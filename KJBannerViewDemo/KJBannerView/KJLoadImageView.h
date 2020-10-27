@@ -18,20 +18,18 @@ typedef void (^KJDownloadProgressBlock)(unsigned long long total, unsigned long 
 
 @interface KJLoadImageView : UIImageView
 /// 下载完成回调
-@property (nonatomic,copy)KJDownLoadImageBlock kj_completionBlock;
+@property (nonatomic,copy,readwrite)KJDownLoadImageBlock kj_completionBlock;
 /// 下载进度回调
-@property (nonatomic,copy)KJDownloadProgressBlock kj_progressBlock;
+@property (nonatomic,copy,readwrite)KJDownloadProgressBlock kj_progressBlock;
 
-/// 指定URL下载图片失败时，重试的次数，默认为2次
+/// 指定URL下载图片失败时重试的次数，默认为2次
 @property (nonatomic,assign)NSUInteger kj_failedTimes;
 /// 是否裁剪为ImageView的尺寸，默认为NO
 @property (nonatomic,assign)BOOL kj_isScale;
 
-/************************************************************************************/
 /// 使用这些方法下载图像异步
 - (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage;
-- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void (^)(UIImage*image))completion;
-/************************************************************************************/
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^)(UIImage*image))completion;
 
 /// 取消请求
 - (void)kj_cancelRequest;

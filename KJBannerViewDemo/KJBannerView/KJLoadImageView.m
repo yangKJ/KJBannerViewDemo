@@ -10,8 +10,8 @@
 #import <objc/runtime.h>
 #import <CommonCrypto/CommonDigest.h>
 
-/** 网络下载相关
- *  图片下载器，没有直接使用NSURLSession之类的，是因为希望这套库可以支持iOS6
+/*  网络下载相关
+ *  图片下载器，没有直接使用NSURLSession之类的，因为希望这套库可以支持iOS6
  */
 @interface KJImageDownloader : NSObject<NSURLSessionDownloadDelegate>
 
@@ -23,21 +23,22 @@
 @property (nonatomic, copy) KJDownLoadDataCallBack callbackOnFinished;
 
 /// 下载图片
-- (void)kj_startDownloadImageWithUrl:(NSString *)url Progress:(KJDownloadProgressBlock)progress Complete:(KJDownLoadDataCallBack)complete;
+- (void)kj_startDownloadImageWithUrl:(NSString*)url Progress:(KJDownloadProgressBlock)progress Complete:(KJDownLoadDataCallBack)complete;
 
 @end
 
 @implementation KJImageDownloader
 
-- (void)kj_startDownloadImageWithUrl:(NSString *)url Progress:(KJDownloadProgressBlock)progress Complete:(KJDownLoadDataCallBack)complete {
+- (void)kj_startDownloadImageWithUrl:(NSString*)url Progress:(KJDownloadProgressBlock)progress Complete:(KJDownLoadDataCallBack)complete{
     self.progressBlock = progress;
     self.callbackOnFinished = complete;
     if ([NSURL URLWithString:url] == nil) {
-        NSError *error = [NSError errorWithDomain:@"henishuo.com" code:101 userInfo:@{@"errorMessage": @"URL不正确"}];
-        !complete ?: complete(nil, error);
+        if (complete) {
+            NSError *error = [NSError errorWithDomain:@"Domain" code:101 userInfo:@{@"message":@"URL不正确"}];
+            complete(nil, error);
+        }
         return;
     }
-    
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:60];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -55,8 +56,7 @@
     }
     if (self.callbackOnFinished) {
         self.callbackOnFinished(data, nil);
-        // 防止重复调用
-        self.callbackOnFinished = nil;
+        self.callbackOnFinished = nil;// 防止重复调用
     }
 }
 
@@ -79,13 +79,12 @@
 
 @end
 
-/************************** 缓存相关 ******************************/
+/// 缓存相关
 @interface UIApplication (KJCacheImage)
 
-@property (nonatomic, strong, readonly) NSMutableDictionary *kj_cacheFaileDictionary;
+@property (nonatomic,strong,readonly) NSMutableDictionary *kj_cacheFaileDictionary;
 
-///
-- (UIImage *)kj_cacheImageForRequest:(NSURLRequest *)request;
+- (UIImage *)kj_cacheImageForRequest:(NSURLRequest*)request;
 - (void)kj_cacheImage:(UIImage *)image forRequest:(NSURLRequest *)request;
 - (void)kj_cacheFailRequest:(NSURLRequest *)request;
 /// 获取失败次数
@@ -115,7 +114,6 @@
         NSError *error = nil;
         [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
     }
-    
     [self kj_clearCache];
 }
 
@@ -152,19 +150,16 @@
     if (image == nil || request == nil) {
         return;
     }
-    
     NSString *directoryPath = KJBannerLoadImages;
     if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
         NSError *error = nil;
         [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
         if (error) return;
     }
-    
     NSString *path = [NSString stringWithFormat:@"%@/%@",directoryPath,[self kj_md5:[self kj_keyForRequest:request]]];
     NSData *data = UIImagePNGRepresentation(image);
     if (data) {
-        /// 缓存数据
-        [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
+        [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];/// 缓存数据
     }
 }
 
@@ -212,11 +207,11 @@
     return self;
 }
 
-- (void)kj_setImageWithURLString:(NSString *)url Placeholder:(UIImage *)placeholderImage {
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage {
     return [self kj_setImageWithURLString:url Placeholder:placeholderImage Completion:nil];
 }
 
-- (void)kj_setImageWithURLString:(NSString *)url Placeholder:(UIImage *)placeholderImage Completion:(void (^)(UIImage*image))completion {
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^)(UIImage*image))completion {
     self.image = placeholderImage;
     self.kj_completionBlock = completion;
     if (url == nil || [url isKindOfClass:[NSNull class]] || (![url hasPrefix:@"http://"] && ![url hasPrefix:@"https://"])){
@@ -276,13 +271,19 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     weakSelf.image = finalImage;
                 });
-                !weakSelf.kj_completionBlock?:weakSelf.kj_completionBlock(weakSelf.image);
-            } else {
-                !weakSelf.kj_completionBlock?:weakSelf.kj_completionBlock(weakSelf.image);
+                if (weakSelf.kj_completionBlock) {
+                    weakSelf.kj_completionBlock(weakSelf.image);
+                }
+            }else {
+                if (weakSelf.kj_completionBlock) {
+                    weakSelf.kj_completionBlock(weakSelf.image);
+                }
             }
         }else {
             [[UIApplication sharedApplication] kj_cacheFailRequest:theRequest];
-            !weakSelf.kj_completionBlock?:weakSelf.kj_completionBlock(weakSelf.image);
+            if (weakSelf.kj_completionBlock) {
+                weakSelf.kj_completionBlock(weakSelf.image);
+            }
         }
     }];
 }

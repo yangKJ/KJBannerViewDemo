@@ -112,7 +112,9 @@
 - (void)setXib{
     /// xib方式
     self.banner.delegate = self;
-    self.banner.pageControl.pageType = PageControlStyleSizeDot;
+//    self.banner.pageControl.pageType = PageControlStyleSizeDot;
+//    self.banner.pageControl.dotwidth = 5;
+//    self.banner.pageControl.dotheight = 5;
     self.banner.imageType = KJBannerViewImageTypeMix;
     self.banner.imageDatas = @[gif,@"98338_https_hhh",tu1,gif2,@"http://photos.tuchong.com/285606/f/4374153.jpg"];
 }

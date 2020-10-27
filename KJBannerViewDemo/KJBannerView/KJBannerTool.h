@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger, KJBannerImageInfoType) {
 /// 滚动方法
 typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
     KJBannerViewRollDirectionTypeRightToLeft = 0, /// 默认，从右往左
-    KJBannerViewRollDirectionTypeLeftToRight,    /// 从左往右
+    KJBannerViewRollDirectionTypeLeftToRight,     /// 从左往右
 };
 /// 图片的几种类型
 typedef NS_ENUM(NSInteger, KJBannerViewImageType) {
@@ -46,18 +46,17 @@ typedef NS_ENUM(NSInteger, KJBannerViewImageType) {
 @end
 
 @interface KJBannerTool : NSObject
-
 /// 存放数据
 @property(nonatomic,strong) NSArray *imageTemps;
 /// 单例
 + (instancetype)sharedInstance;
-/// 判断该字符串是不是一个有效的URL
+/// 判断该字符串是不是有效的URL
 + (BOOL)kj_bannerValidUrl:(NSString*)url;
-/// 根据图片名 判断是否是gif图
+/// 根据图片名判断是否是GIF图
 + (BOOL)kj_bannerIsGifImageWithImageName:(NSString*)imageName;
-/// 根据图片url 判断是否是gif图
+/// 根据图片URL判断是否是GIF图
 + (BOOL)kj_bannerIsGifWithURL:(id)url;
-/// 根据image的data 判断图片类型
+/// 根据image的data判断图片类型
 + (KJBannerImageType)contentTypeWithImageData:(NSData*)data;
 /// 判断是网络图片还是本地
 + (BOOL)kj_bannerImageWithImageUrl:(NSString*)imageUrl;

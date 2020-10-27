@@ -29,7 +29,7 @@
 }
 
 #pragma mark - lazy
-- (KJLoadImageView *)loadImageView{
+- (KJLoadImageView*)loadImageView{
     if(!_loadImageView){
         _loadImageView = [[KJLoadImageView alloc]initWithFrame:self.bounds];
         _loadImageView.image = self.placeholderImage;
@@ -55,9 +55,7 @@
     return _itemView;
 }
 - (void)setItemView:(UIView *)itemView{
-    if (_itemView) {
-        [_itemView removeFromSuperview];
-    }
+    if (_itemView) [_itemView removeFromSuperview];
     _itemView = itemView;
     [self addSubview:_itemView];
 }

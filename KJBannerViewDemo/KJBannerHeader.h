@@ -23,10 +23,12 @@ pod 'KJEmitterView/Control' # 自定义控件
 图片压缩加工处理、滤镜渲染、泛洪算法、识别网址超链接等等
 pod 'KJExtensionHandler'
 pod 'KJExtensionHandler/Foundation'
+pod 'KJExtensionHandler/Exception'  # 异常处理
 
 基类库 - 封装整理常用，采用链式处理，提炼独立工具
 pod 'KJBaseHandler'
 pod 'KJBaseHandler/Tool' # 工具相关
+pod 'KJBaseHandler/Router' # 路由相关
 
 播放器 - KJPlayer是一款视频播放器，AVPlayer的封装，继承UIView
 视频可以边下边播，把播放器播放过的数据流缓存到本地，下次直接从缓冲读取播放
@@ -45,7 +47,7 @@ pod 'KJMenuView' # 菜单控件
 工具库 - 推送工具、网络下载工具、识别网页图片工具等
 pod 'KJWorkbox' # 系统工具
 pod 'KJWorkbox/CommonBox'
- 
+
 Github地址：https://github.com/yangKJ
 简书地址：https://www.jianshu.com/u/c84c00476ab6
 博客地址：https://blog.csdn.net/qq_34534179
@@ -54,8 +56,14 @@ Github地址：https://github.com/yangKJ
 *
 *********************************************************************************
 */
+ 
 /*
  #版本更新日志
+ ### 版本1.3.6
+ - KJPageView 新增属性 margin 用于方块之间微微调整
+ - KJPageView 新增属性 dotwidth和dotheight 用于方块尺寸调整
+ - KJPageView 优化解决不居中问题
+ 
  ### 版本1.3.5
  - 独立委托协议类KJBannerViewProtocol，归类代码更加简洁
  - 新增滚动回调 kScrollBlock
@@ -78,7 +86,7 @@ Github地址：https://github.com/yangKJ
  - 新增裁剪网络图片从而提高效率 kj_scale
  
 ### 版本1.2.6
-- KJPageControl 新增大小点类型 PageControlStyleSizeDot
+- KJPageView 新增大小点类型 PageControlStyleSizeDot
 - 优化修改网友提出的卡顿问题
 - 移出 KJBannerViewCell 当中的判断处理，从而提高效率
 
@@ -99,7 +107,7 @@ Github地址：https://github.com/yangKJ
 - 新增自带Cell显示本地图片 isLocalityImage
  
 ### 版本1.2.0
-- 新增自定义KJPageControl，支持3种样式（圆形，长方形，正方形）
+- KJPageView 支持3种样式（圆形，长方形，正方形）
 - 重新整理，从而提高轮播图性能
 - 自带Cell新增默认占位图，一条数据时隐藏KJPageControl
  
@@ -135,7 +143,6 @@ Github地址：https://github.com/yangKJ
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <objc/runtime.h>
 
 /*  滚动轮播Banner
  *  Banner 支持缩放

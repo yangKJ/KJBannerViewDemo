@@ -124,6 +124,11 @@ pod 'KJBannerView' # 轮播图
 #### <a id="更新日志"></a>更新日志
 ```
 ####版本更新日志:
+### 版本1.3.6
+- KJPageView 新增属性 margin 用于方块之间微微调整
+- KJPageView 新增属性 dotwidth和dotheight 用于方块尺寸调整
+- KJPageView 优化解决不居中问题
+
 ### 版本1.3.5
 - 独立委托协议类KJBannerViewProtocol，归类代码更加简洁
 - 新增滚动回调 kScrollBlock
@@ -142,11 +147,11 @@ pod 'KJBannerView' # 轮播图
 ### 版本1.3.0
 - 新增KJBannerViewDataSource委托，更方便的自定义方式 不需要再继承 KJBannerViewCell
 - kj_BannerView:BannerViewCell:ImageDatas:Index: 此方法和 itemClass 互斥
-- 新增裁剪网络图片从而提高效率 kj_scale
 - Banner支持在Storyboard和Xib中创建并配置其属性
+- 新增裁剪网络图片从而提高效率 kj_scale
 
 ### 版本1.2.6
-- KJPageControl 新增大小点类型 PageControlStyleSizeDot
+- KJPageView 新增大小点类型 PageControlStyleSizeDot
 - 优化修改网友提出的卡顿问题
 - 移出 KJBannerViewCell 当中的判断处理，从而提高效率
 
@@ -167,7 +172,7 @@ pod 'KJBannerView' # 轮播图
 - 新增自带Cell显示本地图片 isLocalityImage
 
 ### 版本1.2.0
-- 新增自定义KJPageControl，支持3种样式（圆形，长方形，正方形）
+- KJPageView 支持3种样式（圆形，长方形，正方形）
 - 重新整理，从而提高轮播图性能
 - 自带Cell新增默认占位图，一条数据时隐藏KJPageControl
 
@@ -182,21 +187,9 @@ pod 'KJBannerView' # 轮播图
 - 创建从KJBannerViewCell继承的Cell
 - 在model设置数据
 
-- (instancetype)initWithFrame:(CGRect)frame{
-    if (self=[super initWithFrame:frame]) {
-        [self.contentView addSubview:self.NameLabel];
-    }
-    return self;
-}
-- (void)setModel:(NSObject *)model{
-    KJBannerModel *kj_model = (KJBannerModel*)model;
-    self.NameLabel.text = kj_model.customTitle;
-}
-
 ### 版本 1.0.2
 - 新增 KJBannerView 轮播图 - banner支持缩放
 - 自带图片下载、缓存相关功能，无任何第三方依赖、轻量级组件
-
 ```
 
 #### <a id="效果图"></a>效果图

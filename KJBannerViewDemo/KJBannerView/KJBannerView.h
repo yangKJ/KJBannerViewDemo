@@ -4,13 +4,13 @@
 //
 //  Created by 杨科军 on 2018/2/27.
 //  Copyright © 2018年 杨科军. All rights reserved.
-//
+//  轮播图
 
 #import <UIKit/UIKit.h>
-#import "KJPageControl.h"
+#import "KJPageView.h"
 #import "KJBannerViewCell.h"
-#import "NSTimer+KJSolve.h"
 #import "KJBannerViewProtocol.h"
+#import "NSTimer+KJSolve.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KJBannerView : UIView
@@ -22,30 +22,28 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner,NSInteger idx);
 
 //************************ 数据源API ************************
-/** 网络数组 1.本地  2.图片 url string  */
+/// 网络数组 1.本地  2.图片 url string
 @property (nonatomic,strong) NSArray *imageDatas;
-/// 自动滚动间隔时间, 默认2s
+/// 自动滚动间隔时间，默认2s
 @property (nonatomic,assign) IBInspectable CGFloat autoScrollTimeInterval;
-/// 是否无线循环, 默认yes
+/// 是否无线循环，默认yes
 @property (nonatomic,assign) IBInspectable BOOL infiniteLoop;
-/// 是否自动滑动, 默认yes
+/// 是否自动滑动，默认yes
 @property (nonatomic,assign) IBInspectable BOOL autoScroll;
-/// 是否缩放, 默认不缩放
+/// 是否缩放，默认不缩放
 @property (nonatomic,assign) IBInspectable BOOL isZoom;
-/// cell宽度, 左右宽度
+/// cell宽度，左右宽度
 @property (nonatomic,assign) IBInspectable CGFloat itemWidth;
-/// cell间距, 默认为0
+/// cell间距，默认为0
 @property (nonatomic,assign) IBInspectable CGFloat itemSpace;
-/** 滚动方向, 默认从右到左 */
+/// 滚动方向，默认从右到左
 @property (nonatomic,assign) KJBannerViewRollDirectionType rollType;
-/** 分页控制器 */
-@property (nonatomic,strong,readonly) KJPageControl *pageControl;
+/// 分页控制器
+@property (nonatomic,strong,readonly) KJPageView *pageControl;
 
-/// 暂停计时器滚动处理
-/// 备注：在viewDidDisappear当中实现
+/// 暂停计时器滚动处理，备注：在viewDidDisappear当中实现
 - (void)kj_pauseTimer;
-/// 继续计时器滚动
-/// 备注：在viewDidAppear当中实现
+/// 继续计时器滚动，备注：在viewDidAppear当中实现
 - (void)kj_repauseTimer;
 
 //************************ 自带Cell可设置属性 *****************************/

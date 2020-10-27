@@ -126,8 +126,6 @@
 
 /// 判断是网络图片还是本地
 + (BOOL)kj_bannerImageWithImageUrl:(NSString*)imageUrl{
-    //    NSRange rangeurl = [imageUrl rangeOfString:@"http"];
-    //    return rangeurl.location != NSNotFound ? NO : YES;
     return ([imageUrl hasPrefix:@"http"] || [imageUrl hasPrefix:@"https"]) ? NO : YES;
 }
 /// 播放网络Gif
