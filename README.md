@@ -68,6 +68,11 @@ end
 
 #### <a id="作者其他库"></a>作者其他Pod库
 ```
+/*
+*********************************************************************************
+*
+*⭐️⭐️⭐️ ----- 本人其他库 ----- ⭐️⭐️⭐️
+*
 粒子效果、自定义控件、自定义选中控件
 pod 'KJEmitterView'
 pod 'KJEmitterView/Control' # 自定义控件
@@ -77,10 +82,12 @@ pod 'KJEmitterView/Control' # 自定义控件
 图片压缩加工处理、滤镜渲染、泛洪算法、识别网址超链接等等
 pod 'KJExtensionHandler'
 pod 'KJExtensionHandler/Foundation'
+pod 'KJExtensionHandler/Exception'  # 异常处理
 
 基类库 - 封装整理常用，采用链式处理，提炼独立工具
 pod 'KJBaseHandler'
 pod 'KJBaseHandler/Tool' # 工具相关
+pod 'KJBaseHandler/Router' # 路由相关
 
 播放器 - KJPlayer是一款视频播放器，AVPlayer的封装，继承UIView
 视频可以边下边播，把播放器播放过的数据流缓存到本地，下次直接从缓冲读取播放
@@ -101,6 +108,9 @@ pod 'KJWorkbox' # 系统工具
 pod 'KJWorkbox/CommonBox'
 
 * 如果觉得好用,希望您能Star支持,你的 ⭐️ 是我持续更新的动力!
+*
+*********************************************************************************
+*/
 ```
 
 ##### Issue
