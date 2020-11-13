@@ -4,7 +4,7 @@
 //
 //  Created by 杨科军 on 2018/2/27.
 //  Copyright © 2018年 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewCell.h"
 
@@ -37,10 +37,12 @@
         _loadImageView.kj_isScale = self.kj_scale;
         [self.contentView addSubview:_loadImageView];
         if (self.imgCornerRadius > 0) {
-            UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:_loadImageView.bounds cornerRadius:_imgCornerRadius];
             CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
             maskLayer.frame = self.bounds;
-            maskLayer.path = maskPath.CGPath;
+            maskLayer.path = ({
+                UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:_loadImageView.bounds cornerRadius:self.imgCornerRadius];
+                path.CGPath;
+            });
             _loadImageView.layer.mask = maskLayer;
         }
     }

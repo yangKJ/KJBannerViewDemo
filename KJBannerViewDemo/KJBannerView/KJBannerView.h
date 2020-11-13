@@ -4,13 +4,13 @@
 //
 //  Created by 杨科军 on 2018/2/27.
 //  Copyright © 2018年 杨科军. All rights reserved.
+//  https://github.com/yangKJ/KJBannerViewDemo
 //  轮播图
 
 #import <UIKit/UIKit.h>
 #import "KJPageView.h"
-#import "KJBannerViewCell.h"
+#import "KJBannerTool.h"
 #import "KJBannerViewProtocol.h"
-#import "NSTimer+KJSolve.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KJBannerView : UIView
@@ -18,12 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,weak) id<KJBannerViewDelegate> delegate;
 @property (nonatomic,weak) id<KJBannerViewDataSource> dataSource;
 /// block回调
-@property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner,NSInteger idx);
-@property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner,NSInteger idx);
+@property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner, NSInteger idx);
+@property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner, NSInteger idx);
 
 //************************ 数据源API ************************
-/// 网络数组 1.本地  2.图片 url string
-@property (nonatomic,strong) NSArray *imageDatas;
+/// 数据源
+@property (nonatomic,strong) NSArray<NSString*>*imageDatas;
 /// 自动滚动间隔时间，默认2s
 @property (nonatomic,assign) IBInspectable CGFloat autoScrollTimeInterval;
 /// 是否无线循环，默认yes
@@ -46,16 +46,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// 继续计时器滚动，备注：在viewDidAppear当中实现
 - (void)kj_repauseTimer;
 
-//************************ 自带Cell可设置属性 *****************************/
-/** 是否裁剪, 默认no*/
+//******************** 自带KJBannerViewCell可设置属性 ********************
+/// 是否裁剪，默认NO
 @property (nonatomic,assign) BOOL kj_scale;
-/** imagView圆角, 默认为0 */
+/// imagView圆角，默认为0px
 @property (nonatomic,assign) IBInspectable CGFloat imgCornerRadius;
-/** cell的占位图, 用于网络未加载到图片时 */
+/// cell的占位图, 用于网络未加载到图片时
 @property (nonatomic,strong) IBInspectable UIImage *placeholderImage;
-/** 轮播图片的ContentMode, 默认为 UIViewContentModeScaleToFill */
+/// 轮播图片的ContentMode，默认为 UIViewContentModeScaleToFill
 @property (nonatomic,assign) UIViewContentMode bannerImageViewContentMode;
-/** 图片的样式, 默认 KJBannerViewImageTypeLocality 网络图片 */
+/// 图片的样式，默认 KJBannerViewImageTypeLocality 网络图片
 @property (nonatomic,assign) KJBannerViewImageType imageType;
 
 //************************ 废弃属性方法 *****************************/

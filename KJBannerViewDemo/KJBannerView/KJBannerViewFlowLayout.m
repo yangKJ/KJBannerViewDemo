@@ -4,7 +4,7 @@
 //
 //  Created by 杨科军 on 2018/2/28.
 //  Copyright © 2018年 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewFlowLayout.h"
 
@@ -22,7 +22,6 @@
 - (void)prepareLayout{
     [super prepareLayout];
 }
-
 /*  重写方法
  *  此方法会计算并返回每个item的位置和大小，换句话说就是collectionView里面的布局是怎样布局的就根这个方法的返回值有关
  *  此方法会先计算一定数量的数据，当你继续滚动需要一些新数据时会再次来计算新的数据

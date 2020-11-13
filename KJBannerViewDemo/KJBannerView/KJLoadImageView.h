@@ -4,6 +4,7 @@
 //
 //  Created by 杨科军 on 2018/12/22.
 //  Copyright © 2018 杨科军. All rights reserved.
+//  https://github.com/yangKJ/KJBannerViewDemo
 //  不依赖三方网络加载图片显示
 
 #import <UIKit/UIKit.h>
@@ -18,9 +19,9 @@ typedef void (^KJDownloadProgressBlock)(unsigned long long total, unsigned long 
 
 @interface KJLoadImageView : UIImageView
 /// 下载完成回调
-@property (nonatomic,copy,readwrite)KJDownLoadImageBlock kj_completionBlock;
+@property(nonatomic,copy,readwrite)KJDownLoadImageBlock kj_completionBlock;
 /// 下载进度回调
-@property (nonatomic,copy,readwrite)KJDownloadProgressBlock kj_progressBlock;
+@property(nonatomic,copy,readwrite)KJDownloadProgressBlock kj_progressBlock;
 
 /// 指定URL下载图片失败时重试的次数，默认为2次
 @property (nonatomic,assign)NSUInteger kj_failedTimes;

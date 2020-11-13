@@ -4,22 +4,24 @@
 //
 //  Created by 杨科军 on 2018/2/27.
 //  Copyright © 2018年 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerView.h"
+#import "KJBannerViewCell.h"
 #import "KJBannerViewFlowLayout.h"
 
 @interface KJBannerView()<UICollectionViewDataSource,UICollectionViewDelegate>
-@property (nonatomic,strong) KJBannerViewFlowLayout *layout;
 @property (nonatomic,strong) UICollectionView *collectionView;
-@property (nonatomic,strong) NSTimer *timer;
+@property (nonatomic,strong) KJBannerViewFlowLayout *layout;
 @property (nonatomic,strong) KJPageView *pageControl;
+@property (nonatomic,strong) CALayer *topLayer;
+@property (nonatomic,strong) NSMutableArray *temps;
+@property (nonatomic,strong) NSTimer *timer;
 @property (nonatomic,assign) NSUInteger nums;
-@property (nonatomic,assign) NSUInteger dragIndex;
+@property (nonatomic,assign) NSInteger dragIndex;
 @property (nonatomic,assign) CGFloat lastX;
-@property (nonatomic,assign) BOOL useCustomCell;/// 是否自定义Cell，默认NO
-@property (nonatomic,assign) BOOL useDataSource;/// 是否使用KJBannerViewDataSource委托方式
-
+@property (nonatomic,assign) BOOL useCustomCell;
+@property (nonatomic,assign) BOOL useDataSource;
 @end
 
 @implementation KJBannerView
@@ -45,7 +47,6 @@
     if (self = [super initWithCoder:aDecoder]) {
         [self kConfig];
         [self addSubview:self.collectionView];
-        [self addSubview:self.pageControl];
     }
     return self;
 }
@@ -53,7 +54,6 @@
     if(self = [super initWithFrame:frame]){
         [self kConfig];
         [self addSubview:self.collectionView];
-        [self addSubview:self.pageControl];
     }
     return self;
 }
@@ -78,44 +78,22 @@
 - (void)setDelegate:(id<KJBannerViewDelegate>)delegate{
     _delegate = delegate;
     if ([delegate respondsToSelector:@selector(kj_BannerView:CurrentIndex:)]) {
-        BOOL close = [delegate kj_BannerView:self CurrentIndex:0];
-        if (close) [self.pageControl removeFromSuperview];
+        BOOL boo = [delegate kj_BannerView:self CurrentIndex:0];
+        if (boo && self.pageControl.superview) {
+            [self.pageControl removeFromSuperview];
+        }
     }
 }
 - (void)setDataSource:(id<KJBannerViewDataSource>)dataSource{
     _dataSource = dataSource;
     self.useDataSource = YES;
 }
-- (void)setImageDatas:(NSArray*)imageDatas{
-    _imageDatas = imageDatas;
-    if (self.useCustomCell == NO && self.useDataSource == NO) {
-        __weak typeof(self) weakself = self;
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            NSMutableArray *temp = [NSMutableArray array];
-            for (NSString *string in imageDatas) {
-                KJBannerDatasInfo *info = [[KJBannerDatasInfo alloc]init];
-                info.superType = weakself.imageType;
-                dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                    info.imageUrl = string;
-                });
-                [temp addObject:info];
-            }
-            [KJBannerTool sharedInstance].imageTemps = temp.mutableCopy;
-            temp = nil;
-            dispatch_async(dispatch_get_main_queue(), ^{            
-                [weakself kj_dealImageDatas:imageDatas];
-            });
-        });
-    }else{
-        [self kj_dealImageDatas:imageDatas];
-    }
-}
 - (void)setItemClass:(Class)itemClass{
     _itemClass = itemClass;
     if (![NSStringFromClass(itemClass) isEqualToString:@"KJBannerViewCell"]) {
-        _useCustomCell = YES;
+        self.useCustomCell = YES;
     }
-    [self.collectionView registerClass:_itemClass forCellWithReuseIdentifier:@"KJBannerViewCell"];
+    [self.collectionView registerClass:itemClass forCellWithReuseIdentifier:@"KJBannerViewCell"];
 }
 - (void)setItemWidth:(CGFloat)itemWidth{
     _itemWidth = itemWidth;
@@ -134,12 +112,38 @@
     [self invalidateTimer];
     if (_autoScroll) [self setupTimer];
 }
-
+- (void)setImageDatas:(NSArray*)imageDatas{
+    if (imageDatas.count == 0) {
+        [self.layer addSublayer:self.topLayer];
+        self.pageControl.hidden = YES;
+        [self.collectionView removeFromSuperview];
+        [self invalidateTimer];
+        return;
+    }else{
+        if (self.collectionView.superview == nil) {
+            [self.topLayer removeFromSuperlayer];
+            [self addSubview:self.collectionView];
+        }
+    }
+    _imageDatas = imageDatas;
+    [self kj_dealImageDatas:imageDatas];
+    if (self.useCustomCell == NO && self.useDataSource == NO) {
+        [self.temps removeAllObjects];
+        for (NSInteger i=0; i<imageDatas.count; i++) {
+            __block KJBannerDatasInfo *info = [[KJBannerDatasInfo alloc]init];
+            info.superType = self.imageType;
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                info.imageUrl = imageDatas[i];
+            });
+            [self.temps addObject:info];
+        }
+    }
+}
 #pragma mark - private
 /// 处理数据的相关操作
 - (void)kj_dealImageDatas:(NSArray*)imageDatas{
-    if(imageDatas.count > 1){
-        _nums = self.infiniteLoop ? imageDatas.count * 10000 : imageDatas.count;
+    if (imageDatas.count > 1) {
+        _nums = self.infiniteLoop ? imageDatas.count * 1000 : imageDatas.count;
         self.pageControl.hidden = NO;
         self.collectionView.scrollEnabled = YES;
         [self setAutoScroll:self.autoScroll];
@@ -167,7 +171,7 @@
 }
 /// 开启计时器
 - (void)setupTimer{
-    [self invalidateTimer]; // 创建定时器前先停止定时器,不然会出现僵尸定时器,导致轮播频率错误
+    [self invalidateTimer];
     __weak typeof(self) weakself = self;
     self.timer = [NSTimer kj_scheduledTimerWithTimeInterval:self.autoScrollTimeInterval Repeats:YES Block:^(NSTimer *timer) {
         [weakself automaticScroll];
@@ -196,7 +200,7 @@
 - (NSInteger)currentIndex{
     if(self.collectionView.frame.size.width == 0 || self.collectionView.frame.size.height == 0) return 0;
     NSInteger index = 0;
-    if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {//水平滑动
+    if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
         index = (self.collectionView.contentOffset.x + (self.itemWidth + self.itemSpace) * 0.5) / (self.itemSpace + self.itemWidth);
     }else{
         index = (self.collectionView.contentOffset.y + _layout.itemSize.height * 0.5) / _layout.itemSize.height;
@@ -210,8 +214,8 @@
         [self.delegate kj_BannerView:self CurrentIndex:idx];
     }
     if (self.kScrollBlock) self.kScrollBlock(self,idx);
-    if(index >= _nums){ //滑到最后则调到中间
-        if(self.infiniteLoop){
+    if (index >= _nums) {
+        if (self.infiniteLoop) {
             index = _nums * 0.5;
             [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
         }
@@ -247,7 +251,7 @@
     NSInteger shouldPage = moveWidth / (self.itemWidth*.5);
     if (velocity.x > 0 || shouldPage > 0) {
         _dragIndex = 1;
-    }else if (velocity.x < 0 || shouldPage < 0){
+    }else if (velocity.x < 0 || shouldPage < 0) {
         _dragIndex = -1;
     }else{
         _dragIndex = 0;
@@ -267,24 +271,21 @@
     return self.nums;
 }
 - (__kindof UICollectionViewCell*)collectionView:(UICollectionView*)collectionView cellForItemAtIndexPath:(NSIndexPath*)indexPath{
-    KJBannerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
+    KJBannerViewCell *bannerViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
     NSInteger itemIndex = indexPath.item % self.imageDatas.count;
     if (self.useDataSource) {
-        cell.itemView = [_dataSource kj_BannerView:self BannerViewCell:cell ImageDatas:self.imageDatas Index:itemIndex];
-        return cell;
+        bannerViewCell.itemView = [_dataSource kj_BannerView:self BannerViewCell:bannerViewCell ImageDatas:self.imageDatas Index:itemIndex];
     }else if (self.useCustomCell) {
-        cell.model = self.imageDatas[itemIndex];
-        return cell;
+        bannerViewCell.model = self.imageDatas[itemIndex];
     }else { /// 自带Cell处理
-        cell.kj_scale = self.kj_scale;
-        cell.imgCornerRadius  = self.imgCornerRadius;
-        cell.placeholderImage = self.placeholderImage;
-        cell.contentMode = self.bannerImageViewContentMode;
-        cell.info = [KJBannerTool sharedInstance].imageTemps[itemIndex];
-        return cell;
+        bannerViewCell.kj_scale = self.kj_scale;
+        bannerViewCell.imgCornerRadius  = self.imgCornerRadius;
+        bannerViewCell.placeholderImage = self.placeholderImage;
+        bannerViewCell.contentMode = self.bannerImageViewContentMode;
+        bannerViewCell.info = self.temps[itemIndex];
     }
+    return bannerViewCell;
 }
-
 #pragma mark - UICollectionViewDelegate
 - (void)collectionView:(UICollectionView*)collectionView didSelectItemAtIndexPath:(NSIndexPath*)indexPath{
     NSInteger idx = [self currentIndex] % self.imageDatas.count;
@@ -295,8 +296,23 @@
         self.kSelectBlock(self,idx);
     }
 }
-
 #pragma mark - lazy
+- (NSMutableArray*)temps{
+    if (!_temps) {
+        _temps = [NSMutableArray array];
+    }
+    return _temps;
+}
+- (CALayer*)topLayer{
+    if (!_topLayer) {
+        CALayer *topLayer = [[CALayer alloc]init];
+        [topLayer setBounds:self.bounds];
+        [topLayer setPosition:CGPointMake(self.bounds.size.width*.5, self.bounds.size.height*.5)];
+        [topLayer setContents:(id)self.placeholderImage.CGImage];
+        _topLayer = topLayer;
+    }
+    return _topLayer;
+}
 - (KJBannerViewFlowLayout*)layout{
     if(!_layout){
         _layout = [[KJBannerViewFlowLayout alloc]init];
@@ -321,6 +337,7 @@
 - (KJPageView*)pageControl{
     if(!_pageControl){
         _pageControl = [[KJPageView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height - 15, self.bounds.size.width, 15)];
+        [self addSubview:_pageControl];
     }
     return _pageControl;
 }

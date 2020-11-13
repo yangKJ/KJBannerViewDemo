@@ -4,7 +4,7 @@
 //
 //  Created by 杨科军 on 2018/12/22.
 //  Copyright © 2018 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJLoadImageView.h"
 #import <objc/runtime.h>
@@ -15,12 +15,12 @@
  */
 @interface KJImageDownloader : NSObject<NSURLSessionDownloadDelegate>
 
-@property (nonatomic, strong) NSURLSession *session;
-@property (nonatomic, strong) NSURLSessionDownloadTask *task;
-@property (nonatomic, assign) unsigned long long totalLength;
-@property (nonatomic, assign) unsigned long long currentLength;
-@property (nonatomic, copy) KJDownloadProgressBlock progressBlock;
-@property (nonatomic, copy) KJDownLoadDataCallBack callbackOnFinished;
+@property(nonatomic,strong) NSURLSession *session;
+@property(nonatomic,strong) NSURLSessionDownloadTask *task;
+@property(nonatomic,assign) unsigned long long totalLength;
+@property(nonatomic,assign) unsigned long long currentLength;
+@property(nonatomic,copy,readwrite) KJDownloadProgressBlock progressBlock;
+@property(nonatomic,copy,readwrite) KJDownLoadDataCallBack callbackOnFinished;
 
 /// 下载图片
 - (void)kj_startDownloadImageWithUrl:(NSString*)url Progress:(KJDownloadProgressBlock)progress Complete:(KJDownLoadDataCallBack)complete;
@@ -56,7 +56,7 @@
     }
     if (self.callbackOnFinished) {
         self.callbackOnFinished(data, nil);
-        self.callbackOnFinished = nil;// 防止重复调用
+        self.callbackOnFinished = nil;
     }
 }
 
@@ -82,7 +82,7 @@
 /// 缓存相关
 @interface UIApplication (KJCacheImage)
 
-@property (nonatomic,strong,readonly) NSMutableDictionary *kj_cacheFaileDictionary;
+@property(nonatomic,strong,readonly) NSMutableDictionary *kj_cacheFaileDictionary;
 
 - (UIImage *)kj_cacheImageForRequest:(NSURLRequest*)request;
 - (void)kj_cacheImage:(UIImage *)image forRequest:(NSURLRequest *)request;
@@ -117,16 +117,15 @@
     [self kj_clearCache];
 }
 
-- (NSUInteger)kj_failTimesForRequest:(NSURLRequest *)request {
+- (NSUInteger)kj_failTimesForRequest:(NSURLRequest*)request {
     NSNumber *faileTimes = [self.kj_cacheFaileDictionary objectForKey:[self kj_md5:[self kj_keyForRequest:request]]];
     if (faileTimes && [faileTimes respondsToSelector:@selector(integerValue)]) {
         return faileTimes.integerValue;
     }
     return 0;
 }
-
 /// 缓存图片
-- (UIImage *)kj_cacheImageForRequest:(NSURLRequest *)request {
+- (UIImage *)kj_cacheImageForRequest:(NSURLRequest*)request{
     if (request) {
         NSString *directoryPath = KJBannerLoadImages;
         NSString *path = [NSString stringWithFormat:@"%@/%@", directoryPath, [self kj_md5:[self kj_keyForRequest:request]]];
@@ -135,7 +134,7 @@
     return nil;
 }
 ///
-- (void)kj_cacheFailRequest:(NSURLRequest *)request {
+- (void)kj_cacheFailRequest:(NSURLRequest*)request{
     NSString *key = [self kj_md5:[self kj_keyForRequest:request]];
     NSNumber *faileTimes = [self.kj_cacheFaileDictionary objectForKey:key];
     NSUInteger times = 0;
@@ -146,10 +145,8 @@
     [self.kj_cacheFaileDictionary setObject:@(times) forKey:key];
 }
 
-- (void)kj_cacheImage:(UIImage *)image forRequest:(NSURLRequest *)request {
-    if (image == nil || request == nil) {
-        return;
-    }
+- (void)kj_cacheImage:(UIImage*)image forRequest:(NSURLRequest*)request{
+    if (image == nil || request == nil) return;
     NSString *directoryPath = KJBannerLoadImages;
     if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
         NSError *error = nil;
@@ -158,23 +155,20 @@
     }
     NSString *path = [NSString stringWithFormat:@"%@/%@",directoryPath,[self kj_md5:[self kj_keyForRequest:request]]];
     NSData *data = UIImagePNGRepresentation(image);
-    if (data) {
-        [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];/// 缓存数据
-    }
+    if (data) [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
 }
 
 #pragma mark - 内部方法
 /// 拼接路径
-- (NSString *)kj_keyForRequest:(NSURLRequest *)request {
+- (NSString*)kj_keyForRequest:(NSURLRequest*)request{
     BOOL portait = NO;
     if (UIDeviceOrientationIsPortrait([[UIDevice currentDevice] orientation])) {
         portait = YES;
     }
     return [NSString stringWithFormat:@"%@%@", request.URL.absoluteString, portait ? @"portait" : @"lanscape"];
 }
-
 /// 加密
-- (NSString *)kj_md5:(NSString *)string {
+- (NSString*)kj_md5:(NSString*)string{
     if (string == nil || [string length] == 0) return nil;
     unsigned char digest[CC_MD5_DIGEST_LENGTH], i;
     CC_MD5([string UTF8String], (int)[string lengthOfBytesUsingEncoding:NSUTF8StringEncoding], digest);
@@ -223,7 +217,6 @@
         [self kj_downloadWithReqeust:request holder:placeholderImage];
     });
 }
-
 #pragma mark - 内部方法
 /// 下载图片
 - (void)kj_downloadWithReqeust:(NSURLRequest*)theRequest holder:(UIImage*)holder {
@@ -291,7 +284,6 @@
 - (void)kj_cancelRequest {
     [_imageDownloader.task cancel];
 }
-
 /// 裁剪图片
 + (UIImage*)kj_clipImage:(UIImage*)image Size:(CGSize)size IsScaleToMax:(BOOL)isScaleToMax {
     CGFloat scale = [UIScreen mainScreen].scale;

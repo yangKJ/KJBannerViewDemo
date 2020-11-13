@@ -4,14 +4,13 @@
 //
 //  Created by 杨科军 on 2018/2/27.
 //  Copyright © 2018年 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import <UIKit/UIKit.h>
 #import "KJLoadImageView.h"
 #import "KJBannerTool.h"
 
 @interface KJBannerViewCell : UICollectionViewCell
-
 /// 数据模型 - 用于自定义样式传递数据
 @property (nonatomic,strong) NSObject *model;
 

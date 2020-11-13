@@ -34,33 +34,6 @@ KJBannerView 是一款轮播Banner，自带图片下载、缓存相关功能、�
 4.支持网络GIF和网络图片和本地图片混合轮播  ☑️  
 5.支持在Storyboard和Xib中创建并配置其属性  ☑️  
 
-----------------------------------------
-#### 温馨提示
-#####1、使用第三方库Xcode报错  
-Cannot synthesize weak property because the current deployment target does not support weak references  
-可在`Podfile`文件底下加入下面的代码，'8.0'是对应的部署目标（deployment target） 删除库重新Pod  
-不支持用weak修饰属性，而weak在使用ARC管理引用计数项目中才可使用  
-遍历每个develop target，将target支持版本统一设成一个支持ARC的版本
-
-```
-##################加入代码##################
-# 使用第三方库xcode报错Cannot synthesize weak property because the current deployment target does not support weak references
-post_install do |installer|
-installer.pods_project.targets.each do |target|
-target.build_configurations.each do |config|
-config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
-end
-end
-end
-##################加入代码##################
-```
-#####2、若搜索不到库
-- 方案1：可执行pod repo update
-- 方案2：使用 rm ~/Library/Caches/CocoaPods/search_index.json 移除本地索引然后再执行安装
-- 方案3：更新一下 CocoaPods 版本
-
-----------------------------------------
-
 #### <a id="作者信息"></a>作者信息
 > Github地址：https://github.com/yangKJ  
 > 简书地址：https://www.jianshu.com/u/c84c00476ab6  
@@ -113,9 +86,6 @@ pod 'KJWorkbox/CommonBox'
 */
 ```
 
-##### Issue
-如果您在使用中有好的需求及建议，或者遇到什么bug，欢迎随时issue，我会及时的回复，有空也会不断优化更新这些库
-
 #### <a id="使用方法(支持cocoapods/carthage安装)"></a>Pod使用方法
 ```
 pod 'KJBannerView' # 轮播图 
@@ -124,6 +94,11 @@ pod 'KJBannerView' # 轮播图
 #### <a id="更新日志"></a>更新日志
 ```
 ####版本更新日志:
+### 版本1.3.7
+- 新增动态图分类，替换原先的动态图播放方式
+- 去掉单例，优化数据的获取方式
+- 解决数据源为空的处理
+
 ### 版本1.3.6
 - KJPageView 新增属性 margin 用于方块之间微微调整
 - KJPageView 新增属性 dotwidth和dotheight 用于方块尺寸调整
@@ -397,6 +372,32 @@ pod 'KJBannerView' # 轮播图
 
 @end
 ```
+----------------------------------------
+#### 温馨提示
+#####1、使用第三方库Xcode报错  
+Cannot synthesize weak property because the current deployment target does not support weak references  
+可在`Podfile`文件底下加入下面的代码，'8.0'是对应的部署目标（deployment target） 删除库重新Pod  
+不支持用weak修饰属性，而weak在使用ARC管理引用计数项目中才可使用  
+遍历每个develop target，将target支持版本统一设成一个支持ARC的版本
+
+```
+##################加入代码##################
+# 使用第三方库xcode报错Cannot synthesize weak property because the current deployment target does not support weak references
+post_install do |installer|
+installer.pods_project.targets.each do |target|
+target.build_configurations.each do |config|
+config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.0'
+end
+end
+end
+##################加入代码##################
+```
+#####2、若搜索不到库
+- 方案1：可执行pod repo update
+- 方案2：使用 rm ~/Library/Caches/CocoaPods/search_index.json 移除本地索引然后再执行安装
+- 方案3：更新一下 CocoaPods 版本
+
+----------------------------------------
 
 #### <a id="打赏作者"></a>打赏作者
 <!--user:用户名 repo:仓库名字 type:star count:数量-->

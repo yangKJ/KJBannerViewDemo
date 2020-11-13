@@ -4,7 +4,7 @@
 //
 //  Created by 杨科军 on 2018/12/23.
 //  Copyright © 2018 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #ifndef KJBannerHeader_h
 #define KJBannerHeader_h
@@ -57,8 +57,26 @@ Github地址：https://github.com/yangKJ
 *********************************************************************************
 */
  
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+/*  滚动轮播Banner
+ *  Banner 支持缩放
+ *  自带图片下载、缓存相关功能
+ */
+#import "KJBannerView.h"
+#import "KJLoadImageView.h" /// 加载网络图片
+#import "KJBannerTool.h" /// 工具类
+
+#endif /* KJBannerHeader_h */
+
 /*
  #版本更新日志
+ ### 版本1.3.7
+ - 新增动态图分类，替换原先的动态图播放方式
+ - 去掉单例，优化数据的获取方式
+ - 解决数据源为空的处理
+ 
  ### 版本1.3.6
  - KJPageView 新增属性 margin 用于方块之间微微调整
  - KJPageView 新增属性 dotwidth和dotheight 用于方块尺寸调整
@@ -133,23 +151,9 @@ Github地址：https://github.com/yangKJ
     self.NameLabel.text = kj_model.customTitle;
 }
 ```
- 
- ### 版本 1.0.2
- - 新增 KJBannerView 轮播图 - banner支持缩放
- - 自带图片下载、缓存相关功能，无任何第三方依赖、轻量级组件
+### 版本 1.0.2
+- 新增 KJBannerView 轮播图 - banner支持缩放
+- 自带图片下载、缓存相关功能，无任何第三方依赖、轻量级组件
 ![轮播图](https://upload-images.jianshu.io/upload_images/1933747-2e51515ae91af6d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 */
-
-#import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
-
-/*  滚动轮播Banner
- *  Banner 支持缩放
- *  自带图片下载、缓存相关功能
- */
-#import "KJBannerView.h"
-#import "KJLoadImageView.h" /// 加载网络图片
-#import "KJBannerTool.h" /// 工具类
-
-#endif /* KJBannerHeader_h */
