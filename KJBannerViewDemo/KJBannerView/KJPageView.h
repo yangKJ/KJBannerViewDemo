@@ -34,7 +34,8 @@ typedef enum : NSInteger{
 /// 类别，默认长方形
 @property(nonatomic,assign) IBInspectable KJPageControlStyle pageType;
 /// 大小点控件
-@property(nonatomic,strong) KJDotPageView *loopPageView;
+@property(nonatomic,strong,readonly) KJDotPageView *loopPageView;
+
 @end
 
 NS_ASSUME_NONNULL_END

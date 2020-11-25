@@ -66,7 +66,7 @@ static int pairGCD(int a, int b) {
     }
 }
 
-static int vectorGCD(size_t const count, int const *const values) {
+static int vectorGCD(size_t const count, int const * const values) {
     int gcd = values[0];
     for (size_t i = 1; i < count; ++i) {
         gcd = pairGCD(values[i], gcd);

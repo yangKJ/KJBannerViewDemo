@@ -51,6 +51,7 @@ pod 'KJWorkbox/CommonBox'
 Github地址：https://github.com/yangKJ
 简书地址：https://www.jianshu.com/u/c84c00476ab6
 博客地址：https://blog.csdn.net/qq_34534179
+掘金地址：https://juejin.cn/user/1987535102554472/posts
  
 * 如果觉得好用,希望您能Star支持,你的 ⭐️ 是我持续更新的动力!
 *
@@ -72,6 +73,9 @@ Github地址：https://github.com/yangKJ
 
 /*
  #版本更新日志
+ ### 版本1.3.8
+ - 新增委托方法 kj_BannerViewDidScroll:
+ 
  ### 版本1.3.7
  - 新增动态图分类，替换原先的动态图播放方式
  - 去掉单例，优化数据的获取方式

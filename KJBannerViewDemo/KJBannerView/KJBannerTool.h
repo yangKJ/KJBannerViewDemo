@@ -12,6 +12,7 @@
 #import "NSTimer+KJSolve.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
 #define KJBannerLoadImages [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/KJLoadImages"];
 typedef NS_ENUM(NSInteger, KJBannerImageType) {
     KJBannerImageTypeUnknown = 0, /// 未知

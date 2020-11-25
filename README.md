@@ -5,20 +5,11 @@
 <img src="https://upload-images.jianshu.io/upload_images/1933747-7b120a5ae9b76bf5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" width="200" hspace="30px">
 </p>
 
-<!--<p align="left">
-  <img width="250" src="Res/156a18392553c66a65882650b1a2289a-2的副本.gif" hspace="1px" />
-  <img width="250" src="Res/811579078870_.pic.jpg" hspace="10px" />
-</p>-->
-
-<!--<video id="video" controls="" preload="none" width="375px" height="667px" poster="https://raw.githubusercontent.com/yangKJ/KJBannerViewDemo/master/Res/IMG_6906.PNG">
-<source id="mp4" src="Res/IMG_6904.mp4" type="video/mp4">
-</video>-->
-
 ----------------------------------------
 ### 框架整体介绍
+* [功能介绍](#功能介绍)
 * [作者信息](#作者信息)
 * [作者其他库](#作者其他库)
-* [功能介绍](#功能介绍)
 * [Pod使用方法](#使用方法(支持cocoapods/carthage安装))
 * [更新日志](#更新日志)
 * [效果图](#效果图)
@@ -38,6 +29,7 @@ KJBannerView 是一款轮播Banner，自带图片下载、缓存相关功能、�
 > Github地址：https://github.com/yangKJ  
 > 简书地址：https://www.jianshu.com/u/c84c00476ab6  
 > 博客地址：https://blog.csdn.net/qq_34534179  
+> 掘金地址：https://juejin.cn/user/1987535102554472/posts
 
 #### <a id="作者其他库"></a>作者其他Pod库
 ```
@@ -94,6 +86,9 @@ pod 'KJBannerView' # 轮播图
 #### <a id="更新日志"></a>更新日志
 ```
 ####版本更新日志:
+### 版本1.3.8
+- 新增委托方法 kj_BannerViewDidScroll:
+
 ### 版本1.3.7
 - 新增动态图分类，替换原先的动态图播放方式
 - 去掉单例，优化数据的获取方式
@@ -180,7 +175,7 @@ pod 'KJBannerView' # 轮播图
 - KJLoadImageView：图片下载工具类
 - KJBannerTool：工具方法
 
-##### 代码事例
+##### 代码示例
 ```
 //
 //  ViewController.m
@@ -198,10 +193,10 @@ pod 'KJBannerView' # 轮播图
 #import "KJTestViewController.h"
 
 #define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
+#define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
+#define tu1 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg"
 
-@interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>{
-    __block UILabel *lab,*labe;
-}
+@interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>
 @property (weak, nonatomic) IBOutlet KJBannerView *banner;
 @property (weak, nonatomic) IBOutlet UIView *backView;
 @property (weak, nonatomic) IBOutlet UILabel *label;
@@ -209,6 +204,7 @@ pod 'KJBannerView' # 轮播图
 @property (weak, nonatomic) IBOutlet UISwitch *Switch;
 @property (nonatomic,strong) KJBannerView *banner2;
 @property (nonatomic,strong) NSArray *temp;
+@property (nonatomic,strong) UILabel *label1,*label2;
 @end
 
 @implementation ViewController
@@ -243,8 +239,8 @@ pod 'KJBannerView' # 轮播图
     banner2.itemWidth = 280;
     banner2.delegate = self;
     banner2.dataSource = self;
-//    banner2.itemClass = [KJCollectionViewCell class];
     banner2.imageType = KJBannerViewImageTypeMix;
+    banner2.pageControl.pageType = PageControlStyleSizeDot;
     [self.backView addSubview:banner2];
     self.banner2.imageDatas = self.temp;
     
@@ -255,49 +251,45 @@ pod 'KJBannerView' # 轮播图
     self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",num / 1024 / 1024.0];
     
     CGFloat w = self.view.frame.size.width;
-    CGFloat h = CGRectGetMaxY(self.label.frame) + 50;
+    CGFloat h = self.label.frame.origin.y + self.label.frame.size.height + 100;
     UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30, w-40, 20)];
-//    label.textColor = UIColor.greenColor;
+    self.label1 = label;
     label.font = [UIFont systemFontOfSize:14];
     [self.view addSubview:label];
     
     UILabel *label2 = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30 + 30, w-40, 20)];
-//    label2.textColor = UIColor.greenColor;
+    self.label2 = label2;
     label2.font = [UIFont systemFontOfSize:14];
     [self.view addSubview:label2];
     
-    lab = label;
-    labe = label2;
-    label.text = [NSString stringWithFormat:@"当前设备可用内存：%.2fMB",[KJTestViewController availableMemory]];
-    label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2fMB",[KJTestViewController usedMemory]];
+    label.text  = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
+    label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
 }
 
 - (void)setTimer{
     __weak typeof(self) weakself = self;
-    NSTimer*timer = [NSTimer kj_scheduledTimerWithTimeInterval:1.0 Repeats:YES Block:^(NSTimer *timer) {
+    NSTimer *timer = [NSTimer kj_scheduledTimerWithTimeInterval:1.0 Repeats:YES Block:^(NSTimer *timer) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            lab.text = [NSString stringWithFormat:@"当前设备可用内存：%.2fMB",[KJTestViewController availableMemory]];
-            labe.text =[NSString stringWithFormat:@"当前任务所占用内存：%.2fMB",[KJTestViewController usedMemory]];
-            weakself.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
+            weakself.label.text  = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
+            weakself.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
+            weakself.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
         });
     }];
     [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
 
 - (void)setXib{
-    /// xib方式
     self.banner.delegate = self;
-    self.banner.pageControl.pageType = PageControlStyleSizeDot;
+    self.banner.pageControl.pageType = PageControlStyleRectangle;
+    self.banner.pageControl.dotwidth = 10;
+    self.banner.pageControl.dotheight = 2;
     self.banner.imageType = KJBannerViewImageTypeMix;
-    self.banner.imageDatas = @[gif,@"98338_https_hhh",@"tu3", @"http://photos.tuchong.com/285606/f/4374153.jpg"];
+    self.banner.imageDatas = @[@"98338_https_hhh",gif,gif2,@"98338_https_hhh",gif2,gif,@"98338_https_hhh",tu1,gif2,@"http://photos.tuchong.com/285606/f/4374153.jpg"];
 }
 
 - (void)qiehuanAction:(UISwitch*)sender{
     if (!sender.on) {
-        NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg",
-                            @"http://img5.cache.netease.com/photo/0003/2012-06-21/84G462VS51GQ0003.jpg",
-                            @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg",
-                            ];
+        NSArray *images = @[@"98338_https_hhh",gif2,gif,@"98338_https_hhh",tu1,gif2];
         NSMutableArray *arr = [NSMutableArray array];
         for (NSInteger i=0; i<images.count; i++) {
             KJBannerModel *model = [[KJBannerModel alloc]init];
@@ -305,7 +297,7 @@ pod 'KJBannerView' # 轮播图
             model.customTitle = [NSString stringWithFormat:@"新版数据:%ld",i];
             [arr addObject:model];
         }
-        self.banner2.imageDatas = arr;
+        self.banner2.imageDatas = @[];
     }else{
         self.banner2.imageDatas = self.temp;
     }
@@ -331,20 +323,19 @@ pod 'KJBannerView' # 轮播图
 }
 - (BOOL)kj_BannerView:(KJBannerView *)banner CurrentIndex:(NSInteger)index{
     if (banner == self.banner) {
+        NSLog(@"currentIndex = %ld",(long)index);
         return NO;
     }
-    NSLog(@"currentIndex = %ld",(long)index);
     return NO;
+}
+- (void)kj_BannerViewDidScroll:(KJBannerView*)banner{
+    if (banner == self.banner) {
+//        NSLog(@"DidScroll");
+    }
 }
 
 - (void)_setDatas{
-    NSArray *images = @[
-        @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg",
-        @"http://photos.tuchong.com/285606/f/4374153.jpg",
-        @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579081905778&di=6ff1ad740b5d1dfc2d622c44fff8716b&imgtype=0&src=http%3A%2F%2Fimg.guitarchina.com%2Fimg2011%2F1013wj3%2F57.jpg",
-        @"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2791659266,2306116334&fm=26&gp=0.jpg",
-        @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579081948321&di=12073138df74d694f683a2526852a3af&imgtype=0&src=http%3A%2F%2Fwx4.sinaimg.cn%2Flarge%2F005Nclsvgy1fde9a93yipj31kw11znbs.jpg",
-        ];
+    NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg"];
     NSMutableArray *arr = [NSMutableArray array];
     for (NSInteger i=0; i<images.count; i++) {
         KJBannerModel *model = [[KJBannerModel alloc]init];

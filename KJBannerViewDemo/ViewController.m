@@ -17,9 +17,7 @@
 #define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
 #define tu1 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg"
 
-@interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>{
-    __block UILabel *lab,*labe;
-}
+@interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>
 @property (weak, nonatomic) IBOutlet KJBannerView *banner;
 @property (weak, nonatomic) IBOutlet UIView *backView;
 @property (weak, nonatomic) IBOutlet UILabel *label;
@@ -27,6 +25,7 @@
 @property (weak, nonatomic) IBOutlet UISwitch *Switch;
 @property (nonatomic,strong) KJBannerView *banner2;
 @property (nonatomic,strong) NSArray *temp;
+@property (nonatomic,strong) UILabel *label1,*label2;
 @end
 
 @implementation ViewController
@@ -61,8 +60,8 @@
     banner2.itemWidth = 280;
     banner2.delegate = self;
     banner2.dataSource = self;
-//    banner2.itemClass = [KJCollectionViewCell class];
     banner2.imageType = KJBannerViewImageTypeMix;
+    banner2.pageControl.pageType = PageControlStyleSizeDot;
     [self.backView addSubview:banner2];
     self.banner2.imageDatas = self.temp;
     
@@ -73,48 +72,38 @@
     self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",num / 1024 / 1024.0];
     
     CGFloat w = self.view.frame.size.width;
-    CGFloat h = CGRectGetMaxY(self.label.frame) + 50;
+    CGFloat h = self.label.frame.origin.y + self.label.frame.size.height + 100;
     UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30, w-40, 20)];
-//    label.textColor = UIColor.greenColor;
+    self.label1 = label;
     label.font = [UIFont systemFontOfSize:14];
     [self.view addSubview:label];
     
     UILabel *label2 = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30 + 30, w-40, 20)];
-//    label2.textColor = UIColor.greenColor;
+    self.label2 = label2;
     label2.font = [UIFont systemFontOfSize:14];
     [self.view addSubview:label2];
     
-    lab = label;
-    labe = label2;
-    label.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
+    label.text  = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
     label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
-    
-    UILabel *label3 = [[UILabel alloc]initWithFrame:CGRectMake(20, self.view.frame.size.height - 30, w-40, 20)];
-//    label3.text = @"pod 'KJBannerView',";
-    label3.textColor = UIColor.redColor;
-    label3.numberOfLines = 0;
-    label3.font = [UIFont systemFontOfSize:12];
-    [self.view addSubview:label3];
 }
 
 - (void)setTimer{
     __weak typeof(self) weakself = self;
-    NSTimer *timer = [NSTimer kj_scheduledTimerWithTimeInterval:1.0 Repeats:YES Block:^(NSTimer *timer) {
+    NSTimer *timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:1.0 Repeats:YES Block:^(NSTimer *timer) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            lab.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
-            labe.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
-            weakself.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
+            weakself.label.text  = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
+            weakself.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
+            weakself.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
         });
     }];
     [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
 
 - (void)setXib{
-    /// xib方式
     self.banner.delegate = self;
-//    self.banner.pageControl.pageType = PageControlStyleSizeDot;
-//    self.banner.pageControl.dotwidth = 5;
-//    self.banner.pageControl.dotheight = 5;
+    self.banner.pageControl.pageType = PageControlStyleRectangle;
+    self.banner.pageControl.dotwidth = 10;
+    self.banner.pageControl.dotheight = 2;
     self.banner.imageType = KJBannerViewImageTypeMix;
     self.banner.imageDatas = @[@"98338_https_hhh",gif,gif2,@"98338_https_hhh",gif2,gif,@"98338_https_hhh",tu1,gif2,@"http://photos.tuchong.com/285606/f/4374153.jpg"];
 }
@@ -155,10 +144,15 @@
 }
 - (BOOL)kj_BannerView:(KJBannerView *)banner CurrentIndex:(NSInteger)index{
     if (banner == self.banner) {
+        NSLog(@"currentIndex = %ld",(long)index);
         return NO;
     }
-    NSLog(@"currentIndex = %ld",(long)index);
     return NO;
+}
+- (void)kj_BannerViewDidScroll:(KJBannerView*)banner{
+    if (banner == self.banner) {
+//        NSLog(@"DidScroll");
+    }
 }
 
 - (void)_setDatas{

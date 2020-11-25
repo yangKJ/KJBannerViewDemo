@@ -17,6 +17,8 @@
 - (void)kj_BannerView:(KJBannerView*)banner SelectIndex:(NSInteger)index;
 /// 滚动时候回调，是否隐藏自带的PageControl
 - (BOOL)kj_BannerView:(KJBannerView*)banner CurrentIndex:(NSInteger)index;
+/// 滚动调用
+- (void)kj_BannerViewDidScroll:(KJBannerView*)banner;
 
 @end
 

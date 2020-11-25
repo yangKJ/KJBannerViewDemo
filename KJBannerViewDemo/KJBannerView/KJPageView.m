@@ -37,7 +37,7 @@
     if (_currentPage == currentPage) return;
     _currentPage = MIN(currentPage, _pages - 1);
     CGFloat x = 0;
-    for (NSInteger i = 0; i < _pages; i++) {
+    for (int i = 0; i < _pages; i++) {
         UIView * view = [self.backView viewWithTag:520+i];
         if (i == _currentPage) {
             view.frame = CGRectMake(x, 0, _selectWidth, _normalheight);
@@ -78,6 +78,7 @@
 @end
 @interface KJPageView ()
 @property(nonatomic,strong)UIView *backView;
+@property(nonatomic,strong)KJDotPageView *loopPageView;
 @end
 @implementation KJPageView
 - (instancetype)initWithFrame:(CGRect)frame{
@@ -105,7 +106,7 @@
         dotwidth  = self.dotwidth;
         dotheight = self.dotheight;
     }else{
-        dotwidth = (self.frame.size.width - (pages-1)*margin) / pages;
+        dotwidth = (self.frame.size.width-(pages-1)*margin) / pages;
         dotwidth = dotwidth > self.frame.size.height/2. ? self.frame.size.height/2. : dotwidth;
         if (_pageType == PageControlStyleCircle || _pageType == PageControlStyleSquare ) {
             dotheight = dotwidth;
@@ -117,7 +118,7 @@
     self.backView.frame  = CGRectMake(0, 0, (pages)*(dotwidth+margin), self.frame.size.height);
     self.backView.center = CGPointMake(self.frame.size.width*.5, self.backView.center.y);
     CGFloat x = 0;
-    for (NSInteger i = 0; i < pages; i++) {
+    for (int i = 0; i < pages; i++) {
         UIView *view = [UIView new];
         [self.backView addSubview:view];
         view.tag = 520 + i;
@@ -139,7 +140,6 @@
         x += dotwidth + margin;
     }
 }
-/// 当前的currentPage
 - (void)setCurrentIndex:(NSInteger)currentIndex{
     if (_pageType == PageControlStyleSizeDot) {
         self.loopPageView.currentPage = currentIndex;

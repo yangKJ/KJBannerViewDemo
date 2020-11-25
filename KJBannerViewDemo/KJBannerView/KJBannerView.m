@@ -129,7 +129,7 @@
     [self kj_dealImageDatas:imageDatas];
     if (self.useCustomCell == NO && self.useDataSource == NO) {
         [self.temps removeAllObjects];
-        for (NSInteger i=0; i<imageDatas.count; i++) {
+        for (int i=0; i<imageDatas.count; i++) {
             __block KJBannerDatasInfo *info = [[KJBannerDatasInfo alloc]init];
             info.superType = self.imageType;
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -173,7 +173,7 @@
 - (void)setupTimer{
     [self invalidateTimer];
     __weak typeof(self) weakself = self;
-    self.timer = [NSTimer kj_scheduledTimerWithTimeInterval:self.autoScrollTimeInterval Repeats:YES Block:^(NSTimer *timer) {
+    self.timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:self.autoScrollTimeInterval Repeats:YES Block:^(NSTimer *timer) {
         [weakself automaticScroll];
     }];
     [[NSRunLoop mainRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
@@ -229,6 +229,9 @@
     self.collectionView.userInteractionEnabled = NO;
     if (!self.imageDatas.count) return;
     self.pageControl.currentIndex = [self currentIndex] % self.imageDatas.count;
+    if ([self.delegate respondsToSelector:@selector(kj_BannerViewDidScroll:)]) {
+        [self.delegate kj_BannerViewDidScroll:self];
+    }
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView{
     _lastX = scrollView.contentOffset.x;
@@ -298,13 +301,13 @@
 }
 #pragma mark - lazy
 - (NSMutableArray*)temps{
-    if (!_temps) {
+    if (!_temps){
         _temps = [NSMutableArray array];
     }
     return _temps;
 }
 - (CALayer*)topLayer{
-    if (!_topLayer) {
+    if (!_topLayer){
         CALayer *topLayer = [[CALayer alloc]init];
         [topLayer setBounds:self.bounds];
         [topLayer setPosition:CGPointMake(self.bounds.size.width*.5, self.bounds.size.height*.5)];
@@ -336,6 +339,7 @@
 }
 - (KJPageView*)pageControl{
     if(!_pageControl){
+        [self layoutIfNeeded];
         _pageControl = [[KJPageView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height - 15, self.bounds.size.width, 15)];
         [self addSubview:_pageControl];
     }
