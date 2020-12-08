@@ -32,14 +32,14 @@
     _isZoom = NO;
     _itemWidth = self.bounds.size.width;
     _itemSpace = 0;
-    _imgCornerRadius = 0;
-    _autoScrollTimeInterval = 2;
+    _bannerRadius = 0;
+    _autoTime = 2;
     _bannerImageViewContentMode = UIViewContentModeScaleAspectFill;
     _rollType = KJBannerViewRollDirectionTypeRightToLeft;
     _imageType = KJBannerViewImageTypeNetIamge;
     _placeholderImage = [UIImage imageNamed:@"KJBannerView.bundle/KJBannerPlaceholderImage"];
     _useCustomCell = NO;
-    _kj_scale = NO;
+    _bannerScale = NO;
     _useDataSource = NO;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -112,8 +112,11 @@
 }
 - (void)setAutoScroll:(BOOL)autoScroll{
     _autoScroll = autoScroll;
-    [self invalidateTimer];
-    if (_autoScroll) [self setupTimer];
+    if (_autoScroll) {
+        [self setupTimer];
+    }else{
+        [self invalidateTimer];
+    }
 }
 - (void)setImageDatas:(NSArray*)imageDatas{
     if (imageDatas.count == 0) {
@@ -129,18 +132,16 @@
         }
     }
     _imageDatas = imageDatas;
-    [self kj_dealImageDatas:imageDatas];
     if (self.useCustomCell == NO && self.useDataSource == NO) {
         [self.temps removeAllObjects];
         for (int i=0; i<imageDatas.count; i++) {
-            __block KJBannerDatasInfo *info = [[KJBannerDatasInfo alloc]init];
+            KJBannerDatasInfo *info = [[KJBannerDatasInfo alloc]init];
             info.superType = self.imageType;
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                info.imageUrl = imageDatas[i];
-            });
+            info.imageUrl = imageDatas[i];
             [self.temps addObject:info];
         }
     }
+    [self kj_dealImageDatas:imageDatas];
 }
 #pragma mark - private
 /// 处理数据的相关操作
@@ -152,7 +153,7 @@
         [self setAutoScroll:self.autoScroll];
         self.pageControl.totalPages = imageDatas.count;
     }else{
-        _nums = 100;
+        _nums = 10;
         self.pageControl.hidden = YES;
         self.collectionView.scrollEnabled = NO;
         [self invalidateTimer];
@@ -176,10 +177,12 @@
 - (void)setupTimer{
     [self invalidateTimer];
     __weak typeof(self) weakself = self;
-    self.timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:self.autoScrollTimeInterval Repeats:YES Block:^(NSTimer *timer) {
-        [weakself automaticScroll];
+    __block NSUInteger index = 0;
+    self.timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:self.autoTime Repeats:YES Block:^(NSTimer *timer) {
+        if (index++>1) [weakself automaticScroll];
     }];
     [[NSRunLoop mainRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
+    [_timer fire];
 }
 /// 释放计时器
 - (void)invalidateTimer{
@@ -238,17 +241,20 @@
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView{
     _lastX = scrollView.contentOffset.x;
-    if (self.autoScroll) return [self invalidateTimer];
+    if (self.autoScroll) {
+        [self invalidateTimer];
+    }
 }
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView willDecelerate:(BOOL)decelerate{
-    if (self.autoScroll) return [self setupTimer];
+    if (self.autoScroll) {
+        [self setupTimer];
+    }
 }
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView{
     [self scrollViewDidEndScrollingAnimation:self.collectionView];
 }
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView{
     self.collectionView.userInteractionEnabled = YES;
-    if (!self.imageDatas.count) return;
 }
 /// 手离开屏幕的时候
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset{
@@ -283,9 +289,9 @@
         bannerViewCell.itemView = [_dataSource kj_BannerView:self BannerViewCell:bannerViewCell ImageDatas:self.imageDatas Index:itemIndex];
     }else if (self.useCustomCell) {
         bannerViewCell.model = self.imageDatas[itemIndex];
-    }else { /// 自带Cell处理
-        bannerViewCell.kj_scale = self.kj_scale;
-        bannerViewCell.imgCornerRadius  = self.imgCornerRadius;
+    }else{ /// 自带Cell处理
+        bannerViewCell.kj_scale = self.bannerScale;
+        bannerViewCell.imgCornerRadius  = self.bannerRadius;
         bannerViewCell.placeholderImage = self.placeholderImage;
         bannerViewCell.contentMode = self.bannerImageViewContentMode;
         bannerViewCell.info = self.temps[itemIndex];

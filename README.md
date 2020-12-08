@@ -11,7 +11,8 @@ KJBannerView 是一款轮播Banner，自带图片下载和缓存
 3、自定义继承 KJBannerViewCell、定制特定样式  ☑️  
 4、支持网络动态图GIF和网络图片和本地图片混合轮播  ☑️  
 5、支持在Storyboard和Xib中创建并配置其属性  ☑️  
-6、提供多种pagecontrol显示  ☑️
+6、提供多种Pagecontrol显示  ☑️  
+7、内部封装网图下载缓存工具  ☑️
 
 ----------------------------------------
 ### 框架整体介绍
@@ -86,9 +87,14 @@ pod 'KJBannerView' # 轮播图
 #### <a id="更新日志"></a>更新日志
 ```
 ####版本更新日志:
+### 版本2.0.1
+- 优化自带第一条数据不显示问题
+- 优化卡顿问题
+- KJBannerView 修改xib属性字段名
+
 ### 版本2.0.0
 - 重写网络请求板块，
-- 封装网络请求工具：KJBannerDownloadProgress
+- 封装网络请求工具：KJBannerViewDownloader
 - 缓存工具：KJBannerViewCacheManager
 - 网图下载工具：KJBannerViewLoadManager
 
@@ -173,14 +179,17 @@ pod 'KJBannerView' # 轮播图
 - KJLoadImageView：图片下载工具类
 - KJBannerTool：工具方法
 - KJBannerViewCacheManager：缓存工具
-- KJBannerDownloadProgress：网络请求工具
+- KJBannerViewDownloader：网络请求工具
 - KJBannerViewLoadManager：网图下载工具
 
-#### <a id="效果图"></a>效果图
-![轮播图](https://upload-images.jianshu.io/upload_images/1933747-2e51515ae91af6d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+#### 支持Xib快捷设置属性
+![Xib](https://upload-images.jianshu.io/upload_images/1933747-0c4b715868e47746.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/666)
 
-#### 下载测试效果图
-![IMG_0145.PNG](https://upload-images.jianshu.io/upload_images/1933747-e38b5378b5e984c3.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+#### <a id="效果图"></a>效果图
+![轮播图](https://upload-images.jianshu.io/upload_images/1933747-2e51515ae91af6d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/666)
+
+#### 下载测试效果图，图片采用同步获取方式
+![IMG_0145.PNG](https://upload-images.jianshu.io/upload_images/1933747-e38b5378b5e984c3.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/666)
 
 #### <a id="温馨提示"></a>温馨提示
 #####1、使用第三方库Xcode报错  

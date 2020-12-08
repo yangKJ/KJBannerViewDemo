@@ -15,13 +15,27 @@
 @implementation KJBannerViewCell
 
 - (void)setInfo:(KJBannerDatasInfo*)info{
+    __weak __typeof(&*self) weakself = self;
     switch (info.type) {
         case KJBannerImageInfoTypeLocality:
-        case KJBannerImageInfoTypeGIFImage:
             self.loadImageView.image = info.image?:self.placeholderImage;
+        case KJBannerImageInfoTypeGIFImage:{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (info.image == nil) info.image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:info.imageUrl]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    weakself.loadImageView.image = info.image?:weakself.placeholderImage;
+                });
+            });
+        }
             break;
         case KJBannerImageInfoTypeNetIamge:
-            [self.loadImageView kj_setImageWithURLString:info.imageUrl Placeholder:self.placeholderImage];
+            if (info.image == nil) {
+                [self.loadImageView kj_setImageWithURLString:info.imageUrl Placeholder:self.placeholderImage Completion:^(UIImage * _Nonnull image) {
+                    info.image = image;
+                }];
+            }else{
+                self.loadImageView.image = info.image;
+            }
             break;
         default:
             break;

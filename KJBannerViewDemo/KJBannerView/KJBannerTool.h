@@ -15,13 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface KJBannerDatasInfo : NSObject
-@property (nonatomic,strong) UIImage *image;
-@property (nonatomic,strong) NSString *imageUrl;
-@property (nonatomic,assign) KJBannerImageInfoType type;
-@property (nonatomic,assign) KJBannerViewImageType superType;
-@end
-
 @interface KJBannerTool : NSObject
 /// 判断该字符串是不是有效的URL
 + (BOOL)kj_bannerValidUrl:(NSString*)url;

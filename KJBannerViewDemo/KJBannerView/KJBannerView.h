@@ -12,12 +12,12 @@
 #import "KJBannerTool.h"
 #import "KJBannerViewProtocol.h"
 NS_ASSUME_NONNULL_BEGIN
-
+IB_DESIGNABLE
 @interface KJBannerView : UIView
 /// 代理方法
 @property (nonatomic,weak) id<KJBannerViewDelegate> delegate;
 @property (nonatomic,weak) id<KJBannerViewDataSource> dataSource;
-/// block回调
+/// Block回调
 @property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner, NSInteger idx);
 @property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner, NSInteger idx);
 
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 数据源
 @property (nonatomic,strong) NSArray<NSString*>*imageDatas;
 /// 自动滚动间隔时间，默认2s
-@property (nonatomic,assign) IBInspectable CGFloat autoScrollTimeInterval;
+@property (nonatomic,assign) IBInspectable CGFloat autoTime;
 /// 是否无线循环，默认yes
 @property (nonatomic,assign) IBInspectable BOOL infiniteLoop;
 /// 是否自动滑动，默认yes
@@ -48,9 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 //******************** 自带KJBannerViewCell可设置属性 ********************
 /// 是否裁剪，默认NO
-@property (nonatomic,assign) BOOL kj_scale;
+@property (nonatomic,assign) IBInspectable BOOL bannerScale;
 /// imagView圆角，默认为0px
-@property (nonatomic,assign) IBInspectable CGFloat imgCornerRadius;
+@property (nonatomic,assign) IBInspectable CGFloat bannerRadius;
 /// cell的占位图，用于网络未加载到图片时
 @property (nonatomic,strong) IBInspectable UIImage *placeholderImage;
 /// 轮播图片的ContentMode，默认为 UIViewContentModeScaleToFill

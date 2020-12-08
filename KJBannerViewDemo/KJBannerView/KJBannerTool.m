@@ -7,83 +7,20 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerTool.h"
-#import <CommonCrypto/CommonDigest.h>
-
-@implementation KJBannerDatasInfo
-
-- (void)setImageUrl:(NSString*)imageUrl{
-    _imageUrl = imageUrl;
-    switch (_superType) {
-        case KJBannerViewImageTypeMix:{ // 混合，本地图片、网络图片、网络GIF
-            if ([KJBannerTool kj_bannerImageWithImageUrl:imageUrl]) { // 本地图片
-                _type = KJBannerImageInfoTypeLocality;
-                _image = [UIImage imageNamed:imageUrl];
-            }else{ // 判断是GIF还是网络图片
-                if ([KJBannerTool kj_bannerIsGifWithURL:_imageUrl]) { // 网络GIF
-//                    _image = [KJBannerTool kj_bannerGetImageWithURL:_imageUrl];
-                    self.image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:imageUrl]];
-                    _type = KJBannerImageInfoTypeGIFImage;
-                }else{ // 网络图片
-                    _type = KJBannerImageInfoTypeNetIamge;
-                }
-            }
-        }
-            break;
-        case KJBannerViewImageTypeGIFAndNet:{ // 网络GIF和网络图片混合
-            if ([KJBannerTool kj_bannerIsGifWithURL:_imageUrl]) {
-//                _image = [KJBannerTool kj_bannerGetImageWithURL:_imageUrl];
-                self.image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:imageUrl]];
-                _type = KJBannerImageInfoTypeGIFImage;
-            }else{ // 网络图片
-                _type = KJBannerImageInfoTypeNetIamge;
-            }
-        }
-            break;
-        case KJBannerViewImageTypeLocality:{ // 本地图片
-            _type = KJBannerImageInfoTypeLocality;
-            _image = [UIImage imageNamed:_imageUrl];
-        }
-            break;
-        case KJBannerViewImageTypeNetIamge:{ // 网络图片
-            _type = KJBannerImageInfoTypeNetIamge;
-        }
-            break;
-        case KJBannerViewImageTypeGIFImage:{ // 网络GIF图片
-//            _image = [KJBannerTool kj_bannerGetImageWithURL:_imageUrl];
-            self.image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:imageUrl]];
-            _type = KJBannerImageInfoTypeGIFImage;
-        }
-            break;
-        default:
-            break;
-    }
-}
-
-#pragma mark - 内部方法
-/// 本地GIF和本地图片
-- (void)kj_ImageLociaWithURL:(NSString*)imageUrl{
-    // 判断是否为本地的动态图GIF
-    if ([KJBannerTool kj_bannerIsGifImageWithImageName:imageUrl] == NO) {
-        
-    }
-}
-
-@end
 
 @implementation KJBannerTool
-
-/** 判断该字符串是不是一个有效的URL */
+/// 判断该字符串是不是一个有效的URL
 + (BOOL)kj_bannerValidUrl:(NSString*)url{
     NSString *regex = @"[a-zA-z]+://[^\\s]*";
     NSPredicate *urlTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
     return [urlTest evaluateWithObject:url];
 }
-/** 根据图片名 判断是否是gif图 */
+/// 根据图片名判断是否是动态图
 + (BOOL)kj_bannerIsGifImageWithImageName:(NSString*)imageName{
     NSString *ext = imageName.pathExtension.lowercaseString;
     return [ext isEqualToString:@"gif"] ? YES : NO;
 }
-/** 根据图片url 判断是否是gif图 */
+/// 根据图片地址判断是否为动态图
 + (BOOL)kj_bannerIsGifWithURL:(id)url{
     if (![url isKindOfClass:[NSURL class]]) {
         url = [NSURL URLWithString:url];
@@ -91,7 +28,7 @@
     NSData *data = [NSData dataWithContentsOfURL:url];
     return [self contentTypeWithImageData:data] == KJBannerImageTypeGif ? YES : NO;
 }
-/// 根据image的data 判断图片类型
+/// 根据DATA判断图片类型
 + (KJBannerImageType)contentTypeWithImageData:(NSData*)data {
     uint8_t c;
     [data getBytes:&c length:1];

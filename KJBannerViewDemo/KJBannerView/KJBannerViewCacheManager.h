@@ -24,9 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)kj_storeImage:(UIImage*)image Key:(NSString*)key;
 
 /// 清理掉缓存和本地文件
-+ (void)kj_clearLocalityImageAndCache;
++ (BOOL)kj_clearLocalityImageAndCache;
 /// 获取图片本地文件总大小
-+ (unsigned long long)kj_getLocalityImageCacheSize;
++ (int64_t)kj_getLocalityImageCacheSize;
 /// MD5加密
 + (NSString*)kj_bannerMD5WithString:(NSString*)string;
 

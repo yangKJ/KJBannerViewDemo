@@ -25,9 +25,10 @@
                                     <constraint firstAttribute="width" secondItem="6Ix-O9-EeV" secondAttribute="height" multiplier="2:1" id="nHw-c3-qd7"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="autoScrollTimeInterval">
+                                    <userDefinedRuntimeAttribute type="number" keyPath="autoTime">
                                         <real key="value" value="3"/>
                                     </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="image" keyPath="placeholderImage" value="tu3"/>
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cfo-aw-2br">
@@ -129,6 +130,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="tu3" width="1024" height="682"/>
         <systemColor name="systemIndigoColor">
             <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

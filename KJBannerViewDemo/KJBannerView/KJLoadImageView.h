@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 清理掉本地缓存
 + (void)kj_clearImagesCache;
 /// 获取图片缓存的占用的总大小
-+ (unsigned long long)kj_imagesCacheSize;
++ (int64_t)kj_imagesCacheSize;
 
 @end
 

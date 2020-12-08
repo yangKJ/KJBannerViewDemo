@@ -90,21 +90,21 @@
     });
 }
 /// 清理掉缓存和本地文件
-+ (void)kj_clearLocalityImageAndCache{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.cache removeAllObjects];
-        NSString *directoryPath = KJBannerLoadImages;
-        if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
-            NSError *error = nil;
-            [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
-        }
-    });
++ (BOOL)kj_clearLocalityImageAndCache{
+    BOOL boo = NO;
+    [self.cache removeAllObjects];
+    NSString *directoryPath = KJBannerLoadImages;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
+        NSError *error = nil;
+        boo = [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
+    }
+    return boo;
 }
 /// 获取图片本地文件总大小
-+ (unsigned long long)kj_getLocalityImageCacheSize{
++ (int64_t)kj_getLocalityImageCacheSize{
     NSString *directoryPath = KJBannerLoadImages;
     BOOL isDir = NO;
-    unsigned long long total = 0;
+    int64_t total = 0;
     if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:&isDir]) {
         if (isDir) {
             NSError *error = nil;

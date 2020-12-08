@@ -8,22 +8,16 @@
 
 #import "KJLoadImageView.h"
 @implementation KJLoadImageView
-- (void)configureLayout{
-    self.contentMode = UIViewContentModeScaleToFill;
-    self.kj_failedTimes = 2;
-    self.kj_isScale = NO;
-}
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         [self configureLayout];
     }
     return self;
 }
-
+/// 设置网图
 - (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage{
     return [self kj_setImageWithURLString:url Placeholder:placeholderImage Completion:nil];
 }
-
 - (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^)(UIImage *image))completion{
     self.image = placeholderImage;
     if (url.length == 0 || url == nil || [url isEqualToString:@""]) {
@@ -38,7 +32,9 @@
                 CGSize size = CGSizeMake(weakself.frame.size.width * scale, weakself.frame.size.height * scale);
                 image = [weakself kj_cropImage:image Size:size];
             }
-            weakself.image = image;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weakself.image = image;
+            });
         }
         if (completion) {
             completion(image);
@@ -50,8 +46,15 @@
     [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
 }
 /// 获取图片缓存的占用的总大小
-+ (unsigned long long)kj_imagesCacheSize{
++ (int64_t)kj_imagesCacheSize{
     return [KJBannerViewCacheManager kj_getLocalityImageCacheSize];
+}
+#pragma mark - private
+/// 初始化
+- (void)configureLayout{
+    self.contentMode = UIViewContentModeScaleToFill;
+    self.kj_failedTimes = 2;
+    self.kj_isScale = NO;
 }
 /// 等比改变图片尺寸
 - (UIImage*)kj_cropImage:(UIImage*)image Size:(CGSize)size{

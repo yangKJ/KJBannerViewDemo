@@ -54,8 +54,8 @@
 - (void)setUI{
     KJBannerView *banner2 = [[KJBannerView alloc]initWithFrame:self.backView.bounds];
     self.banner2 = banner2;
-    banner2.imgCornerRadius = 15;
-    banner2.autoScrollTimeInterval = 2;
+    banner2.bannerRadius = 15;
+    banner2.autoTime = 2;
     banner2.isZoom = YES;
     banner2.itemSpace = -10;
     banner2.itemWidth = 280;
@@ -106,9 +106,9 @@
     self.banner.pageControl.dotwidth = 10;
     self.banner.pageControl.dotheight = 2;
     self.banner.imageType = KJBannerViewImageTypeMix;
-//    self.banner.kj_scale = YES;
-//    self.banner.bannerImageViewContentMode = UIViewContentModeScaleAspectFit;
-    self.banner.imageDatas = @[tu1,tu2,gif,gif2,@"98338_https_hhh",gif2,tu2,gif,@"98338_https_hhh",tu2,gif2];
+    self.banner.bannerScale = NO;
+    self.banner.bannerImageViewContentMode = UIViewContentModeScaleAspectFill;
+    self.banner.imageDatas = @[gif,tu2,tu1,gif2,@"98338_https_hhh",gif2,tu2,gif,@"98338_https_hhh",tu2,gif2];
 }
 
 - (void)qiehuanAction:(UISwitch*)sender{

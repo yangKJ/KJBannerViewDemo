@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "KJLoadImageView.h"
-#import "KJBannerTool.h"
+#import "KJBannerDatasInfo.h"
 
 @interface KJBannerViewCell : UICollectionViewCell
 /// 数据模型 - 用于自定义样式传递数据

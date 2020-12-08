@@ -56,9 +56,7 @@
     self.imageView = imageView;
     
     kGCD_async(^{
-        NSData *data = [KJBannerViewLoadManager kj_downloadDataWithURL:@"http://photos.tuchong.com/285606/f/4374153.jpg" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-            
-        }];
+        NSData *data = [KJBannerViewLoadManager kj_downloadDataWithURL:@"http://photos.tuchong.com/285606/f/4374153.jpg" progress:nil];
         kGCD_main(^{
             self.imageView.image = [UIImage imageWithData:data];
         });
