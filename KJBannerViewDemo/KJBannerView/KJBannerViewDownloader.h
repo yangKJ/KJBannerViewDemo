@@ -1,0 +1,35 @@
+//
+//  KJBannerViewDownloader.h
+//  KJBannerViewDemo
+//
+//  Created by 杨科军 on 2020/12/7.
+//  Copyright © 2020 杨科军. All rights reserved.
+//  https://github.com/yangKJ/KJBannerViewDemo
+//  网络请求工具
+
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+@interface KJBannerDownloadProgress : NSObject
+@property(nonatomic,assign)int64_t bytesWritten;// 当前下载包大小
+@property(nonatomic,assign)int64_t downloadBytes;// 已下载大小
+@property(nonatomic,assign)int64_t totalBytes;// 总大小
+@property(nonatomic,assign)float progress;// 下载进度
+@property(nonatomic,assign)float speed;// 当前下载速度 kb/s
+@end
+
+NS_ASSUME_NONNULL_BEGIN
+/// 网络请求回调
+typedef void (^KJLoadDataBlock)(NSData *_Nullable data, NSError *_Nullable error);
+/// 下载进度回调
+typedef void (^_Nullable KJLoadProgressBlock)(KJBannerDownloadProgress *downloadProgress);
+@interface KJBannerViewDownloader : NSObject
+/// 超时时长，默认10秒
+@property(nonatomic,assign)NSTimeInterval timeoutInterval;
+/// 下载数据
+- (void)kj_startDownloadImageWithURL:(NSURL*)URL Progress:(KJLoadProgressBlock)progress Complete:(KJLoadDataBlock)complete;
+/// 取消下载
+- (void)kj_cancelRequest;
+
+@end
+
+NS_ASSUME_NONNULL_END

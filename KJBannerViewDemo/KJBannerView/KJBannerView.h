@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign) BOOL kj_scale;
 /// imagView圆角，默认为0px
 @property (nonatomic,assign) IBInspectable CGFloat imgCornerRadius;
-/// cell的占位图, 用于网络未加载到图片时
+/// cell的占位图，用于网络未加载到图片时
 @property (nonatomic,strong) IBInspectable UIImage *placeholderImage;
 /// 轮播图片的ContentMode，默认为 UIViewContentModeScaleToFill
 @property (nonatomic,assign) UIViewContentMode bannerImageViewContentMode;

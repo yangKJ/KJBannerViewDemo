@@ -1,29 +1,26 @@
 # KJBannerView
 
 <p align="left">
-<img src="https://upload-images.jianshu.io/upload_images/1933747-4627deb498ba06db.gif?imageMogr2/auto-orient/strip" width="200" hspace="1px">
-<img src="https://upload-images.jianshu.io/upload_images/1933747-7b120a5ae9b76bf5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" width="200" hspace="30px">
+<img src="https://upload-images.jianshu.io/upload_images/1933747-f7fbb91e9088f39e.gif?imageMogr2/auto-orient/strip" width="" hspace="1px">
 </p>
+
+#### <a id="功能介绍"></a>功能介绍
+KJBannerView 是一款轮播Banner，自带图片下载和缓存    
+1、无任何第三方依赖、自带缓存加载  ☑️  
+2、缩放无限循环滚动  ☑️  
+3、自定义继承 KJBannerViewCell、定制特定样式  ☑️  
+4、支持网络动态图GIF和网络图片和本地图片混合轮播  ☑️  
+5、支持在Storyboard和Xib中创建并配置其属性  ☑️  
+6、提供多种pagecontrol显示  ☑️
 
 ----------------------------------------
 ### 框架整体介绍
 * [功能介绍](#功能介绍)
 * [作者信息](#作者信息)
-* [作者其他库](#作者其他库)
-* [Pod使用方法](#使用方法(支持cocoapods/carthage安装))
 * [更新日志](#更新日志)
-* [效果图](#效果图)
 * [KJBannerView 功能区](#KJBannerView)
+* [效果图](#效果图)
 * [打赏作者 &radic;](#打赏作者)
-
-----------------------------------------
-#### <a id="功能介绍"></a>功能介绍
-KJBannerView 是一款轮播Banner，自带图片下载、缓存相关功能、轻量级组件    
-1.无任何第三方依赖、自带缓存加载  ☑️  
-2.缩放无限循环滚动  ☑️  
-3.自定义继承 KJBannerViewCell、定制特定样式  ☑️  
-4.支持网络GIF和网络图片和本地图片混合轮播  ☑️  
-5.支持在Storyboard和Xib中创建并配置其属性  ☑️  
 
 #### <a id="作者信息"></a>作者信息
 > Github地址：https://github.com/yangKJ  
@@ -89,6 +86,12 @@ pod 'KJBannerView' # 轮播图
 #### <a id="更新日志"></a>更新日志
 ```
 ####版本更新日志:
+### 版本2.0.0
+- 重写网络请求板块，
+- 封装网络请求工具：KJBannerDownloadProgress
+- 缓存工具：KJBannerViewCacheManager
+- 网图下载工具：KJBannerViewLoadManager
+
 ### 版本1.3.8
 - 新增委托方法 kj_BannerViewDidScroll:
 
@@ -156,218 +159,30 @@ pod 'KJBannerView' # 轮播图
 
 ### 版本1.1.0
 - 新增 支持自定义Cell
-- 使用方法：
-- 创建从KJBannerViewCell继承的Cell
-- 在model设置数据
+- 继承KJBannerViewCell，然后在model设置数据
 
 ### 版本 1.0.2
 - 新增 KJBannerView 轮播图 - banner支持缩放
 - 自带图片下载、缓存相关功能，无任何第三方依赖、轻量级组件
 ```
 
-#### <a id="效果图"></a>效果图
-![轮播图](https://upload-images.jianshu.io/upload_images/1933747-2e51515ae91af6d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
-![KJBannerViewDemo](https://upload-images.jianshu.io/upload_images/1933747-f7fbb91e9088f39e.gif?imageMogr2/auto-orient/strip)
-
 #### <a id="KJBannerView"></a>KJBannerView
-
 - KJPageControl：自定义三种PageControl  长方形、正方形、圆形
 - KJBannerViewFlowLayout：Cell缩放管理
 - KJBannerViewCell：基类Cell，自定义的Cell需继承该Cell
 - KJLoadImageView：图片下载工具类
 - KJBannerTool：工具方法
+- KJBannerViewCacheManager：缓存工具
+- KJBannerDownloadProgress：网络请求工具
+- KJBannerViewLoadManager：网图下载工具
 
-##### 代码示例
-```
-//
-//  ViewController.m
-//  KJBannerViewDemo
-//
-//  Created by 杨科军 on 2018/12/22.
-//  Copyright © 2018 杨科军. All rights reserved.
-//
+#### <a id="效果图"></a>效果图
+![轮播图](https://upload-images.jianshu.io/upload_images/1933747-2e51515ae91af6d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-#import "ViewController.h"
-#import "KJBannerHeader.h"
-#import "KJCollectionViewCell.h"
-#import "KJBannerModel.h"
-#import <objc/message.h>
-#import "KJTestViewController.h"
+#### 下载测试效果图
+![IMG_0145.PNG](https://upload-images.jianshu.io/upload_images/1933747-e38b5378b5e984c3.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-#define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
-#define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
-#define tu1 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg"
-
-@interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>
-@property (weak, nonatomic) IBOutlet KJBannerView *banner;
-@property (weak, nonatomic) IBOutlet UIView *backView;
-@property (weak, nonatomic) IBOutlet UILabel *label;
-@property (weak, nonatomic) IBOutlet UIButton *button;
-@property (weak, nonatomic) IBOutlet UISwitch *Switch;
-@property (nonatomic,strong) KJBannerView *banner2;
-@property (nonatomic,strong) NSArray *temp;
-@property (nonatomic,strong) UILabel *label1,*label2;
-@end
-
-@implementation ViewController
-
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-    [self.banner kj_repauseTimer];
-    [self.banner2 kj_repauseTimer];
-}
-- (void)viewDidDisappear:(BOOL)animated{
-    [super viewDidDisappear:animated];
-    [self.banner kj_pauseTimer];
-    [self.banner2 kj_pauseTimer];
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    [self _setDatas];
-    [self setXib];
-    [self setUI];
-    [self setTimer];
-}
-
-- (void)setUI{
-    KJBannerView *banner2 = [[KJBannerView alloc]initWithFrame:self.backView.bounds];
-    self.banner2 = banner2;
-    banner2.imgCornerRadius = 15;
-    banner2.autoScrollTimeInterval = 2;
-    banner2.isZoom = YES;
-    banner2.itemSpace = -10;
-    banner2.itemWidth = 280;
-    banner2.delegate = self;
-    banner2.dataSource = self;
-    banner2.imageType = KJBannerViewImageTypeMix;
-    banner2.pageControl.pageType = PageControlStyleSizeDot;
-    [self.backView addSubview:banner2];
-    self.banner2.imageDatas = self.temp;
-    
-    [self.button addTarget:self action:@selector(clearAction) forControlEvents:(UIControlEventTouchUpInside)];
-    [self.Switch addTarget:self action:@selector(qiehuanAction:) forControlEvents:(UIControlEventValueChanged)];
-    
-    long long num = [KJLoadImageView kj_imagesCacheSize];
-    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",num / 1024 / 1024.0];
-    
-    CGFloat w = self.view.frame.size.width;
-    CGFloat h = self.label.frame.origin.y + self.label.frame.size.height + 100;
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30, w-40, 20)];
-    self.label1 = label;
-    label.font = [UIFont systemFontOfSize:14];
-    [self.view addSubview:label];
-    
-    UILabel *label2 = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30 + 30, w-40, 20)];
-    self.label2 = label2;
-    label2.font = [UIFont systemFontOfSize:14];
-    [self.view addSubview:label2];
-    
-    label.text  = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
-    label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
-}
-
-- (void)setTimer{
-    __weak typeof(self) weakself = self;
-    NSTimer *timer = [NSTimer kj_scheduledTimerWithTimeInterval:1.0 Repeats:YES Block:^(NSTimer *timer) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weakself.label.text  = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
-            weakself.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
-            weakself.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
-        });
-    }];
-    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
-}
-
-- (void)setXib{
-    self.banner.delegate = self;
-    self.banner.pageControl.pageType = PageControlStyleRectangle;
-    self.banner.pageControl.dotwidth = 10;
-    self.banner.pageControl.dotheight = 2;
-    self.banner.imageType = KJBannerViewImageTypeMix;
-    self.banner.imageDatas = @[@"98338_https_hhh",gif,gif2,@"98338_https_hhh",gif2,gif,@"98338_https_hhh",tu1,gif2,@"http://photos.tuchong.com/285606/f/4374153.jpg"];
-}
-
-- (void)qiehuanAction:(UISwitch*)sender{
-    if (!sender.on) {
-        NSArray *images = @[@"98338_https_hhh",gif2,gif,@"98338_https_hhh",tu1,gif2];
-        NSMutableArray *arr = [NSMutableArray array];
-        for (NSInteger i=0; i<images.count; i++) {
-            KJBannerModel *model = [[KJBannerModel alloc]init];
-            model.customImageUrl = images[i];
-            model.customTitle = [NSString stringWithFormat:@"新版数据:%ld",i];
-            [arr addObject:model];
-        }
-        self.banner2.imageDatas = @[];
-    }else{
-        self.banner2.imageDatas = self.temp;
-    }
-}
-- (void)clearAction{
-    [KJLoadImageView kj_clearImagesCache];
-}
-- (IBAction)pauseRoll:(UIButton *)sender {
-    [self.banner kj_pauseTimer];
-    [self.banner2 kj_pauseTimer];
-}
-- (IBAction)repauseRoll:(UIButton *)sender {
-    [self.banner kj_repauseTimer];
-    [self.banner2 kj_repauseTimer];
-}
-
-#pragma mark - KJBannerViewDelegate
-//点击图片的代理
-- (void)kj_BannerView:(KJBannerView *)banner SelectIndex:(NSInteger)index{
-    NSLog(@"index = %ld",(long)index);
-    KJTestViewController *vc = [KJTestViewController new];
-    [self.navigationController pushViewController:vc animated:YES];
-}
-- (BOOL)kj_BannerView:(KJBannerView *)banner CurrentIndex:(NSInteger)index{
-    if (banner == self.banner) {
-        NSLog(@"currentIndex = %ld",(long)index);
-        return NO;
-    }
-    return NO;
-}
-- (void)kj_BannerViewDidScroll:(KJBannerView*)banner{
-    if (banner == self.banner) {
-//        NSLog(@"DidScroll");
-    }
-}
-
-- (void)_setDatas{
-    NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg"];
-    NSMutableArray *arr = [NSMutableArray array];
-    for (NSInteger i=0; i<images.count; i++) {
-        KJBannerModel *model = [[KJBannerModel alloc]init];
-        model.customImageUrl = images[i];
-        model.customTitle = [NSString stringWithFormat:@"图片名称:%ld",i];
-        [arr addObject:model];
-    }
-    self.temp = arr;
-}
-
-#pragma mark - KJBannerViewDataSource
-- (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index{
-    KJBannerModel *model = imageDatas[index];
-    CGRect rect = {0, 0, 100, 20};
-    UILabel *label = [[UILabel alloc]initWithFrame:rect];
-    label.text = model.customTitle;
-    label.textColor = UIColor.whiteColor;
-    label.center = bannercell.contentView.center;
-    KJLoadImageView *imageView = [[KJLoadImageView alloc]initWithFrame:bannercell.contentView.bounds];
-    imageView.kj_isScale = YES;
-    [imageView kj_setImageWithURLString:model.customImageUrl Placeholder:[UIImage imageNamed:@"tu3"]];
-    [imageView addSubview:label];
-    return imageView;
-}
-
-@end
-```
-----------------------------------------
-#### 温馨提示
+#### <a id="温馨提示"></a>温馨提示
 #####1、使用第三方库Xcode报错  
 Cannot synthesize weak property because the current deployment target does not support weak references  
 可在`Podfile`文件底下加入下面的代码，'8.0'是对应的部署目标（deployment target） 删除库重新Pod  

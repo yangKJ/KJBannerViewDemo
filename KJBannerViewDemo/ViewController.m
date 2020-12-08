@@ -16,6 +16,7 @@
 #define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
 #define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
 #define tu1 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg"
+#define tu2 @"http://photos.tuchong.com/285606/f/4374153.jpg"
 
 @interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>
 @property (weak, nonatomic) IBOutlet KJBannerView *banner;
@@ -105,7 +106,9 @@
     self.banner.pageControl.dotwidth = 10;
     self.banner.pageControl.dotheight = 2;
     self.banner.imageType = KJBannerViewImageTypeMix;
-    self.banner.imageDatas = @[@"98338_https_hhh",gif,gif2,@"98338_https_hhh",gif2,gif,@"98338_https_hhh",tu1,gif2,@"http://photos.tuchong.com/285606/f/4374153.jpg"];
+//    self.banner.kj_scale = YES;
+//    self.banner.bannerImageViewContentMode = UIViewContentModeScaleAspectFit;
+    self.banner.imageDatas = @[tu1,tu2,gif,gif2,@"98338_https_hhh",gif2,tu2,gif,@"98338_https_hhh",tu2,gif2];
 }
 
 - (void)qiehuanAction:(UISwitch*)sender{
@@ -138,13 +141,13 @@
 #pragma mark - KJBannerViewDelegate
 //点击图片的代理
 - (void)kj_BannerView:(KJBannerView *)banner SelectIndex:(NSInteger)index{
-    NSLog(@"index = %ld",(long)index);
+//    NSLog(@"index = %ld",(long)index);
     KJTestViewController *vc = [KJTestViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
 - (BOOL)kj_BannerView:(KJBannerView *)banner CurrentIndex:(NSInteger)index{
     if (banner == self.banner) {
-        NSLog(@"currentIndex = %ld",(long)index);
+//        NSLog(@"currentIndex = %ld",(long)index);
         return NO;
     }
     return NO;

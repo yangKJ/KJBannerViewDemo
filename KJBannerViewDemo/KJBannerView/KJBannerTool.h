@@ -10,37 +10,11 @@
 #import <UIKit/UIKit.h>
 #import "UIImage+KJBannerGIF.h"
 #import "NSTimer+KJSolve.h"
+#import "KJBannerViewType.h"
+#import "KJBannerViewCacheManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define KJBannerLoadImages [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/KJLoadImages"];
-typedef NS_ENUM(NSInteger, KJBannerImageType) {
-    KJBannerImageTypeUnknown = 0, /// 未知
-    KJBannerImageTypeJpeg    = 1, /// jpg
-    KJBannerImageTypePng     = 2, /// png
-    KJBannerImageTypeGif     = 3, /// gif
-    KJBannerImageTypeTiff    = 4, /// tiff
-    KJBannerImageTypeWebp    = 5, /// webp
-};
-/// 图片的几种类型
-typedef NS_ENUM(NSInteger, KJBannerImageInfoType) {
-    KJBannerImageInfoTypeLocality, /// 本地图片
-    KJBannerImageInfoTypeNetIamge, /// 网络图片
-    KJBannerImageInfoTypeGIFImage, /// 网络动态图
-};
-/// 滚动方法
-typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
-    KJBannerViewRollDirectionTypeRightToLeft = 0, /// 默认，从右往左
-    KJBannerViewRollDirectionTypeLeftToRight,     /// 从左往右
-};
-/// 图片的几种类型
-typedef NS_ENUM(NSInteger, KJBannerViewImageType) {
-    KJBannerViewImageTypeMix = 0,  /// 混合，本地图片、网络图片、网络动态图
-    KJBannerViewImageTypeGIFAndNet,/// 网络动态图和网络图片混合
-    KJBannerViewImageTypeLocality, /// 本地图片
-    KJBannerViewImageTypeNetIamge, /// 网络图片
-    KJBannerViewImageTypeGIFImage, /// 网络动态图
-};
 @interface KJBannerDatasInfo : NSObject
 @property (nonatomic,strong) UIImage *image;
 @property (nonatomic,strong) NSString *imageUrl;

@@ -7,325 +7,69 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJLoadImageView.h"
-#import <objc/runtime.h>
-#import <CommonCrypto/CommonDigest.h>
-
-/*  网络下载相关
- *  图片下载器，没有直接使用NSURLSession之类的，因为希望这套库可以支持iOS6
- */
-@interface KJImageDownloader : NSObject<NSURLSessionDownloadDelegate>
-
-@property(nonatomic,strong) NSURLSession *session;
-@property(nonatomic,strong) NSURLSessionDownloadTask *task;
-@property(nonatomic,assign) unsigned long long totalLength;
-@property(nonatomic,assign) unsigned long long currentLength;
-@property(nonatomic,copy,readwrite) KJDownloadProgressBlock progressBlock;
-@property(nonatomic,copy,readwrite) KJDownLoadDataCallBack callbackOnFinished;
-
-/// 下载图片
-- (void)kj_startDownloadImageWithUrl:(NSString*)url Progress:(KJDownloadProgressBlock)progress Complete:(KJDownLoadDataCallBack)complete;
-
-@end
-
-@implementation KJImageDownloader
-
-- (void)kj_startDownloadImageWithUrl:(NSString*)url Progress:(KJDownloadProgressBlock)progress Complete:(KJDownLoadDataCallBack)complete{
-    self.progressBlock = progress;
-    self.callbackOnFinished = complete;
-    if ([NSURL URLWithString:url] == nil) {
-        if (complete) {
-            NSError *error = [NSError errorWithDomain:@"Domain" code:101 userInfo:@{@"message":@"URL不正确"}];
-            complete(nil, error);
-        }
-        return;
-    }
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:60];
-    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
-    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    self.session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:queue];
-    NSURLSessionDownloadTask *task = [self.session downloadTaskWithRequest:request];
-    [task resume];
-    self.task = task;
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-    NSData *data = [NSData dataWithContentsOfURL:location];
-    if (self.progressBlock) {
-        self.progressBlock(self.totalLength, self.currentLength);
-    }
-    if (self.callbackOnFinished) {
-        self.callbackOnFinished(data, nil);
-        self.callbackOnFinished = nil;
-    }
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-    self.currentLength = totalBytesWritten;
-    self.totalLength = totalBytesExpectedToWrite;
-    if (self.progressBlock) {
-        self.progressBlock(self.totalLength, self.currentLength);
-    }
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    if ([error code] != NSURLErrorCancelled) {
-        if (self.callbackOnFinished) {
-            self.callbackOnFinished(nil, error);
-        }
-        self.callbackOnFinished = nil;
-    }
-}
-
-@end
-
-/// 缓存相关
-@interface UIApplication (KJCacheImage)
-
-@property(nonatomic,strong,readonly) NSMutableDictionary *kj_cacheFaileDictionary;
-
-- (UIImage *)kj_cacheImageForRequest:(NSURLRequest*)request;
-- (void)kj_cacheImage:(UIImage *)image forRequest:(NSURLRequest *)request;
-- (void)kj_cacheFailRequest:(NSURLRequest *)request;
-/// 获取失败次数
-- (NSUInteger)kj_failTimesForRequest:(NSURLRequest *)request;
-
-@end
-
-@implementation UIApplication (KJCacheImage)
-
-- (NSMutableDictionary *)kj_cacheFaileDictionary {
-    NSMutableDictionary *dict = objc_getAssociatedObject(self, @selector(kj_cacheFaileDictionary));
-    if (!dict) {
-        dict = [[NSMutableDictionary alloc] init];
-        objc_setAssociatedObject(self, @selector(kj_cacheFaileDictionary), dict, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-    return dict;
-}
-
-- (void)kj_clearCache {
-    [self.kj_cacheFaileDictionary removeAllObjects];
-    objc_setAssociatedObject(self, @selector(kj_cacheFaileDictionary), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (void)kj_clearDiskCaches {
-    NSString *directoryPath = KJBannerLoadImages;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
-        NSError *error = nil;
-        [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
-    }
-    [self kj_clearCache];
-}
-
-- (NSUInteger)kj_failTimesForRequest:(NSURLRequest*)request {
-    NSNumber *faileTimes = [self.kj_cacheFaileDictionary objectForKey:[self kj_md5:[self kj_keyForRequest:request]]];
-    if (faileTimes && [faileTimes respondsToSelector:@selector(integerValue)]) {
-        return faileTimes.integerValue;
-    }
-    return 0;
-}
-/// 缓存图片
-- (UIImage *)kj_cacheImageForRequest:(NSURLRequest*)request{
-    if (request) {
-        NSString *directoryPath = KJBannerLoadImages;
-        NSString *path = [NSString stringWithFormat:@"%@/%@", directoryPath, [self kj_md5:[self kj_keyForRequest:request]]];
-        return [UIImage imageWithContentsOfFile:path];
-    }
-    return nil;
-}
-///
-- (void)kj_cacheFailRequest:(NSURLRequest*)request{
-    NSString *key = [self kj_md5:[self kj_keyForRequest:request]];
-    NSNumber *faileTimes = [self.kj_cacheFaileDictionary objectForKey:key];
-    NSUInteger times = 0;
-    if (faileTimes && [faileTimes respondsToSelector:@selector(integerValue)]) {
-        times = [faileTimes integerValue];
-    }
-    times++;
-    [self.kj_cacheFaileDictionary setObject:@(times) forKey:key];
-}
-
-- (void)kj_cacheImage:(UIImage*)image forRequest:(NSURLRequest*)request{
-    if (image == nil || request == nil) return;
-    NSString *directoryPath = KJBannerLoadImages;
-    if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
-        NSError *error = nil;
-        [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
-        if (error) return;
-    }
-    NSString *path = [NSString stringWithFormat:@"%@/%@",directoryPath,[self kj_md5:[self kj_keyForRequest:request]]];
-    NSData *data = UIImagePNGRepresentation(image);
-    if (data) [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
-}
-
-#pragma mark - 内部方法
-/// 拼接路径
-- (NSString*)kj_keyForRequest:(NSURLRequest*)request{
-    BOOL portait = NO;
-    if (UIDeviceOrientationIsPortrait([[UIDevice currentDevice] orientation])) {
-        portait = YES;
-    }
-    return [NSString stringWithFormat:@"%@%@", request.URL.absoluteString, portait ? @"portait" : @"lanscape"];
-}
-/// 加密
-- (NSString*)kj_md5:(NSString*)string{
-    if (string == nil || [string length] == 0) return nil;
-    unsigned char digest[CC_MD5_DIGEST_LENGTH], i;
-    CC_MD5([string UTF8String], (int)[string lengthOfBytesUsingEncoding:NSUTF8StringEncoding], digest);
-    NSMutableString *ms = [NSMutableString string];
-    for (i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
-        [ms appendFormat:@"%02x", (int)(digest[i])];
-    }
-    return [ms copy];
-}
-
-@end
-
-@interface KJLoadImageView (){
-    __weak KJImageDownloader *_imageDownloader;
-}
-
-@end
-
 @implementation KJLoadImageView
-
-- (void)configureLayout {
+- (void)configureLayout{
     self.contentMode = UIViewContentModeScaleToFill;
     self.kj_failedTimes = 2;
     self.kj_isScale = NO;
 }
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         [self configureLayout];
     }
     return self;
 }
 
-- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage {
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage{
     return [self kj_setImageWithURLString:url Placeholder:placeholderImage Completion:nil];
 }
 
-- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^)(UIImage*image))completion {
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^)(UIImage *image))completion{
     self.image = placeholderImage;
-    self.kj_completionBlock = completion;
-    if (url == nil || [url isKindOfClass:[NSNull class]] || (![url hasPrefix:@"http://"] && ![url hasPrefix:@"https://"])){
-        if (completion) self.kj_completionBlock(self.image);
+    if (url.length == 0 || url == nil || [url isEqualToString:@""]) {
         return;
     }
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self kj_downloadWithReqeust:request holder:placeholderImage];
-    });
-}
-#pragma mark - 内部方法
-/// 下载图片
-- (void)kj_downloadWithReqeust:(NSURLRequest*)theRequest holder:(UIImage*)holder {
-    UIImage *cachedImage = [[UIApplication sharedApplication] kj_cacheImageForRequest:theRequest];
-    if (cachedImage) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.image = cachedImage;
-        });
-        if (self.kj_completionBlock) self.kj_completionBlock(cachedImage);
-        return;
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.image = holder;
-    });
-    /// 判断失败次数
-    if ([[UIApplication sharedApplication] kj_failTimesForRequest:theRequest] >= self.kj_failedTimes) {
-        return;
-    }
-    
-    [self kj_cancelRequest];
-    _imageDownloader = nil;
-    
-    __weak __typeof(self) weakSelf = self;
-    KJImageDownloader *downloader = [[KJImageDownloader alloc] init];
-    _imageDownloader = downloader;
-    [downloader kj_startDownloadImageWithUrl:theRequest.URL.absoluteString Progress:^(unsigned long long total, unsigned long long current) {
-        !self.kj_progressBlock?:self.kj_progressBlock(total,current);
-    } Complete:^(NSData *data, NSError *error) {
-        if (data != nil && error == nil) {// 成功
-            UIImage *image = [UIImage imageWithData:data];
-            __block UIImage *finalImage = image;
-            if (image) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (weakSelf.kj_isScale) {// 剪裁
-                        if (fabs(weakSelf.frame.size.width - image.size.width) != 0 && fabs(weakSelf.frame.size.height - image.size.height) != 0) {
-                            finalImage = [KJLoadImageView kj_clipImage:image Size:weakSelf.frame.size IsScaleToMax:YES];
-                        }
-                    }
-                });
-                [[UIApplication sharedApplication] kj_cacheImage:finalImage forRequest:theRequest];
-            } else {
-                [[UIApplication sharedApplication] kj_cacheFailRequest:theRequest];
+    KJBannerViewLoadManager.kMaxLoadNum = self.kj_failedTimes;
+    __weak typeof(self) weakself = self;
+    [KJBannerViewLoadManager kj_loadImageWithURL:url complete:^(UIImage * _Nullable image) {
+        if (image) {
+            if (weakself.kj_isScale) {
+                CGFloat scale = UIScreen.mainScreen.scale;
+                CGSize size = CGSizeMake(weakself.frame.size.width * scale, weakself.frame.size.height * scale);
+                image = [weakself kj_cropImage:image Size:size];
             }
-            if (finalImage) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weakSelf.image = finalImage;
-                });
-                if (weakSelf.kj_completionBlock) {
-                    weakSelf.kj_completionBlock(weakSelf.image);
-                }
-            }else {
-                if (weakSelf.kj_completionBlock) {
-                    weakSelf.kj_completionBlock(weakSelf.image);
-                }
-            }
-        }else {
-            [[UIApplication sharedApplication] kj_cacheFailRequest:theRequest];
-            if (weakSelf.kj_completionBlock) {
-                weakSelf.kj_completionBlock(weakSelf.image);
-            }
+            weakself.image = image;
+        }
+        if (completion) {
+            completion(image);
         }
     }];
 }
-
-- (void)kj_cancelRequest {
-    [_imageDownloader.task cancel];
+/// 清理掉本地缓存
++ (void)kj_clearImagesCache{
+    [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
 }
-/// 裁剪图片
-+ (UIImage*)kj_clipImage:(UIImage*)image Size:(CGSize)size IsScaleToMax:(BOOL)isScaleToMax {
-    CGFloat scale = [UIScreen mainScreen].scale;
-    UIGraphicsBeginImageContextWithOptions(size, NO, scale);
-    CGSize aspectFitSize = CGSizeZero;
-    if (image.size.width != 0 && image.size.height != 0) {
-        CGFloat rateWidth = size.width / image.size.width;
-        CGFloat rateHeight = size.height / image.size.height;
-        CGFloat rate = isScaleToMax ? MAX(rateHeight, rateWidth) : MIN(rateHeight, rateWidth);
-        aspectFitSize = CGSizeMake(image.size.width * rate, image.size.height * rate);
+/// 获取图片缓存的占用的总大小
++ (unsigned long long)kj_imagesCacheSize{
+    return [KJBannerViewCacheManager kj_getLocalityImageCacheSize];
+}
+/// 等比改变图片尺寸
+- (UIImage*)kj_cropImage:(UIImage*)image Size:(CGSize)size{
+    float scale = image.size.width/image.size.height;
+    CGRect rect = CGRectZero;
+    if (scale > size.width/size.height){
+        rect.origin.x = (image.size.width - image.size.height * size.width/size.height)/2;
+        rect.size.width  = image.size.height * size.width/size.height;
+        rect.size.height = image.size.height;
+    }else{
+        rect.origin.y = (image.size.height - image.size.width/size.width * size.height)/2;
+        rect.size.width  = image.size.width;
+        rect.size.height = image.size.width/size.width * size.height;
     }
-    [image drawInRect:CGRectMake(0, 0, aspectFitSize.width, aspectFitSize.height)];
-    UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return finalImage;
-}
-
-#pragma mark - 缓存相关方法
-+ (void)kj_clearImagesCache {
-    [[UIApplication sharedApplication] kj_clearDiskCaches];
-}
-
-+ (unsigned long long)kj_imagesCacheSize {
-    NSString *directoryPath = KJBannerLoadImages;
-    BOOL isDir = NO;
-    unsigned long long total = 0;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:&isDir]) {
-        if (isDir) {
-            NSError *error = nil;
-            NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryPath error:&error];
-            if (error == nil) {
-                for (NSString *subpath in array) {
-                    NSString *path = [directoryPath stringByAppendingPathComponent:subpath];
-                    NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
-                    if (!error) {
-                        total += [dict[NSFileSize] unsignedIntegerValue];
-                    }
-                }
-            }
-        }
-    }
-    return total;
+    CGImageRef imageRef   = CGImageCreateWithImageInRect(image.CGImage, rect);
+    UIImage *croppedImage = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    return croppedImage;
 }
 
 @end

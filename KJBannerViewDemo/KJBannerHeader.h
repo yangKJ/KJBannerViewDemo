@@ -76,6 +76,12 @@ Github地址：https://github.com/yangKJ
 
 /*
  #版本更新日志
+ ### 版本2.0.0
+ - 重写网络请求板块，
+ - 封装网络请求工具：KJBannerDownloadProgress
+ - 缓存工具：KJBannerViewCacheManager
+ - 网图下载工具：KJBannerViewLoadManager
+
  ### 版本1.3.8
  - 新增委托方法 kj_BannerViewDidScroll:
  

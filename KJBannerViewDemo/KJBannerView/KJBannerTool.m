@@ -178,7 +178,7 @@
         if (error) return;
     }
     if ([url isKindOfClass:[NSURL class]]) url = [url absoluteString];
-    NSString *name = [self kj_bannerMD5WithString:url];
+    NSString *name = [KJBannerViewCacheManager kj_bannerMD5WithString:url];
     NSString *path = [directoryPath stringByAppendingPathComponent:name];
     NSData *data = UIImagePNGRepresentation(image);
     if (data) [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
@@ -187,23 +187,12 @@
 + (UIImage*)kj_bannerGetImageInFileWithURL:(id)url{
     if ([url isKindOfClass:[NSURL class]]) url = [url absoluteString];
     NSString *directoryPath = KJBannerLoadImages;
-    NSString *name = [KJBannerTool kj_bannerMD5WithString:url];
+    NSString *name = [KJBannerViewCacheManager kj_bannerMD5WithString:url];
     NSString *path = [directoryPath stringByAppendingPathComponent:name];
     NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:path];
     NSData *fileData = [handle readDataToEndOfFile];
     [handle closeFile];
     return [[UIImage alloc]initWithData:fileData];
-}
-/// md5加密
-+ (NSString*)kj_bannerMD5WithString:(NSString*)string{
-    const char *original_str = [string UTF8String];
-    unsigned char digist[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(original_str, (uint)strlen(original_str), digist);
-    NSMutableString *outPutStr = [NSMutableString stringWithCapacity:10];
-    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++){
-        [outPutStr appendFormat:@"%02X", digist[i]];
-    }
-    return [outPutStr lowercaseString];
 }
 
 @end

@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		680DE7F523B2EF9C0061C5B2 /* NSTimer+KJSolve.m in Sources */ = {isa = PBXBuildFile; fileRef = 680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */; };
+		6817DE40257DCC46007B7055 /* KJBannerViewCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */; };
+		6817DE44257DCD8C007B7055 /* KJBannerViewDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */; };
+		6817DE48257E1B2F007B7055 /* KJBannerViewLoadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */; };
 		68185A9422EFED0500C365DE /* KJBannerTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 68185A9322EFED0500C365DE /* KJBannerTool.m */; };
 		681B899D255E2B0C00622CA8 /* UIImage+KJBannerGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 681B899C255E2B0C00622CA8 /* UIImage+KJBannerGIF.m */; };
 		683A7F3B21CEA4E5008DD08C /* KJBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 683A7F3421CEA4E5008DD08C /* KJBannerView.m */; };
@@ -33,6 +36,13 @@
 		680DE7F323B2EF9C0061C5B2 /* NSTimer+KJSolve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSTimer+KJSolve.h"; sourceTree = "<group>"; };
 		680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+KJSolve.m"; sourceTree = "<group>"; };
 		6814AB6021CEA59B000AE6AB /* KJBannerHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerHeader.h; sourceTree = "<group>"; };
+		6817DE3D257DCBC0007B7055 /* KJBannerViewType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewType.h; sourceTree = "<group>"; };
+		6817DE3E257DCC46007B7055 /* KJBannerViewCacheManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewCacheManager.h; sourceTree = "<group>"; };
+		6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerViewCacheManager.m; sourceTree = "<group>"; };
+		6817DE42257DCD8C007B7055 /* KJBannerViewDownloader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewDownloader.h; sourceTree = "<group>"; };
+		6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerViewDownloader.m; sourceTree = "<group>"; };
+		6817DE46257E1B2F007B7055 /* KJBannerViewLoadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewLoadManager.h; sourceTree = "<group>"; };
+		6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerViewLoadManager.m; sourceTree = "<group>"; };
 		68185A9222EFED0500C365DE /* KJBannerTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerTool.h; sourceTree = "<group>"; };
 		68185A9322EFED0500C365DE /* KJBannerTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerTool.m; sourceTree = "<group>"; };
 		681B899B255E2B0C00622CA8 /* UIImage+KJBannerGIF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+KJBannerGIF.h"; sourceTree = "<group>"; };
@@ -84,23 +94,30 @@
 			isa = PBXGroup;
 			children = (
 				68B5F17E22B0AB2000D71808 /* KJBannerView.bundle */,
-				685F5F5824326028001D97C4 /* KJBannerViewProtocol.h */,
-				683A7F3821CEA4E5008DD08C /* KJLoadImageView.h */,
-				683A7F3521CEA4E5008DD08C /* KJLoadImageView.m */,
+				68185A9222EFED0500C365DE /* KJBannerTool.h */,
+				68185A9322EFED0500C365DE /* KJBannerTool.m */,
 				683A7F3921CEA4E5008DD08C /* KJBannerView.h */,
 				683A7F3421CEA4E5008DD08C /* KJBannerView.m */,
 				683A7F3321CEA4E5008DD08C /* KJBannerViewCell.h */,
 				683A7F3A21CEA4E5008DD08C /* KJBannerViewCell.m */,
 				683A7F3621CEA4E5008DD08C /* KJBannerViewFlowLayout.h */,
 				683A7F3721CEA4E5008DD08C /* KJBannerViewFlowLayout.m */,
+				685F5F5824326028001D97C4 /* KJBannerViewProtocol.h */,
+				6817DE3D257DCBC0007B7055 /* KJBannerViewType.h */,
+				683A7F3821CEA4E5008DD08C /* KJLoadImageView.h */,
+				683A7F3521CEA4E5008DD08C /* KJLoadImageView.m */,
 				68CC363D229B7AC9005A78A5 /* KJPageView.h */,
 				68CC363E229B7AC9005A78A5 /* KJPageView.m */,
-				68185A9222EFED0500C365DE /* KJBannerTool.h */,
-				68185A9322EFED0500C365DE /* KJBannerTool.m */,
 				680DE7F323B2EF9C0061C5B2 /* NSTimer+KJSolve.h */,
 				680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */,
 				681B899B255E2B0C00622CA8 /* UIImage+KJBannerGIF.h */,
 				681B899C255E2B0C00622CA8 /* UIImage+KJBannerGIF.m */,
+				6817DE3E257DCC46007B7055 /* KJBannerViewCacheManager.h */,
+				6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */,
+				6817DE42257DCD8C007B7055 /* KJBannerViewDownloader.h */,
+				6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */,
+				6817DE46257E1B2F007B7055 /* KJBannerViewLoadManager.h */,
+				6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */,
 			);
 			path = KJBannerView;
 			sourceTree = "<group>";
@@ -220,6 +237,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6817DE48257E1B2F007B7055 /* KJBannerViewLoadManager.m in Sources */,
 				68E26B5621CE924700F91182 /* ViewController.m in Sources */,
 				68E26B6121CE924800F91182 /* main.m in Sources */,
 				683A7F3C21CEA4E5008DD08C /* KJLoadImageView.m in Sources */,
@@ -227,6 +245,8 @@
 				680DE7F523B2EF9C0061C5B2 /* NSTimer+KJSolve.m in Sources */,
 				68E26B5321CE924700F91182 /* AppDelegate.m in Sources */,
 				683A7F3B21CEA4E5008DD08C /* KJBannerView.m in Sources */,
+				6817DE40257DCC46007B7055 /* KJBannerViewCacheManager.m in Sources */,
+				6817DE44257DCD8C007B7055 /* KJBannerViewDownloader.m in Sources */,
 				684059DD21EA08D00092F630 /* KJBannerModel.m in Sources */,
 				6872ECB823CEBB4100F63970 /* KJTestViewController.m in Sources */,
 				681B899D255E2B0C00622CA8 /* UIImage+KJBannerGIF.m in Sources */,
