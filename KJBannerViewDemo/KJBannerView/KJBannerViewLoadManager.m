@@ -9,8 +9,7 @@
 #import "KJBannerViewLoadManager.h"
 
 @interface KJBannerViewLoadManager ()
-@property(nonatomic,strong,class)NSMutableDictionary *dict;/// 失败次数
-@property(nonatomic,copy,readwrite)KJLoadProgressBlock progressblock;
+@property(nonatomic,strong,class)NSMutableDictionary *dict;
 @end
 
 @implementation KJBannerViewLoadManager
@@ -30,7 +29,6 @@ static KJBannerViewLoadManager *manager = nil;
                 if (complete) complete(nil);
                 return;
             }
-            KJBannerViewDownloader *downloader = [[KJBannerViewDownloader alloc] init];
             __block void (^kAnalysis)(NSData *data, NSError *error) = ^(NSData *data, NSError *error){
                 UIImage *image = nil;
                 if (error) {
@@ -44,7 +42,7 @@ static KJBannerViewLoadManager *manager = nil;
                             if (complete) complete(image);
                         });
                         [KJBannerViewCacheManager kj_storeImage:image Key:url];
-                        [self.dict removeAllObjects];
+                        [self kj_resetFailureDictForKey:url];
                         return;
                     }
                 }
@@ -52,6 +50,7 @@ static KJBannerViewLoadManager *manager = nil;
                     if (complete) complete(image);
                 });
             };
+            KJBannerViewDownloader *downloader = [[KJBannerViewDownloader alloc] init];
             if (progress) {
                 [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
                     progress(downloadProgress);
@@ -71,11 +70,10 @@ static KJBannerViewLoadManager *manager = nil;
     @synchronized (self) {
         if (manager == nil) manager = [self new];
     }
-    manager.progressblock = progress;
-    return [manager kj_recursionDataWithURL:[NSURL URLWithString:url]];
+    return [manager kj_recursionDataWithURL:[NSURL URLWithString:url] progress:progress];
 }
-/// 递归拿到Data
-- (NSData*)kj_recursionDataWithURL:(NSURL*)URL{
+/// 递归拿到DATA
+- (NSData*)kj_recursionDataWithURL:(NSURL*)URL progress:(KJLoadProgressBlock)progress{
     NSInteger count = [KJBannerViewLoadManager kj_failureNumsForKey:URL.absoluteString];
     if (count >= KJBannerViewLoadManager.kMaxLoadNum) {
         return nil;
@@ -86,10 +84,9 @@ static KJBannerViewLoadManager *manager = nil;
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         dispatch_group_async(dispatch_group_create(), queue, ^{
-            KJBannerViewDownloader *downloader = [[KJBannerViewDownloader alloc] init];
-            [downloader kj_startDownloadImageWithURL:URL Progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-                if (manager.progressblock) {
-                    manager.progressblock(downloadProgress);
+            [[KJBannerViewDownloader new] kj_startDownloadImageWithURL:URL Progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
+                if (progress) {
+                    progress(downloadProgress);
                 }
             } Complete:^(NSData *data, NSError *error) {
                 if (error) {
@@ -104,29 +101,34 @@ static KJBannerViewLoadManager *manager = nil;
     };
     NSData *data = kGetData(URL);
     if (data) {
-        [KJBannerViewLoadManager.dict removeAllObjects];
+        [KJBannerViewLoadManager kj_resetFailureDictForKey:URL.absoluteString];
         return data;
     }else{
-        return [self kj_recursionDataWithURL:URL];
+        return [self kj_recursionDataWithURL:URL progress:progress];
     }
 }
 #pragma mark - private
+/// 重置失败次数
++ (void)kj_resetFailureDictForKey:(NSString*)key{
+    key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
+    [self.dict setObject:@(0) forKey:key];
+}
 /// 失败次数
 + (NSUInteger)kj_failureNumsForKey:(NSString*)key{
     key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
-    NSNumber *failes = [self.dict objectForKey:key];
-    return (failes && [failes respondsToSelector:@selector(integerValue)]) ? failes.integerValue : 0;
+    NSNumber *number = [self.dict objectForKey:key];
+    return (number && [number respondsToSelector:@selector(integerValue)]) ? number.integerValue : 0;
 }
 /// 缓存失败
 + (void)kj_cacheFailureForKey:(NSString*)key{
     key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
-    NSNumber *failes = [self.dict objectForKey:key];
-    NSUInteger nums = 0;
-    if (failes && [failes respondsToSelector:@selector(integerValue)]) {
-        nums = [failes integerValue];
+    NSNumber *number = [self.dict objectForKey:key];
+    NSUInteger index = 0;
+    if (number && [number respondsToSelector:@selector(integerValue)]) {
+        index = [number integerValue];
     }
-    nums++;
-    [self.dict setObject:@(nums) forKey:key];
+    index++;
+    [self.dict setObject:@(index) forKey:key];
 }
 
 #pragma mark - lazy

@@ -25,6 +25,9 @@ typedef void (^_Nullable KJLoadProgressBlock)(KJBannerDownloadProgress *download
 @interface KJBannerViewDownloader : NSObject
 /// 超时时长，默认10秒
 @property(nonatomic,assign)NSTimeInterval timeoutInterval;
+/// 设置最大并发队列数，默认为一条
+@property(nonatomic,assign)NSUInteger maxConcurrentOperationCount;
+
 /// 下载数据
 - (void)kj_startDownloadImageWithURL:(NSURL*)URL Progress:(KJLoadProgressBlock)progress Complete:(KJLoadDataBlock)complete;
 /// 取消下载

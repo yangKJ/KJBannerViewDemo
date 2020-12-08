@@ -41,7 +41,10 @@
     _useCustomCell = NO;
     _kj_scale = NO;
     _useDataSource = NO;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     self.itemClass = [KJBannerViewCell class];
+#pragma clang diagnostic pop
 }
 - (instancetype)initWithCoder:(NSCoder*)aDecoder{
     if (self = [super initWithCoder:aDecoder]) {

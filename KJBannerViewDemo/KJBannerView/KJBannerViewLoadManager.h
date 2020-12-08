@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface KJBannerViewLoadManager : NSObject
 /// 失败次数，默认2次
 @property(nonatomic,assign,class)NSInteger kMaxLoadNum;
+
 /// 带缓存机制的下载图片
 + (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *_Nullable image))complete;
 + (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *_Nullable image))complete progress:(KJLoadProgressBlock)progress;

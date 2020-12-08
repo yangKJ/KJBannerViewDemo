@@ -10,6 +10,9 @@
 
 @interface KJBannerViewDownloader ()<NSURLSessionDownloadDelegate>
 @property(nonatomic,strong)NSURLSessionTask *task;
+@property(nonatomic,strong)NSOperationQueue *queue;
+@property(nonatomic,strong)NSURLSessionConfiguration *configuration;
+@property(nonatomic,strong)KJBannerDownloadProgress *downloadProgress;
 @property(nonatomic,copy,readwrite)KJLoadProgressBlock progressBlock;
 @property(nonatomic,copy,readwrite)KJLoadDataBlock dataBlock;
 @end
@@ -26,6 +29,7 @@
         }
         return;
     }
+    self.maxConcurrentOperationCount = 1;
     if (progress) {
         self.dataBlock = complete;
         self.progressBlock = progress;
@@ -36,7 +40,7 @@
 }
 /// 不需要下载进度的网络请求
 - (void)kj_downloadImageWithURL:(NSURL*)URL Complete:(KJLoadDataBlock)complete{
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[[NSOperationQueue alloc] init]];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:self.configuration delegate:self delegateQueue:self.queue];
     NSURLSessionDataTask *dataTask = [session dataTaskWithURL:URL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (complete) {
             complete(data,error);
@@ -48,7 +52,7 @@
 /// 下载进度的请求方式
 - (void)kj_downloadImageWithURL:(NSURL*)URL{
     NSMutableURLRequest *request = kGetRequest(URL, self.timeoutInterval?:10.0);
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[[NSOperationQueue alloc] init]];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:self.configuration delegate:self delegateQueue:self.queue];
     NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithRequest:request];
     [downloadTask resume];
     self.task = downloadTask;
@@ -73,19 +77,20 @@ static inline NSMutableURLRequest *kGetRequest(NSURL *URL, NSTimeInterval timeou
 }
 /// 下载中
 - (void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask*)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite{
-    KJBannerDownloadProgress *downloadProgress = [KJBannerDownloadProgress new];
-    downloadProgress.bytesWritten = bytesWritten;
-    downloadProgress.downloadBytes = totalBytesWritten;
-    downloadProgress.totalBytes = totalBytesExpectedToWrite;
-    downloadProgress.speed = bytesWritten / 1024.;
-    downloadProgress.progress = (double)totalBytesWritten / totalBytesExpectedToWrite;
-    
-    self.progressBlock(downloadProgress);
+    @synchronized (self.downloadProgress) {
+        self.downloadProgress.bytesWritten = bytesWritten;
+        self.downloadProgress.downloadBytes = totalBytesWritten;
+        self.downloadProgress.totalBytes = totalBytesExpectedToWrite;
+        self.downloadProgress.speed = bytesWritten / 1024.;
+        self.downloadProgress.progress = (double)totalBytesWritten / totalBytesExpectedToWrite;
+        
+        self.progressBlock(self.downloadProgress);
+    }
 }
 /// 下载完成调用
 - (void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask*)downloadTask didFinishDownloadingToURL:(NSURL*)location{
-    NSData *data = [NSData dataWithContentsOfURL:location];
     if (self.dataBlock) {
+        NSData *data = [NSData dataWithContentsOfURL:location];
         self.dataBlock(data, nil);
         _dataBlock = nil;
     }
@@ -103,7 +108,31 @@ static inline NSMutableURLRequest *kGetRequest(NSURL *URL, NSTimeInterval timeou
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession*)session{
     
 }
-
+#pragma mark - getter/setter
+- (void)setMaxConcurrentOperationCount:(NSUInteger)maxConcurrentOperationCount{
+    _maxConcurrentOperationCount = maxConcurrentOperationCount;
+    self.queue.maxConcurrentOperationCount = maxConcurrentOperationCount;
+}
+#pragma mark - lazy
+- (KJBannerDownloadProgress*)downloadProgress{
+    if (!_downloadProgress) {
+        _downloadProgress = [[KJBannerDownloadProgress alloc]init];
+    }
+    return _downloadProgress;
+}
+- (NSOperationQueue*)queue{
+    if (!_queue) {
+        _queue = [[NSOperationQueue alloc]init];
+    }
+    return _queue;
+}
+- (NSURLSessionConfiguration*)configuration{
+    if (!_configuration) {
+        _configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        _configuration.networkServiceType = NSURLNetworkServiceTypeDefault;
+    }
+    return _configuration;
+}
 @end
 @implementation KJBannerDownloadProgress
 @end

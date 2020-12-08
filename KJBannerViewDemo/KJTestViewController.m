@@ -65,6 +65,17 @@
     });
     
     [self buttonAction];
+    
+    kGCD_async(^{
+        [KJBannerViewLoadManager kj_downloadDataWithURL:@"https://mp4.vjshi.com/2018-03-30/1f36dd9819eeef0bc508414494d34ad9.mp4" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
+            NSLog(@"1111");
+        }];
+    });
+    kGCD_async(^{
+        [KJBannerViewLoadManager kj_downloadDataWithURL:@"https://mp4.vjshi.com/2018-03-30/1f36dd9819eeef0bc508414494d34ad9.mp4" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
+            NSLog(@"2222");
+        }];
+    });
 }
 - (void)buttonAction{
     kGCD_async(^{
