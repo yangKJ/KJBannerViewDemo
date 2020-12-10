@@ -18,24 +18,25 @@ typedef NS_ENUM(NSInteger, KJBannerImageType) {
     KJBannerImageTypeTiff    = 4, /// tiff
     KJBannerImageTypeWebp    = 5, /// webp
 };
-/// 图片的几种类型
-typedef NS_ENUM(NSInteger, KJBannerImageInfoType) {
-    KJBannerImageInfoTypeLocality, /// 本地图片
-    KJBannerImageInfoTypeNetIamge, /// 网络图片
-    KJBannerImageInfoTypeGIFImage, /// 网络动态图
-};
 /// 滚动方法
 typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
     KJBannerViewRollDirectionTypeRightToLeft = 0, /// 默认，从右往左
     KJBannerViewRollDirectionTypeLeftToRight,     /// 从左往右
 };
-/// 图片的几种类型
+/// 数据源类型
 typedef NS_ENUM(NSInteger, KJBannerViewImageType) {
-    KJBannerViewImageTypeMix = 0,  /// 混合，本地图片、网络图片、网络动态图
+    KJBannerViewImageTypeMix = 0,  /// 混合，本地图片、网络图片、网络动态图、本地动态图
+    KJBannerViewImageTypeLocality, /// 本地图片和本地动态图
     KJBannerViewImageTypeGIFAndNet,/// 网络动态图和网络图片混合
-    KJBannerViewImageTypeLocality, /// 本地图片
     KJBannerViewImageTypeNetIamge, /// 网络图片
     KJBannerViewImageTypeGIFImage, /// 网络动态图
+};
+/// 图片的几种类型
+typedef NS_ENUM(NSInteger, KJBannerImageInfoType) {
+    KJBannerImageInfoTypeLocality = 0,/// 本地图片
+    KJBannerImageInfoTypeLocalityGIF, /// 本地动态图
+    KJBannerImageInfoTypeNetIamge, /// 网络图片
+    KJBannerImageInfoTypeGIFImage, /// 网络动态图
 };
 
 #endif /* KJBannerViewType_h */

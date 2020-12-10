@@ -4,7 +4,7 @@
 //
 //  Created by 杨科军 on 2020/11/12.
 //  Copyright © 2020 杨科军. All rights reserved.
-//  https://github.com/yangKJ/KJBannerViewDemo
+//  
 
 #import "UIImage+KJBannerGIF.h"
 
@@ -22,30 +22,6 @@
 }
 + (UIImage*)kj_bannerGIFImageWithURL:(NSURL*)URL{
     return animatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceCreateWithURL(BANNERGIFTOCF URL, NULL));
-}
-
-static int delayCentisecondsForImageAtIndex(CGImageSourceRef const source, size_t const i) {
-    int delayCentiseconds = 1;
-    CFDictionaryRef const properties = CGImageSourceCopyPropertiesAtIndex(source, i, NULL);
-    if (properties) {
-        CFDictionaryRef const gifProperties = CFDictionaryGetValue(properties, kCGImagePropertyGIFDictionary);
-        if (gifProperties) {
-            NSNumber *number = BANNERGIFFROMCF CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFUnclampedDelayTime);
-            if (number == NULL || [number doubleValue] == 0) {
-                number = BANNERGIFFROMCF CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFDelayTime);
-            }
-            if ([number doubleValue] > 0) delayCentiseconds = (int)lrint([number doubleValue] * 100);
-        }
-        CFRelease(properties);
-    }
-    return delayCentiseconds;
-}
-
-static void createImagesAndDelays(CGImageSourceRef source, size_t count, CGImageRef imagesOut[count], int delayCentisecondsOut[count]) {
-    for (size_t i = 0; i < count; ++i) {
-        imagesOut[i] = CGImageSourceCreateImageAtIndex(source, i, NULL);
-        delayCentisecondsOut[i] = delayCentisecondsForImageAtIndex(source, i);
-    }
 }
 
 static int sum(size_t const count, int const *const values) {
@@ -93,6 +69,28 @@ static void releaseImages(size_t const count, CGImageRef const images[count]) {
     }
 }
 
+static void createImagesAndDelays(CGImageSourceRef source, size_t count, CGImageRef imagesOut[count], int delayCentisecondsOut[count]) {
+    for (size_t i = 0; i < count; ++i) {
+        imagesOut[i] = CGImageSourceCreateImageAtIndex(source, i, NULL);
+        delayCentisecondsOut[i] = delayCentisecondsForImageAtIndex(source, i);
+    }
+}
+static int delayCentisecondsForImageAtIndex(CGImageSourceRef const source, size_t const i) {
+    int delayCentiseconds = 1;
+    CFDictionaryRef const properties = CGImageSourceCopyPropertiesAtIndex(source, i, NULL);
+    if (properties) {
+        CFDictionaryRef const gifProperties = CFDictionaryGetValue(properties, kCGImagePropertyGIFDictionary);
+        if (gifProperties) {
+            NSNumber *number = BANNERGIFFROMCF CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFUnclampedDelayTime);
+            if (number == NULL || [number doubleValue] == 0) {
+                number = BANNERGIFFROMCF CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFDelayTime);
+            }
+            if ([number doubleValue] > 0) delayCentiseconds = (int)lrint([number doubleValue] * 100);
+        }
+        CFRelease(properties);
+    }
+    return delayCentiseconds;
+}
 static UIImage * animatedImageWithAnimatedGIFImageSource(CGImageSourceRef const source) {
     size_t const count = CGImageSourceGetCount(source);
     CGImageRef images[count];
@@ -110,7 +108,7 @@ static UIImage * animatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceR
         UIImage *const image = animatedImageWithAnimatedGIFImageSource(source);
         CFRelease(source);
         return image;
-    }else {
+    }else{
         return nil;
     }
 }

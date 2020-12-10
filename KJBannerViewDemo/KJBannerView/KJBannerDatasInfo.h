@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong) NSString *imageUrl;
 @property (nonatomic,assign) KJBannerImageInfoType type;
 @property (nonatomic,assign) KJBannerViewImageType superType;
+/// 本地动态图
+@property (nonatomic,strong,readonly) NSData *localityGIFData;
 
 @end
 

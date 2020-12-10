@@ -7,54 +7,69 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerDatasInfo.h"
-
+#import "UIImage+KJBannerGIF.h"
 @implementation KJBannerDatasInfo
+- (NSData*)localityGIFData{
+    return kGetLocalityGIFData(_imageUrl);
+}
 - (void)setImageUrl:(NSString*)imageUrl{
     _imageUrl = imageUrl;
     __weak __typeof(&*self) weakself = self;
     kGCD_banner_async(^{
-        switch (weakself.superType) {
-            case KJBannerViewImageTypeMix:{
-                if ([KJBannerTool kj_bannerImageWithImageUrl:imageUrl]) {
-                    weakself.type = KJBannerImageInfoTypeLocality;
-                    weakself.image = [UIImage imageNamed:imageUrl];
-                }else if ([KJBannerTool kj_bannerIsGifWithURL:imageUrl]) {
-                    weakself.image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:imageUrl]];
-                    weakself.type = KJBannerImageInfoTypeGIFImage;
-                }else{
-                    weakself.type = KJBannerImageInfoTypeNetIamge;
-                }
-            }
-                break;
-            case KJBannerViewImageTypeGIFAndNet:{
-                if ([KJBannerTool kj_bannerIsGifWithURL:imageUrl]) {
-                    weakself.image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:imageUrl]];
-                    weakself.type = KJBannerImageInfoTypeGIFImage;
-                }else{
-                    weakself.type = KJBannerImageInfoTypeNetIamge;
-                }
-            }
-                break;
-            case KJBannerViewImageTypeLocality:{
-                weakself.type = KJBannerImageInfoTypeLocality;
+        void (^kDelLocalityImage)(void) = ^{
+            NSData *data = kGetLocalityGIFData(imageUrl);
+            if (data) {
+                weakself.image = [UIImage kj_bannerGIFImageWithData:data];
+                weakself.type = KJBannerImageInfoTypeLocalityGIF;
+            }else{
                 weakself.image = [UIImage imageNamed:imageUrl];
+                weakself.type = KJBannerImageInfoTypeLocality;
             }
-                break;
-            case KJBannerViewImageTypeNetIamge:{
+        };
+        void (^kDelNetImage)(void) = ^{
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+            if ([KJBannerTool contentTypeWithImageData:data] == KJBannerImageTypeGif) {
+                weakself.image = [UIImage kj_bannerGIFImageWithData:data];
+                weakself.type = KJBannerImageInfoTypeGIFImage;
+                data = nil;
+            }else{
                 weakself.type = KJBannerImageInfoTypeNetIamge;
             }
+        };
+        
+        switch (weakself.superType) {
+            case KJBannerViewImageTypeMix:
+                if (kLocality(imageUrl)) {
+                    kDelLocalityImage();
+                }else{
+                    kDelNetImage();
+                }
                 break;
-            case KJBannerViewImageTypeGIFImage:{
-                weakself.image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:imageUrl]];
-                weakself.type = KJBannerImageInfoTypeGIFImage;
-            }
+            case KJBannerViewImageTypeLocality:
+                kDelLocalityImage();
+                break;
+            case KJBannerViewImageTypeGIFAndNet:
+            case KJBannerViewImageTypeNetIamge:
+            case KJBannerViewImageTypeGIFImage:
+                kDelNetImage();
                 break;
             default:
                 break;
         }
     });
 }
-
+#pragma mark - private
+NS_INLINE bool kLocality(NSString *url){
+    return ([url hasPrefix:@"http"] || [url hasPrefix:@"https"]) ? false : true;
+}
+NS_INLINE NSData * _Nullable kGetLocalityGIFData(NSString *name){
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSData *data = [NSData dataWithContentsOfFile:[bundle pathForResource:name ofType:@"gif"]];
+    if (data == nil) {
+        data = [NSData dataWithContentsOfFile:[bundle pathForResource:name ofType:@"GIF"]];
+    }
+    return data;
+}
 NS_INLINE void kGCD_banner_async(dispatch_block_t block) {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {

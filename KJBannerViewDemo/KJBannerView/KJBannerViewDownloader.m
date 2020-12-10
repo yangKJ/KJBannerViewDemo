@@ -35,13 +35,14 @@
         self.progressBlock = progress;
         [self kj_downloadImageWithURL:URL];
     }else{
-        [self kj_downloadImageWithURL:URL Complete:complete];
+        [self kj_dataImageWithURL:URL Complete:complete];
     }
 }
 /// 不需要下载进度的网络请求
-- (void)kj_downloadImageWithURL:(NSURL*)URL Complete:(KJLoadDataBlock)complete{
+- (void)kj_dataImageWithURL:(NSURL*)URL Complete:(KJLoadDataBlock)complete{
+    NSMutableURLRequest *request = kGetRequest(URL, self.timeoutInterval?:10.0);
     NSURLSession *session = [NSURLSession sessionWithConfiguration:self.configuration delegate:self delegateQueue:self.queue];
-    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:URL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (complete) {
             complete(data,error);
         }
@@ -62,7 +63,7 @@ static inline NSMutableURLRequest *kGetRequest(NSURL *URL, NSTimeInterval timeou
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.timeoutInterval = timeoutInterval;
     request.HTTPShouldUsePipelining = YES;
-    request.cachePolicy = NSURLRequestUseProtocolCachePolicy;
+    request.cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
     request.allHTTPHeaderFields = @{@"Accept":@"image/webp,image/*;q=0.8"};
     return request;
 }

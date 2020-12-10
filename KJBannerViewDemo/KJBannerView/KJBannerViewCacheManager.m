@@ -31,7 +31,7 @@
     return nil;
 }
 /// 先从缓存读取，若没有则读取本地文件并写入缓存
-+ (void)kj_getImageWithKey:(NSString*)key completion:(void(^)(UIImage*image))completion{
++ (void)kj_getImageWithKey:(NSString*)key completion:(void(^)(UIImage *image))completion{
     if (key && key.length) {
         [self config];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -66,21 +66,17 @@
         return;
     }
     [self config];
-    NSString *subpath = [self kj_bannerMD5WithString:key];
-    if (self.allowCache) {
-        NSUInteger cost = kImageCacheSize(image);
-        [self.cache setObject:image forKey:subpath cost:cost];
-    }
-    NSString *directoryPath = KJBannerLoadImages;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *subpath = [self kj_bannerMD5WithString:key];
+        if (self.allowCache) {
+            NSUInteger cost = kImageCacheSize(image);
+            [self.cache setObject:image forKey:subpath cost:cost];
+        }
+        NSString *directoryPath = KJBannerLoadImages;
         if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
             NSError *error = nil;
             BOOL isOK = [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
-            if (isOK && error == nil) {
-                
-            }else{
-                return;
-            }
+            if (isOK && error == nil){}else return;
         }
         @autoreleasepool {
             NSString *path = [directoryPath stringByAppendingPathComponent:subpath];

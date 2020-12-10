@@ -15,10 +15,14 @@
     NSPredicate *urlTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
     return [urlTest evaluateWithObject:url];
 }
+/// 判断是网络图片还是本地
++ (BOOL)kj_bannerImageWithImageUrl:(NSString*)url{
+    return ([url hasPrefix:@"http"] || [url hasPrefix:@"https"]) ? NO : YES;
+}
 /// 根据图片名判断是否是动态图
 + (BOOL)kj_bannerIsGifImageWithImageName:(NSString*)imageName{
     NSString *ext = imageName.pathExtension.lowercaseString;
-    return [ext isEqualToString:@"gif"] ? YES : NO;
+    return ([ext isEqualToString:@"gif"]) ? YES : NO;
 }
 /// 根据图片地址判断是否为动态图
 + (BOOL)kj_bannerIsGifWithURL:(id)url{
@@ -29,7 +33,7 @@
     return [self contentTypeWithImageData:data] == KJBannerImageTypeGif ? YES : NO;
 }
 /// 根据DATA判断图片类型
-+ (KJBannerImageType)contentTypeWithImageData:(NSData*)data {
++ (KJBannerImageType)contentTypeWithImageData:(NSData*)data{
     uint8_t c;
     [data getBytes:&c length:1];
     switch (c) {
@@ -49,11 +53,6 @@
             return KJBannerImageTypeUnknown;
     }
     return KJBannerImageTypeUnknown;
-}
-
-/// 判断是网络图片还是本地
-+ (BOOL)kj_bannerImageWithImageUrl:(NSString*)imageUrl{
-    return ([imageUrl hasPrefix:@"http"] || [imageUrl hasPrefix:@"https"]) ? NO : YES;
 }
 /// 播放网络Gif
 + (NSTimeInterval)kj_bannerPlayGifWithImageView:(UIImageView*)imageView URL:(id)url{

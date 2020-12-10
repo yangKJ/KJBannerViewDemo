@@ -18,14 +18,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign)NSUInteger kj_failedTimes;
 /// 是否裁剪为ImageView的尺寸，默认为NO
 @property (nonatomic,assign)BOOL kj_isScale;
-/// 使用这些方法下载图像异步
-- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage;
-- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^_Nullable)(UIImage*image))completion;
 
 /// 清理掉本地缓存
 + (void)kj_clearImagesCache;
 /// 获取图片缓存的占用的总大小
 + (int64_t)kj_imagesCacheSize;
+
+/// 网图显示下载
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage;
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^_Nullable)(UIImage*image))completion;
+
+/// 动态图显示下载
+- (void)kj_setGIFImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^_Nullable)(UIImage*image))completion;
 
 @end
 

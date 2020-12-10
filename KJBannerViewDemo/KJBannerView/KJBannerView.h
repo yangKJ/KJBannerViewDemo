@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 #import "KJPageView.h"
-#import "KJBannerTool.h"
+#import "KJBannerViewType.h"                                                                                                                                        
 #import "KJBannerViewProtocol.h"
 NS_ASSUME_NONNULL_BEGIN
 IB_DESIGNABLE
@@ -54,9 +54,11 @@ IB_DESIGNABLE
 /// cell的占位图，用于网络未加载到图片时
 @property (nonatomic,strong) IBInspectable UIImage *placeholderImage;
 /// 轮播图片的ContentMode，默认为 UIViewContentModeScaleToFill
-@property (nonatomic,assign) UIViewContentMode bannerImageViewContentMode;
-/// 图片的样式，默认 KJBannerViewImageTypeLocality 网络图片
+@property (nonatomic,assign) UIViewContentMode bannerContentMode;
+/// 图片的样式，默认 KJBannerViewImageTypeNetIamge 网络图片
 @property (nonatomic,assign) KJBannerViewImageType imageType;
+/// 是否采用动态图缓存，默认NO
+@property (nonatomic,assign) BOOL openGIFCache;
 
 //************************ 废弃属性方法 *****************************/
 /// 支持自定义Cell，自定义Cell需继承自 KJBannerViewCell

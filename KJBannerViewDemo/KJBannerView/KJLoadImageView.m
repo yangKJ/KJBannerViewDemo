@@ -7,6 +7,8 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJLoadImageView.h"
+#import "UIImage+KJBannerGIF.h"
+#import "KJBannerViewCacheManager+KJBannerGIF.h"
 @implementation KJLoadImageView
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
@@ -14,6 +16,15 @@
     }
     return self;
 }
+/// 清理掉本地缓存
++ (void)kj_clearImagesCache{
+    [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
+}
+/// 获取图片缓存的占用的总大小
++ (int64_t)kj_imagesCacheSize{
+    return [KJBannerViewCacheManager kj_getLocalityImageCacheSize];
+}
+#pragma mark - 网图
 /// 设置网图
 - (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage{
     return [self kj_setImageWithURLString:url Placeholder:placeholderImage Completion:nil];
@@ -33,7 +44,9 @@
                 image = [weakself kj_cropImage:image Size:size];
             }
             dispatch_async(dispatch_get_main_queue(), ^{
-                weakself.image = image;
+                if ([image isKindOfClass:[UIImage class]]) {                
+                    weakself.image = image;
+                }
             });
         }
         if (completion) {
@@ -41,14 +54,39 @@
         }
     }];
 }
-/// 清理掉本地缓存
-+ (void)kj_clearImagesCache{
-    [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
+
+#pragma mark - 动态图
+/// 动态图显示下载
+- (void)kj_setGIFImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^_Nullable)(UIImage*image))completion{
+    self.image = placeholderImage;
+    if (url.length == 0 || url == nil || [url isEqualToString:@""]) {
+        return;
+    }
+    __weak typeof(self) weakself = self;
+    [KJBannerViewCacheManager kj_getGIFImageWithKey:url completion:^(NSData *data) {
+        __block UIImage *image;
+        if (data) {
+            image = [UIImage kj_bannerGIFImageWithData:data];
+            weakself.image = image;
+            if (completion) completion(image);
+        }else{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:url]];
+                if (image) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        weakself.image = image;
+                    });
+                    NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url]];
+                    [KJBannerViewCacheManager kj_storeGIFData:data Key:url];
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (completion) completion(image);
+                });
+            });
+        }
+    }];
 }
-/// 获取图片缓存的占用的总大小
-+ (int64_t)kj_imagesCacheSize{
-    return [KJBannerViewCacheManager kj_getLocalityImageCacheSize];
-}
+
 #pragma mark - private
 /// 初始化
 - (void)configureLayout{
@@ -76,3 +114,4 @@
 }
 
 @end
+

@@ -7,7 +7,6 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJPageView.h"
-
 /// 大小点控件
 @interface KJDotPageView : UIView
 @property (nonatomic, strong) UIView *backView;

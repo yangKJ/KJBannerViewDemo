@@ -15,6 +15,8 @@
 
 #define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
 #define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
+#define gif3 @"https://upload-images.jianshu.io/upload_images/24396273-4b959c2cab65baf6.gif"
+
 #define tu1 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg"
 #define tu2 @"http://photos.tuchong.com/285606/f/4374153.jpg"
 
@@ -107,23 +109,30 @@
     self.banner.pageControl.dotheight = 2;
     self.banner.imageType = KJBannerViewImageTypeMix;
     self.banner.bannerScale = NO;
-    self.banner.bannerImageViewContentMode = UIViewContentModeScaleAspectFill;
-    self.banner.imageDatas = @[gif,tu2,tu1,gif2,@"98338_https_hhh",gif2,tu2,gif,@"98338_https_hhh",tu2,gif2];
+    self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
+<<<<<<< HEAD
+    self.banner.imageDatas = @[tu2,gif,@"IMG_0139",tu1,gif2,@"IMG_4931",gif3,@"tu3"];
+=======
+    self.banner.imageDatas = @[gif3,gif,gif3,tu2,gif3,@"IMG_0139",gif3,tu1,gif3,gif2,gif3,@"IMG_4931",gif3,@"tu3"];
+>>>>>>> origin/master
 }
 
 - (void)qiehuanAction:(UISwitch*)sender{
+    NSArray *images = @[tu2,tu1,@"IMG_4931",tu1];
+    NSMutableArray *arr = [NSMutableArray array];
+    for (int i=0; i<images.count; i++) {
+        KJBannerModel *model = [[KJBannerModel alloc]init];
+        model.customImageUrl = images[i];
+        model.customTitle = [NSString stringWithFormat:@"新版数据:%d",i];
+        [arr addObject:model];
+    }
     if (!sender.on) {
-        NSArray *images = @[@"98338_https_hhh",gif2,gif,@"98338_https_hhh",tu1,gif2];
-        NSMutableArray *arr = [NSMutableArray array];
-        for (NSInteger i=0; i<images.count; i++) {
-            KJBannerModel *model = [[KJBannerModel alloc]init];
-            model.customImageUrl = images[i];
-            model.customTitle = [NSString stringWithFormat:@"新版数据:%ld",i];
-            [arr addObject:model];
-        }
-        self.banner2.imageDatas = @[];
+        self.banner2.autoScroll = NO;
+        self.banner2.isZoom = YES;
+        self.banner2.rollType = KJBannerViewRollDirectionTypeLeftToRight;
+        self.banner2.imageDatas = arr;
     }else{
-        self.banner2.imageDatas = self.temp;
+        self.banner2.imageDatas = @[];
     }
 }
 - (void)clearAction{
@@ -161,10 +170,10 @@
 - (void)_setDatas{
     NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg"];
     NSMutableArray *arr = [NSMutableArray array];
-    for (NSInteger i=0; i<images.count; i++) {
+    for (int i=0; i<images.count; i++) {
         KJBannerModel *model = [[KJBannerModel alloc]init];
         model.customImageUrl = images[i];
-        model.customTitle = [NSString stringWithFormat:@"图片名称:%ld",i];
+        model.customTitle = [NSString stringWithFormat:@"图片名称:%d",i];
         [arr addObject:model];
     }
     self.temp = arr;

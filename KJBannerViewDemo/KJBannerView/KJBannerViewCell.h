@@ -15,13 +15,15 @@
 @property (nonatomic,strong) NSObject *model;
 
 /// 图片显示方式
-@property (nonatomic,assign) UIViewContentMode contentMode;
+@property (nonatomic,assign) UIViewContentMode bannerContentMode;
 /// 圆角
-@property (nonatomic,assign) CGFloat imgCornerRadius;
+@property (nonatomic,assign) CGFloat bannerRadius;
 /// 占位图
 @property (nonatomic,strong) UIImage *placeholderImage;
 /// 是否裁剪，默认no
-@property (nonatomic,assign) BOOL kj_scale;
+@property (nonatomic,assign) BOOL bannerScale;
+/// 是否采用动态图缓存，默认NO
+@property (nonatomic,assign) BOOL openGIFCache;
 /// 自带数据模型
 @property (nonatomic,strong) KJBannerDatasInfo *info;
 /// 使用KJBannerViewDataSource方式时候使用

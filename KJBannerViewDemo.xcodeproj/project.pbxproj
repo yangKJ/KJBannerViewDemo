@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		680DE7F523B2EF9C0061C5B2 /* NSTimer+KJSolve.m in Sources */ = {isa = PBXBuildFile; fileRef = 680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */; };
+		6816D19B2581BAE700E828DD /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 6816D19A2581BAE700E828DD /* CHANGELOG.md */; };
 		6817DE40257DCC46007B7055 /* KJBannerViewCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */; };
 		6817DE44257DCD8C007B7055 /* KJBannerViewDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */; };
 		6817DE48257E1B2F007B7055 /* KJBannerViewLoadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */; };
@@ -22,7 +23,8 @@
 		68571C73257F779A0079241B /* KJBannerDatasInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 68571C72257F779A0079241B /* KJBannerDatasInfo.m */; };
 		6872ECB823CEBB4100F63970 /* KJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6872ECB623CEBB4100F63970 /* KJTestViewController.m */; };
 		68B5F17F22B0AB2000D71808 /* KJBannerView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 68B5F17E22B0AB2000D71808 /* KJBannerView.bundle */; };
-		68CC363A229B71E3005A78A5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 68CC3639229B71E3005A78A5 /* README.md */; };
+		68BD69F82580712000D4B3AF /* IMG_0139.GIF in Resources */ = {isa = PBXBuildFile; fileRef = 68BD69F72580712000D4B3AF /* IMG_0139.GIF */; };
+		68BD6A052580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 68BD6A042580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.m */; };
 		68CC363C229B7226005A78A5 /* KJBannerView.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 68CC363B229B7226005A78A5 /* KJBannerView.podspec */; };
 		68CC363F229B7AC9005A78A5 /* KJPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 68CC363E229B7AC9005A78A5 /* KJPageView.m */; };
 		68E26B5321CE924700F91182 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 68E26B5221CE924700F91182 /* AppDelegate.m */; };
@@ -31,12 +33,14 @@
 		68E26B5B21CE924800F91182 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 68E26B5A21CE924800F91182 /* Assets.xcassets */; };
 		68E26B5E21CE924800F91182 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68E26B5C21CE924800F91182 /* LaunchScreen.storyboard */; };
 		68E26B6121CE924800F91182 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 68E26B6021CE924800F91182 /* main.m */; };
+		9E55E423E28D1B0062626563 /* Pods_KJBannerViewDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A119D9FF8F30834B7557B666 /* Pods_KJBannerViewDemo.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		680DE7F323B2EF9C0061C5B2 /* NSTimer+KJSolve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSTimer+KJSolve.h"; sourceTree = "<group>"; };
 		680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+KJSolve.m"; sourceTree = "<group>"; };
 		6814AB6021CEA59B000AE6AB /* KJBannerHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerHeader.h; sourceTree = "<group>"; };
+		6816D19A2581BAE700E828DD /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
 		6817DE3D257DCBC0007B7055 /* KJBannerViewType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewType.h; sourceTree = "<group>"; };
 		6817DE3E257DCC46007B7055 /* KJBannerViewCacheManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewCacheManager.h; sourceTree = "<group>"; };
 		6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerViewCacheManager.m; sourceTree = "<group>"; };
@@ -66,7 +70,9 @@
 		6872ECB523CEBB4100F63970 /* KJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJTestViewController.h; sourceTree = "<group>"; };
 		6872ECB623CEBB4100F63970 /* KJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJTestViewController.m; sourceTree = "<group>"; };
 		68B5F17E22B0AB2000D71808 /* KJBannerView.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = KJBannerView.bundle; sourceTree = "<group>"; };
-		68CC3639229B71E3005A78A5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		68BD69F72580712000D4B3AF /* IMG_0139.GIF */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = IMG_0139.GIF; sourceTree = "<group>"; };
+		68BD6A032580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KJBannerViewCacheManager+KJBannerGIF.h"; sourceTree = "<group>"; };
+		68BD6A042580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "KJBannerViewCacheManager+KJBannerGIF.m"; sourceTree = "<group>"; };
 		68CC363B229B7226005A78A5 /* KJBannerView.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = KJBannerView.podspec; sourceTree = SOURCE_ROOT; };
 		68CC363D229B7AC9005A78A5 /* KJPageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJPageView.h; sourceTree = "<group>"; };
 		68CC363E229B7AC9005A78A5 /* KJPageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJPageView.m; sourceTree = "<group>"; };
@@ -80,6 +86,9 @@
 		68E26B5D21CE924800F91182 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		68E26B5F21CE924800F91182 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		68E26B6021CE924800F91182 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A119D9FF8F30834B7557B666 /* Pods_KJBannerViewDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KJBannerViewDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3D287044B54F7EEB4FF3D6B /* Pods-KJBannerViewDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KJBannerViewDemo.release.xcconfig"; path = "Target Support Files/Pods-KJBannerViewDemo/Pods-KJBannerViewDemo.release.xcconfig"; sourceTree = "<group>"; };
+		ACCAC1A1CEAB921E6DD69956 /* Pods-KJBannerViewDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KJBannerViewDemo.debug.xcconfig"; path = "Target Support Files/Pods-KJBannerViewDemo/Pods-KJBannerViewDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,12 +96,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E55E423E28D1B0062626563 /* Pods_KJBannerViewDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		06EFFDA7C3924E99F02B4C94 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A119D9FF8F30834B7557B666 /* Pods_KJBannerViewDemo.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		683A7F3221CEA4E5008DD08C /* KJBannerView */ = {
 			isa = PBXGroup;
 			children = (
@@ -119,6 +137,8 @@
 				681B899C255E2B0C00622CA8 /* UIImage+KJBannerGIF.m */,
 				6817DE3E257DCC46007B7055 /* KJBannerViewCacheManager.h */,
 				6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */,
+				68BD6A032580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.h */,
+				68BD6A042580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.m */,
 				6817DE42257DCD8C007B7055 /* KJBannerViewDownloader.h */,
 				6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */,
 				6817DE46257E1B2F007B7055 /* KJBannerViewLoadManager.h */,
@@ -132,6 +152,8 @@
 			children = (
 				68E26B5021CE924700F91182 /* KJBannerViewDemo */,
 				68E26B4F21CE924700F91182 /* Products */,
+				69087766EF7DFE2EB3ECB6F8 /* Pods */,
+				06EFFDA7C3924E99F02B4C94 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -160,13 +182,23 @@
 				684059DF21EB59DA0092F630 /* KJCollectionViewCell.m */,
 				68E26B5721CE924700F91182 /* Main.storyboard */,
 				68E26B5A21CE924800F91182 /* Assets.xcassets */,
+				68BD69F72580712000D4B3AF /* IMG_0139.GIF */,
 				68E26B5C21CE924800F91182 /* LaunchScreen.storyboard */,
 				68E26B5F21CE924800F91182 /* Info.plist */,
 				68E26B6021CE924800F91182 /* main.m */,
-				68CC3639229B71E3005A78A5 /* README.md */,
+				6816D19A2581BAE700E828DD /* CHANGELOG.md */,
 				68CC363B229B7226005A78A5 /* KJBannerView.podspec */,
 			);
 			path = KJBannerViewDemo;
+			sourceTree = "<group>";
+		};
+		69087766EF7DFE2EB3ECB6F8 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				ACCAC1A1CEAB921E6DD69956 /* Pods-KJBannerViewDemo.debug.xcconfig */,
+				A3D287044B54F7EEB4FF3D6B /* Pods-KJBannerViewDemo.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -176,6 +208,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 68E26B6421CE924800F91182 /* Build configuration list for PBXNativeTarget "KJBannerViewDemo" */;
 			buildPhases = (
+				F77B8E5BF0904313AF1EDCBE /* [CP] Check Pods Manifest.lock */,
 				68E26B4A21CE924700F91182 /* Sources */,
 				68E26B4B21CE924700F91182 /* Frameworks */,
 				68E26B4C21CE924700F91182 /* Resources */,
@@ -229,13 +262,39 @@
 				68E26B5E21CE924800F91182 /* LaunchScreen.storyboard in Resources */,
 				68CC363C229B7226005A78A5 /* KJBannerView.podspec in Resources */,
 				68E26B5B21CE924800F91182 /* Assets.xcassets in Resources */,
+				6816D19B2581BAE700E828DD /* CHANGELOG.md in Resources */,
 				68B5F17F22B0AB2000D71808 /* KJBannerView.bundle in Resources */,
-				68CC363A229B71E3005A78A5 /* README.md in Resources */,
 				68E26B5921CE924700F91182 /* Main.storyboard in Resources */,
+				68BD69F82580712000D4B3AF /* IMG_0139.GIF in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F77B8E5BF0904313AF1EDCBE /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-KJBannerViewDemo-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		68E26B4A21CE924700F91182 /* Sources */ = {
@@ -243,6 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				68571C73257F779A0079241B /* KJBannerDatasInfo.m in Sources */,
+				68BD6A052580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.m in Sources */,
 				6817DE48257E1B2F007B7055 /* KJBannerViewLoadManager.m in Sources */,
 				68E26B5621CE924700F91182 /* ViewController.m in Sources */,
 				68E26B6121CE924800F91182 /* main.m in Sources */,
@@ -401,6 +461,7 @@
 		};
 		68E26B6521CE924800F91182 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ACCAC1A1CEAB921E6DD69956 /* Pods-KJBannerViewDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -419,6 +480,7 @@
 		};
 		68E26B6621CE924800F91182 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A3D287044B54F7EEB4FF3D6B /* Pods-KJBannerViewDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
