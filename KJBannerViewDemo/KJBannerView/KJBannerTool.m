@@ -105,31 +105,6 @@
     CFRelease(imageSource);
     return animatedImage;
 }
-/// 保存gif在本地
-+ (void)kj_bannerSaveWithImage:(UIImage*)image URL:(id)url{
-    NSString *directoryPath = KJBannerLoadImages;
-    if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
-        NSError *error = nil;
-        [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
-        if (error) return;
-    }
-    if ([url isKindOfClass:[NSURL class]]) url = [url absoluteString];
-    NSString *name = [KJBannerViewCacheManager kj_bannerMD5WithString:url];
-    NSString *path = [directoryPath stringByAppendingPathComponent:name];
-    NSData *data = UIImagePNGRepresentation(image);
-    if (data) [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
-}
-/// 从 File 当中获取Gif文件
-+ (UIImage*)kj_bannerGetImageInFileWithURL:(id)url{
-    if ([url isKindOfClass:[NSURL class]]) url = [url absoluteString];
-    NSString *directoryPath = KJBannerLoadImages;
-    NSString *name = [KJBannerViewCacheManager kj_bannerMD5WithString:url];
-    NSString *path = [directoryPath stringByAppendingPathComponent:name];
-    NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:path];
-    NSData *fileData = [handle readDataToEndOfFile];
-    [handle closeFile];
-    return [[UIImage alloc]initWithData:fileData];
-}
 
 @end
 

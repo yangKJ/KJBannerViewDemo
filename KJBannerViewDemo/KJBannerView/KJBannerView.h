@@ -8,11 +8,11 @@
 //  轮播图
 
 #import <UIKit/UIKit.h>
-#import "KJPageView.h"
-#import "KJBannerViewType.h"                                                                                                                                        
+#import "KJBannerViewType.h"
 #import "KJBannerViewProtocol.h"
 NS_ASSUME_NONNULL_BEGIN
 IB_DESIGNABLE
+@class KJPageView;
 @interface KJBannerView : UIView
 /// 代理方法
 @property (nonatomic,weak) id<KJBannerViewDelegate> delegate;

@@ -7,6 +7,7 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewCell.h"
+#import "KJLoadImageView.h"
 #import "UIImage+KJBannerGIF.h"
 @interface KJBannerViewCell()
 @property (nonatomic,strong) KJLoadImageView *loadImageView;

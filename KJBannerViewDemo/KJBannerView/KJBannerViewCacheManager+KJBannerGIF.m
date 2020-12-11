@@ -31,5 +31,28 @@
         }
     });
 }
+/// 保存动态图在本地
++ (void)kj_saveWithImage:(UIImage*)image URL:(NSString*)url{
+    NSString *directoryPath = KJBannerLoadImages;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
+        NSError *error = nil;
+        [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) return;
+    }
+    NSString *name = [KJBannerViewCacheManager kj_bannerMD5WithString:url];
+    NSString *path = [directoryPath stringByAppendingPathComponent:name];
+    NSData *data = UIImagePNGRepresentation(image);
+    if (data) [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
+}
+/// 读取文件动态图
++ (UIImage*)kj_getImageInFileWithURL:(NSString*)url{
+    NSString *directoryPath = KJBannerLoadImages;
+    NSString *name = [KJBannerViewCacheManager kj_bannerMD5WithString:url];
+    NSString *path = [directoryPath stringByAppendingPathComponent:name];
+    NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:path];
+    NSData *fileData = [handle readDataToEndOfFile];
+    [handle closeFile];
+    return [[UIImage alloc]initWithData:fileData];
+}
 
 @end

@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "KJBannerTool.h"
-
+#import "KJBannerViewType.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KJBannerDatasInfo : NSObject

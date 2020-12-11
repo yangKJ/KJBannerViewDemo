@@ -7,9 +7,10 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerView.h"
+#import "NSTimer+KJSolve.h"
 #import "KJBannerViewCell.h"
 #import "KJBannerViewFlowLayout.h"
-
+#import "KJPageView.h"
 @interface KJBannerView()<UICollectionViewDataSource,UICollectionViewDelegate>
 @property (nonatomic,strong) NSMutableArray<KJBannerDatasInfo*>*temps;
 @property (nonatomic,strong) UICollectionView *collectionView;

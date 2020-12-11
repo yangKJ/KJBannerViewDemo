@@ -8,6 +8,7 @@
 
 #import "KJLoadImageView.h"
 #import "UIImage+KJBannerGIF.h"
+#import "KJBannerViewLoadManager.h"
 #import "KJBannerViewCacheManager+KJBannerGIF.h"
 @implementation KJLoadImageView
 - (instancetype)initWithFrame:(CGRect)frame{

@@ -8,9 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "NSTimer+KJSolve.h"
 #import "KJBannerViewType.h"
-#import "KJBannerViewCacheManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

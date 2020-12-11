@@ -7,7 +7,6 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import <UIKit/UIKit.h>
-#import "KJLoadImageView.h"
 #import "KJBannerDatasInfo.h"
 
 @interface KJBannerViewCell : UICollectionViewCell

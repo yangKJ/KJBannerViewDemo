@@ -8,6 +8,7 @@
 
 #import "KJBannerDatasInfo.h"
 #import "UIImage+KJBannerGIF.h"
+#import "KJBannerTool.h"
 @implementation KJBannerDatasInfo
 - (NSData*)localityGIFData{
     return kGetLocalityGIFData(_imageUrl);

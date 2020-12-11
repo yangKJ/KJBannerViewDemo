@@ -8,8 +8,6 @@
 //  不依赖三方网络加载图片显示
 
 #import <UIKit/UIKit.h>
-#import "KJBannerViewType.h"
-#import "KJBannerViewLoadManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

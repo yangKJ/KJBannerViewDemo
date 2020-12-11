@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSData*)kj_getGIFImageWithKey:(NSString*)key;
 /// 将动态图写入本地
 + (void)kj_storeGIFData:(NSData*)data Key:(NSString*)key;
+/// 保存动态图在本地
++ (void)kj_saveWithImage:(UIImage*)image URL:(NSString*)url;
+/// 读取文件动态图
++ (UIImage*)kj_getImageInFileWithURL:(NSString*)url;
 
 @end
 
