@@ -37,8 +37,6 @@
                         weakself.loadImageView.image = info.image?:weakself.placeholderImage;
                     });
                 });
-<<<<<<< HEAD
-=======
             }else{
                 if (info.image == nil) {
                     [self.loadImageView kj_setGIFImageWithURLString:info.imageUrl Placeholder:self.placeholderImage Completion:^(UIImage * _Nonnull image) {
@@ -46,19 +44,6 @@
                     }];
                 }else{
                     self.loadImageView.image = info.image;
-                }
-            }
-        }
-            break;
-        case KJBannerImageInfoTypeNetIamge:
-            if (info.image == nil) {
-                [self.loadImageView kj_setImageWithURLString:info.imageUrl Placeholder:self.placeholderImage Completion:^(UIImage * _Nonnull image) {
-                    info.image = image;
-                }];
->>>>>>> origin/master
-            }else{
-                if (info.image == nil) {
-                    [self.loadImageView kj_setGIFImageWithURLString:info.imageUrl Placeholder:self.placeholderImage Completion:nil];
                 }
             }
         }

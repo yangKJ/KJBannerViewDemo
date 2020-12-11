@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface KJBannerViewCacheManager (KJBannerGIF)
 /// 动态图本地获取
-+ (void)kj_getGIFImageWithKey:(NSString*)key completion:(void(^)(NSData *data))completion;
++ (NSData*)kj_getGIFImageWithKey:(NSString*)key;
 /// 将动态图写入本地
 + (void)kj_storeGIFData:(NSData*)data Key:(NSString*)key;
 

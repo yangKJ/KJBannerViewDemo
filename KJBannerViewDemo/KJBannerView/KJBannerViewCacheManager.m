@@ -16,59 +16,47 @@
 @implementation KJBannerViewCacheManager
 /// 先从缓存读取，若没有则读取本地文件
 + (UIImage*)kj_getImageWithKey:(NSString*)key{
-    if (key && key.length) {
-        [self config];
-        NSString *subpath = [self kj_bannerMD5WithString:key];
-        UIImage *image = nil;
-        if (self.allowCache) {
-            image = [self.cache objectForKey:subpath];
-            if (image) return image;
-        }
+    if (key == nil || key.length == 0) return nil;
+    NSString *subpath = [self kj_bannerMD5WithString:key];
+    UIImage *image = [self.cache objectForKey:subpath];
+    if (image == nil) {
         NSString *path = [KJBannerLoadImages stringByAppendingPathComponent:subpath];
         image = [UIImage imageWithContentsOfFile:path];
-        return image;
     }
-    return nil;
+    return image;
 }
 /// 先从缓存读取，若没有则读取本地文件并写入缓存
 + (void)kj_getImageWithKey:(NSString*)key completion:(void(^)(UIImage *image))completion{
-    if (key && key.length) {
-        [self config];
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSString *subpath = [self kj_bannerMD5WithString:key];
-            UIImage *image = nil;
-            if (self.allowCache) {
-                image = [self.cache objectForKey:subpath];
-                if (image) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (completion) completion(image);
-                    });
-                    return;
-                }
-            }
+    if (key == nil || key.length == 0) {
+        dispatch_async(dispatch_get_main_queue(), ^{        
+            if (completion) completion(nil);
+        });
+        return;
+    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *subpath = [self kj_bannerMD5WithString:key];
+        UIImage *image = [self.cache objectForKey:subpath];
+        if (image == nil) {
             NSString *path = [KJBannerLoadImages stringByAppendingPathComponent:subpath];
             image = [UIImage imageWithContentsOfFile:path];
-            if (image != nil && self.allowCache) {
+            if (image && self.allowCache) {
+                [self kj_config];
                 NSUInteger cost = kImageCacheSize(image);
                 [self.cache setObject:image forKey:subpath cost:cost];
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completion) completion(image);
-            });
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) completion(image);
         });
-    }else{
-        if (completion) completion(nil);
-    }
+    });
 }
 /// 将图片写入缓存和存储到本地
 + (void)kj_storeImage:(UIImage*)image Key:(NSString*)key{
-    if (image == nil || key == nil || key.length == 0) {
-        return;
-    }
-    [self config];
+    if (image == nil || key == nil || key.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *subpath = [self kj_bannerMD5WithString:key];
         if (self.allowCache) {
+            [self kj_config];
             NSUInteger cost = kImageCacheSize(image);
             [self.cache setObject:image forKey:subpath cost:cost];
         }
@@ -122,19 +110,21 @@
     unsigned char digist[CC_MD5_DIGEST_LENGTH];
     CC_MD5(original_str, (uint)strlen(original_str), digist);
     NSMutableString *outPutStr = [NSMutableString stringWithCapacity:10];
-    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++){
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
         [outPutStr appendFormat:@"%02X", digist[i]];
     }
     return [outPutStr lowercaseString];
 }
 #pragma mark - private
-+ (void)config{
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        self.maxCache = 50;
-        self.allowCache = YES;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kj_clearCaches) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-    });
+static KJBannerViewCacheManager *manager = nil;
++ (KJBannerViewCacheManager*)kj_config{
+    @synchronized (self) {
+        if (manager == nil) {
+            manager = [[super allocWithZone:NULL] init];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kj_clearCaches) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+        }
+    }
+    return manager;
 }
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
@@ -156,20 +146,20 @@ static NSCache *_cache = nil;
 + (void)setCache:(NSCache*)cache{
     _cache = cache;
 }
-static BOOL _allowCache = NO;
+static BOOL _allowCache = YES;
 + (BOOL)allowCache{
     return _allowCache;
 }
 + (void)setAllowCache:(BOOL)allowCache{
     _allowCache = allowCache;
 }
-static NSUInteger _maxCache = 0;
+static NSUInteger _maxCache = 50;
 + (NSUInteger)maxCache{
     return _maxCache;
 }
 + (void)setMaxCache:(NSUInteger)maxCache{
     _maxCache = maxCache;
-    self.cache.totalCostLimit = maxCache * 1024 * 1024;
+    self.cache.totalCostLimit = _maxCache * 1024 * 1024;
 }
 
 @end

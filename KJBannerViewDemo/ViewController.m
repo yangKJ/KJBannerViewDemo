@@ -110,11 +110,7 @@
     self.banner.imageType = KJBannerViewImageTypeMix;
     self.banner.bannerScale = NO;
     self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
-<<<<<<< HEAD
     self.banner.imageDatas = @[tu2,gif,@"IMG_0139",tu1,gif2,@"IMG_4931",gif3,@"tu3"];
-=======
-    self.banner.imageDatas = @[gif3,gif,gif3,tu2,gif3,@"IMG_0139",gif3,tu1,gif3,gif2,gif3,@"IMG_4931",gif3,@"tu3"];
->>>>>>> origin/master
 }
 
 - (void)qiehuanAction:(UISwitch*)sender{

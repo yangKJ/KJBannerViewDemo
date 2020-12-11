@@ -31,7 +31,7 @@
 }
 - (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^)(UIImage *image))completion{
     self.image = placeholderImage;
-    if (url.length == 0 || url == nil || [url isEqualToString:@""]) {
+    if (url == nil || url.length == 0 || [url isEqualToString:@""]) {
         return;
     }
     KJBannerViewLoadManager.kMaxLoadNum = self.kj_failedTimes;
@@ -59,32 +59,28 @@
 /// 动态图显示下载
 - (void)kj_setGIFImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^_Nullable)(UIImage*image))completion{
     self.image = placeholderImage;
-    if (url.length == 0 || url == nil || [url isEqualToString:@""]) {
+    if (url == nil || url.length == 0 || [url isEqualToString:@""]) {
         return;
     }
     __weak typeof(self) weakself = self;
-    [KJBannerViewCacheManager kj_getGIFImageWithKey:url completion:^(NSData *data) {
-        __block UIImage *image;
-        if (data) {
-            image = [UIImage kj_bannerGIFImageWithData:data];
-            weakself.image = image;
-            if (completion) completion(image);
-        }else{
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:url]];
-                if (image) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        weakself.image = image;
-                    });
-                    NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url]];
-                    [KJBannerViewCacheManager kj_storeGIFData:data Key:url];
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (completion) completion(image);
-                });
+    NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url];
+    if (data) {
+        UIImage *image = [UIImage kj_bannerGIFImageWithData:data];
+        weakself.image = image;
+        if (completion) completion(image);
+    }else{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            UIImage *image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:url]];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (image) weakself.image = image;
+                if (completion) completion(image);
             });
-        }
-    }];
+        });
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url]];
+            if (data) [KJBannerViewCacheManager kj_storeGIFData:data Key:url];
+        });
+    }
 }
 
 #pragma mark - private

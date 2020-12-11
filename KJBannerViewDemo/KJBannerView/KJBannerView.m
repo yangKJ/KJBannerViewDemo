@@ -55,7 +55,7 @@
     return self;
 }
 - (instancetype)initWithFrame:(CGRect)frame{
-    if(self = [super initWithFrame:frame]){
+    if (self = [super initWithFrame:frame]) {
         [self kConfig];
         [self addSubview:self.collectionView];
     }

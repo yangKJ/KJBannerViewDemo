@@ -19,51 +19,65 @@ static KJBannerViewLoadManager *manager = nil;
     [self kj_loadImageWithURL:url complete:complete progress:nil];
 }
 + (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *image))complete progress:(KJLoadProgressBlock)progress{
-    [KJBannerViewCacheManager kj_getImageWithKey:url completion:^(UIImage * _Nonnull image) {
+    __block void (^kGetNetImage)(void) = ^{
+        if ([self kj_failureNumsForKey:url] >= self.kMaxLoadNum) {
+            if (complete) complete(nil);
+            return;
+        }
+        __block void (^kAnalysis)(NSData *data, NSError *error) = ^(NSData *data, NSError *error){
+            UIImage *image = nil;
+            if (error) {
+                [self kj_cacheFailureForKey:url];
+                [self kj_loadImageWithURL:url complete:complete progress:progress];
+                return;
+            }else{
+                image = [UIImage imageWithData:data];
+                if (image) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (complete) complete(image);
+                    });
+                    [KJBannerViewCacheManager kj_storeImage:image Key:url];
+                    [self kj_resetFailureDictForKey:url];
+                    return;
+                }
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (complete) complete(image);
+            });
+        };
+        KJBannerViewDownloader *downloader = [[KJBannerViewDownloader alloc] init];
+        if (progress) {
+            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
+                progress(downloadProgress);
+            } Complete:^(NSData * _Nullable data, NSError * _Nullable error) {
+                kAnalysis(data, error);
+            }];
+        }else{
+            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:nil Complete:^(NSData *data, NSError *error) {
+                kAnalysis(data, error);
+            }];
+        }
+    };
+    if (self.useAsync) {
+        [KJBannerViewCacheManager kj_getImageWithKey:url completion:^(UIImage * _Nonnull image) {
+            if (image) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (complete) complete(image);
+                });
+            }else{
+                kGetNetImage();
+            }
+        }];
+    }else{
+        UIImage *image = [KJBannerViewCacheManager kj_getImageWithKey:url];
         if (image) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (complete) complete(image);
             });
         }else{
-            if ([self kj_failureNumsForKey:url] >= self.kMaxLoadNum) {
-                if (complete) complete(nil);
-                return;
-            }
-            __block void (^kAnalysis)(NSData *data, NSError *error) = ^(NSData *data, NSError *error){
-                UIImage *image = nil;
-                if (error) {
-                    [self kj_cacheFailureForKey:url];
-                    [self kj_loadImageWithURL:url complete:complete progress:progress];
-                    return;
-                }else{
-                    image = [UIImage imageWithData:data];
-                    if (image) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if (complete) complete(image);
-                        });
-                        [KJBannerViewCacheManager kj_storeImage:image Key:url];
-                        [self kj_resetFailureDictForKey:url];
-                        return;
-                    }
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (complete) complete(image);
-                });
-            };
-            KJBannerViewDownloader *downloader = [[KJBannerViewDownloader alloc] init];
-            if (progress) {
-                [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-                    progress(downloadProgress);
-                } Complete:^(NSData * _Nullable data, NSError * _Nullable error) {
-                    kAnalysis(data, error);
-                }];
-            }else{
-                [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:nil Complete:^(NSData *data, NSError *error) {
-                    kAnalysis(data, error);
-                }];
-            }
+            kGetNetImage();
         }
-    }];
+    }
 }
 /// 下载数据，未使用缓存机制
 + (NSData*)kj_downloadDataWithURL:(NSString*)url progress:(KJLoadProgressBlock)progress{
@@ -148,6 +162,13 @@ static NSInteger _kMaxLoadNum = 2;
 }
 + (void)setKMaxLoadNum:(NSInteger)kMaxLoadNum{
     _kMaxLoadNum = kMaxLoadNum;
+}
+static BOOL _useAsync = NO;
++ (BOOL)useAsync{
+    return _useAsync;
+}
++ (void)setUseAsync:(BOOL)useAsync{
+    _useAsync = useAsync;
 }
 
 @end

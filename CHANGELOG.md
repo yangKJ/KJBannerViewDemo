@@ -9,10 +9,14 @@ KJBannerView 是一款轮播Banner，自带图片下载和缓存
 7、内部封装网图下载缓存工具  ☑️
 
 # 版本更新日志:
+### [版本2.0.4](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.4)
+- 完善逻辑，
+- KJBannerViewLoadManager 新增是否开启异步字段 `useAsync`
+- 新增 KJBannerViewCacheManager+KJBannerGIF 动态图缓存相关 
 
 ### [版本2.0.3](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.3)
 - 新增本地动态图播放
-- KJBannerView 新增是否需要动态图缓存字段`openGIFCache`
+- KJBannerView 新增是否需要动态图缓存字段 `openGIFCache`
 
 ### [版本2.0.1](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.1)
 - 优化自带第一条数据不显示问题
