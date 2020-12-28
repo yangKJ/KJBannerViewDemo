@@ -56,6 +56,11 @@
             break;
     }
 }
+- (void)setItemView:(UIView*)itemView{
+    if (_itemView) [_itemView removeFromSuperview];
+    _itemView = itemView;
+    [self.contentView addSubview:itemView];
+}
 
 #pragma mark - lazy
 - (KJLoadImageView*)loadImageView{
@@ -76,21 +81,6 @@
         }
     }
     return _loadImageView;
-}
-
-@synthesize itemView = _itemView;
-- (UIView*)itemView{
-    if (_itemView == nil) {
-        _itemView = [[UIView alloc] init];
-    }
-    return _itemView;
-}
-- (void)setItemView:(UIView*)itemView{
-    if (_itemView) {
-        [_itemView removeFromSuperview];
-    }
-    _itemView = itemView;
-    [self addSubview:_itemView];
 }
 
 @end

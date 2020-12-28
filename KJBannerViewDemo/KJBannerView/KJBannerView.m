@@ -183,12 +183,12 @@
     self.timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:self.autoTime Repeats:YES Block:^(NSTimer *timer) {
         if (index++>1) [weakself automaticScroll];
     }];
-    [[NSRunLoop mainRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
-    [_timer fire];
+    [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+    [self.timer fire];
 }
 /// 释放计时器
 - (void)invalidateTimer{
-    [_timer invalidate];
+    [self.timer invalidate];
     _timer = nil;
 }
 /// 自动滚动

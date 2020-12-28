@@ -23,7 +23,7 @@
 @end
 
 @protocol KJBannerViewDataSource <NSObject>
-/// 自定义控件
+/// 定制不同的控件
 - (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index;
 
 @end

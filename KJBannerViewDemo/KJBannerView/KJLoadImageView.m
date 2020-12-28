@@ -27,11 +27,11 @@
 }
 #pragma mark - 网图
 /// 设置网图
-- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage{
-    return [self kj_setImageWithURLString:url Placeholder:placeholderImage Completion:nil];
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholder{
+    return [self kj_setImageWithURLString:url Placeholder:placeholder Completion:nil];
 }
-- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^)(UIImage *image))completion{
-    self.image = placeholderImage;
+- (void)kj_setImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholder Completion:(void(^)(UIImage *image))completion{
+    self.image = placeholder;
     if (url == nil || url.length == 0 || [url isEqualToString:@""]) {
         return;
     }
@@ -58,8 +58,8 @@
 
 #pragma mark - 动态图
 /// 动态图显示下载
-- (void)kj_setGIFImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholderImage Completion:(void(^_Nullable)(UIImage*image))completion{
-    self.image = placeholderImage;
+- (void)kj_setGIFImageWithURLString:(NSString*)url Placeholder:(UIImage*)placeholder Completion:(void(^_Nullable)(UIImage*image))completion{
+    self.image = placeholder;
     if (url == nil || url.length == 0 || [url isEqualToString:@""]) {
         return;
     }

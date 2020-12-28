@@ -42,7 +42,7 @@
             view.frame = CGRectMake(x, 0, _selectWidth, _normalheight);
             x += _selectWidth + _margin;
             view.backgroundColor = _selectColor;
-        }else {
+        }else{
             view.frame = CGRectMake(x, 0, _normalWidth, _normalheight);
             x += _normalWidth + _margin;
             view.backgroundColor = _normalColor;
@@ -145,10 +145,28 @@
         return;
     }
     if (_currentIndex != currentIndex) {
-        _currentIndex = MIN(currentIndex, _totalPages - 1);
-        [self.backView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            obj.backgroundColor = idx == currentIndex ? self.selectColor : self.normalColor;
-        }];
+        bool isRight = false;
+        NSInteger max = _totalPages - 1;
+        if (currentIndex == 0 && _currentIndex == max) {
+            isRight = true;
+        }else if (currentIndex == max && _currentIndex == 0) {
+            isRight = false;
+        }else if (_currentIndex < currentIndex) {
+            isRight = true;
+        }
+        UIView *view = self.backView.subviews[currentIndex];
+        view.backgroundColor = self.selectColor;
+        if (isRight && currentIndex == 0) {
+            UIView *lastView = self.backView.subviews.lastObject;
+            lastView.backgroundColor = self.normalColor;
+        }else if (!isRight && currentIndex == max) {
+            UIView *lastView = self.backView.subviews.firstObject;
+            lastView.backgroundColor = self.normalColor;
+        }else{
+            UIView *lastView = self.backView.subviews[isRight?currentIndex-1:currentIndex+1];
+            lastView.backgroundColor = self.normalColor;
+        }
+        _currentIndex = currentIndex;
     }
 }
 

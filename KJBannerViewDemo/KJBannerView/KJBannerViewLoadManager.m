@@ -19,12 +19,12 @@ static KJBannerViewLoadManager *manager = nil;
     [self kj_loadImageWithURL:url complete:complete progress:nil];
 }
 + (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *image))complete progress:(KJLoadProgressBlock)progress{
-    __block void (^kGetNetImage)(void) = ^{
+    void (^kGetNetImage)(void) = ^{
         if ([self kj_failureNumsForKey:url] >= self.kMaxLoadNum) {
             if (complete) complete(nil);
             return;
         }
-        __block void (^kAnalysis)(NSData *data, NSError *error) = ^(NSData *data, NSError *error){
+        void (^kAnalysis)(NSData *data, NSError *error) = ^(NSData *data, NSError *error){
             UIImage *image = nil;
             if (error) {
                 [self kj_cacheFailureForKey:url];
@@ -47,7 +47,7 @@ static KJBannerViewLoadManager *manager = nil;
         };
         KJBannerViewDownloader *downloader = [[KJBannerViewDownloader alloc] init];
         if (progress) {
-            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
+            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:^(KJBannerDownloadProgress * downloadProgress) {
                 progress(downloadProgress);
             } Complete:^(NSData * _Nullable data, NSError * _Nullable error) {
                 kAnalysis(data, error);
@@ -92,7 +92,7 @@ static KJBannerViewLoadManager *manager = nil;
     if (count >= KJBannerViewLoadManager.kMaxLoadNum) {
         return nil;
     }
-    NSData * (^kGetData)(NSURL*URL) = ^NSData *(NSURL*URL){
+    NSData * (^kGetData)(NSURL*URL) = ^NSData * (NSURL*URL){
         if (URL == nil) return nil;
         __block NSData *__data = nil;
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);

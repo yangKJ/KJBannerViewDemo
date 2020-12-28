@@ -11,9 +11,9 @@
 @implementation NSTimer (KJSolve)
 
 + (NSTimer*)kj_bannerScheduledTimerWithTimeInterval:(NSTimeInterval)inerval Repeats:(BOOL)repeats Block:(void(^)(NSTimer*timer))block{
-    return [NSTimer scheduledTimerWithTimeInterval:inerval target:self selector:@selector(blcokInvoke:) userInfo:[block copy] repeats:repeats];
+    return [NSTimer scheduledTimerWithTimeInterval:inerval target:self selector:@selector(bannerblcokInvoke:) userInfo:[block copy] repeats:repeats];
 }
-+ (void)blcokInvoke:(NSTimer*)timer {
++ (void)bannerblcokInvoke:(NSTimer*)timer {
     void (^block)(NSTimer *timer) = timer.userInfo;
     if (block) block(timer);
 }
