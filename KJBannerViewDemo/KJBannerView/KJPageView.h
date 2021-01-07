@@ -35,6 +35,8 @@ typedef enum : NSInteger{
 @property(nonatomic,assign) IBInspectable KJPageControlStyle pageType;
 /// 大小点控件
 @property(nonatomic,strong,readonly) KJDotPageView *loopPageView;
+/// 非自动滚动情况
+- (void)kj_notAutomaticScrollIndex:(NSInteger)index;
 
 @end
 

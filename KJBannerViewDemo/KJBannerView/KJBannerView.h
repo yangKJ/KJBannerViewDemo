@@ -20,6 +20,14 @@ IB_DESIGNABLE
 /// Block回调
 @property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner, NSInteger idx);
 @property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner, NSInteger idx);
+/// 暂停计时器滚动处理，备注：在viewDidDisappear当中实现
+- (void)kj_pauseTimer;
+/// 继续计时器滚动，备注：在viewDidAppear当中实现
+- (void)kj_repauseTimer;
+/// 滚动到指定位置，备注：需要在设置数据源之后调用
+- (void)kj_makeScrollToIndex:(NSInteger)index;
+/// 使用Masonry自动布局，请在设置布局之后调用该方法
+- (void)kj_useMasonry;
 
 //************************ 数据源API ************************
 /// 数据源
@@ -36,17 +44,21 @@ IB_DESIGNABLE
 @property (nonatomic,assign) IBInspectable CGFloat itemWidth;
 /// cell间距，默认为0
 @property (nonatomic,assign) IBInspectable CGFloat itemSpace;
-/// 滚动方向，默认从右到左
-@property (nonatomic,assign) KJBannerViewRollDirectionType rollType;
+/// 是否显示分页控件，默认yes
+@property (nonatomic,assign) IBInspectable BOOL showPageControl;
 /// 分页控制器
 @property (nonatomic,strong,readonly) KJPageView *pageControl;
+/// 滚动方向，默认从右到左
+@property (nonatomic,assign) KJBannerViewRollDirectionType rollType;
 
-/// 暂停计时器滚动处理，备注：在viewDidDisappear当中实现
-- (void)kj_pauseTimer;
-/// 继续计时器滚动，备注：在viewDidAppear当中实现
-- (void)kj_repauseTimer;
+//************************ 废弃属性方法 *****************************/
+/// 支持自定义Cell，自定义Cell需继承自 KJBannerViewCell
+@property (nonatomic,strong) Class itemClass DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_BannerView:BannerViewCell:ImageDatas:Index:]");
+
+@end
 
 //******************** 自带KJBannerViewCell可设置属性 ********************
+@interface KJBannerView (KJBannerViewCell)
 /// 是否裁剪，默认NO
 @property (nonatomic,assign) IBInspectable BOOL bannerScale;
 /// imagView圆角，默认为0px
@@ -59,10 +71,6 @@ IB_DESIGNABLE
 @property (nonatomic,assign) KJBannerViewImageType imageType;
 /// 是否采用动态图缓存，默认NO
 @property (nonatomic,assign) BOOL openGIFCache;
-
-//************************ 废弃属性方法 *****************************/
-/// 支持自定义Cell，自定义Cell需继承自 KJBannerViewCell
-@property (nonatomic,strong) Class itemClass DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_BannerView:BannerViewCell:ImageDatas:Index:]");
 
 @end
 

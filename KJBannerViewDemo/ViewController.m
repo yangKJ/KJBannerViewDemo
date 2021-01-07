@@ -14,6 +14,7 @@
 #import "KJLoadImageView.h"
 #import "NSTimer+KJSolve.h"
 #import "KJPageView.h"
+#import <Masonry/Masonry.h>
 
 #define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
 #define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
@@ -50,68 +51,61 @@
     
     [self _setDatas];
     [self setXib];
+    [self setMasonry];
     [self setUI];
     [self setTimer];
 }
 
 - (void)setUI{
-    KJBannerView *banner2 = [[KJBannerView alloc]initWithFrame:self.backView.bounds];
-    self.banner2 = banner2;
-    banner2.bannerRadius = 15;
-    banner2.autoTime = 2;
-    banner2.isZoom = YES;
-    banner2.itemSpace = -10;
-    banner2.itemWidth = 280;
-    banner2.delegate = self;
-    banner2.dataSource = self;
-    banner2.imageType = KJBannerViewImageTypeMix;
-    banner2.pageControl.pageType = PageControlStyleSizeDot;
-    [self.backView addSubview:banner2];
-    self.banner2.imageDatas = self.temp;
-    
     [self.button addTarget:self action:@selector(clearAction) forControlEvents:(UIControlEventTouchUpInside)];
     [self.Switch addTarget:self action:@selector(qiehuanAction:) forControlEvents:(UIControlEventValueChanged)];
     
-    long long num = [KJLoadImageView kj_imagesCacheSize];
+    int64_t num = [KJLoadImageView kj_imagesCacheSize];
     self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",num / 1024 / 1024.0];
     
     CGFloat w = self.view.frame.size.width;
     CGFloat h = self.label.frame.origin.y + self.label.frame.size.height + 100;
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30, w-40, 20)];
-    self.label1 = label;
-    label.font = [UIFont systemFontOfSize:14];
-    [self.view addSubview:label];
+    self.label1 = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30, w-40, 20)];
+    self.label1.font = [UIFont systemFontOfSize:14];
+    [self.view addSubview:self.label1];
     
-    UILabel *label2 = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30 + 30, w-40, 20)];
-    self.label2 = label2;
-    label2.font = [UIFont systemFontOfSize:14];
-    [self.view addSubview:label2];
+    self.label2 = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30 + 30, w-40, 20)];
+    self.label2.font = [UIFont systemFontOfSize:14];
+    [self.view addSubview:self.label2];
     
-    label.text  = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
-    label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
+    self.label1.text  = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
+    self.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
 }
-
-- (void)setTimer{
-    __weak typeof(self) weakself = self;
-    NSTimer *timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:1.0 Repeats:YES Block:^(NSTimer *timer) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weakself.label.text  = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
-            weakself.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
-            weakself.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
-        });
+- (void)setMasonry{
+    self.banner2 = [[KJBannerView alloc]init];
+    self.banner2.autoTime = 2;
+    self.banner2.isZoom = YES;
+    self.banner2.itemSpace = -10;
+    self.banner2.itemWidth = 280;
+    self.banner2.delegate = self;
+    self.banner2.dataSource = self;
+    self.banner2.imageType = KJBannerViewImageTypeMix;
+    self.banner2.pageControl.pageType = PageControlStyleSizeDot;
+    [self.backView addSubview:self.banner2];
+    [self.banner2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.bottom.mas_equalTo(0);
     }];
-    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+    [self.banner2 kj_useMasonry];
+    
+    self.banner2.imageDatas = self.temp;
 }
-
 - (void)setXib{
     self.banner.delegate = self;
     self.banner.pageControl.pageType = PageControlStyleRectangle;
-    self.banner.pageControl.dotwidth = 10;
+    self.banner.pageControl.selectColor = UIColor.greenColor;
+    self.banner.pageControl.dotwidth = 20;
     self.banner.pageControl.dotheight = 2;
     self.banner.imageType = KJBannerViewImageTypeMix;
-    self.banner.bannerScale = NO;
+    self.banner.bannerScale = YES;
+    self.banner.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
     self.banner.imageDatas = @[tu2,gif2,@"IMG_0139",@"tu3"];
+    [self.banner kj_makeScrollToIndex:1];
 }
 - (void)_setDatas{
     NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg",tu1,@"IMG_4931",tu1];
@@ -124,7 +118,17 @@
     }
     self.temp = arr;
 }
-
+- (void)setTimer{
+    __weak typeof(self) weakself = self;
+    NSTimer *timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:1.0 Repeats:YES Block:^(NSTimer *timer) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakself.label.text  = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
+            weakself.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
+            weakself.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
+        });
+    }];
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+}
 - (void)qiehuanAction:(UISwitch*)sender{
     if (sender.on) {
         self.banner2.imageDatas = self.temp;
@@ -151,7 +155,7 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 - (BOOL)kj_BannerView:(KJBannerView *)banner CurrentIndex:(NSInteger)index{
-    if (banner == self.banner2) return YES;
+    if (banner == self.banner2) return NO;
     return NO;
 }
 - (void)kj_BannerViewDidScroll:(KJBannerView*)banner{
@@ -167,12 +171,8 @@
         label.text = @"定制不同的控件";
         label.frame = CGRectMake(0, 0, bannercell.contentView.frame.size.width, 40);
         label.font = [UIFont boldSystemFontOfSize:35];
-        label.textColor = UIColor.redColor;
+        label.textColor = UIColor.greenColor;
         label.textAlignment = NSTextAlignmentCenter;
-    }else{
-        label.text = model.customTitle;
-        label.textColor = UIColor.whiteColor;
-        label.center = bannercell.contentView.center;
     }
     KJLoadImageView *imageView = [[KJLoadImageView alloc]initWithFrame:bannercell.contentView.bounds];
     imageView.kj_isScale = YES;

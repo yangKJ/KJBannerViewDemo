@@ -20,8 +20,10 @@ typedef NS_ENUM(NSInteger, KJBannerImageType) {
 };
 /// 滚动方法
 typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
-    KJBannerViewRollDirectionTypeRightToLeft = 0, /// 默认，从右往左
-    KJBannerViewRollDirectionTypeLeftToRight,     /// 从左往右
+    KJBannerViewRollDirectionTypeRightToLeft, /// 默认，从右往左
+    KJBannerViewRollDirectionTypeLeftToRight, /// 从左往右
+    KJBannerViewRollDirectionTypeBottomToTop, /// 从下往上
+    KJBannerViewRollDirectionTypeTopToBottom, /// 从上往下
 };
 /// 数据源类型
 typedef NS_ENUM(NSInteger, KJBannerViewImageType) {

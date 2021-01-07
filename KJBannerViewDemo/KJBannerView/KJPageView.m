@@ -91,6 +91,9 @@
     }
     return self;
 }
+- (void)kj_useMasonry{
+    self.backView.frame = self.bounds;
+}
 /// 设置PageView
 - (void)setTotalPages:(NSInteger)pages{
     _totalPages = pages;
@@ -169,7 +172,17 @@
         _currentIndex = currentIndex;
     }
 }
-
+/// 非自动滚动情况
+- (void)kj_notAutomaticScrollIndex:(NSInteger)index{
+    _currentIndex = index;
+    if (_pageType == PageControlStyleSizeDot) {
+        self.loopPageView.currentPage = index;
+        return;
+    }
+    [self.backView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        obj.backgroundColor = idx == index ? self.selectColor : self.normalColor;
+    }];
+}
 #pragma mark - lazy
 - (KJDotPageView*)loopPageView{
     if (!_loopPageView) {
