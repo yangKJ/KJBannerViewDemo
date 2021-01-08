@@ -9,42 +9,28 @@
 #import "KJCollectionViewCell.h"
 #import "KJLoadImageView.h"
 @interface KJCollectionViewCell ()
-@property (strong, nonatomic) UILabel *NameLabel;
-@property (strong, nonatomic) KJLoadImageView *ImageView;
-
+@property (strong, nonatomic) UILabel *label;
 @end
 
 @implementation KJCollectionViewCell
 
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self=[super initWithFrame:frame]) {
-        [self.contentView addSubview:self.ImageView];
-        [self.contentView addSubview:self.NameLabel];
+        [self.contentView addSubview:self.label];
     }
     return self;
 }
 
-- (void)setModel:(NSObject *)model{
-    KJBannerModel *mmodel = (KJBannerModel*)model;
-    [self.ImageView kj_setImageWithURLString:mmodel.customImageUrl Placeholder:[UIImage imageNamed:@"98338_https_hhh"]];
-    self.NameLabel.text = mmodel.customTitle;
+- (void)setModel:(NSObject*)model{
+    self.label.text = (NSString*)model;
 }
-
-- (KJLoadImageView *)ImageView{
-    if(!_ImageView){
-        _ImageView = [[KJLoadImageView alloc]initWithFrame:self.contentView.bounds];
-        _ImageView.layer.cornerRadius = 10;
+- (UILabel*)label{
+    if (!_label) {
+        _label = [[UILabel alloc]initWithFrame:self.bounds];
+        _label.textColor = UIColor.blackColor;
+        _label.font = [UIFont boldSystemFontOfSize:16];
     }
-    return _ImageView;
-}
-
-- (UILabel*)NameLabel{
-    if (!_NameLabel) {
-        _NameLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 20)];
-        _NameLabel.center = self.contentView.center;
-        _NameLabel.textColor = UIColor.whiteColor;
-    }
-    return _NameLabel;
+    return _label;
 }
 
 @end

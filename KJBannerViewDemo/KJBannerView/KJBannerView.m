@@ -12,6 +12,7 @@
 #import "KJBannerViewFlowLayout.h"
 #import "KJPageView.h"
 #import <objc/runtime.h>
+#define kPageHeight (20)
 @interface KJBannerView()<UICollectionViewDataSource,UICollectionViewDelegate>
 @property (nonatomic,strong) NSMutableArray<KJBannerDatasInfo*>*temps;
 @property (nonatomic,strong) UICollectionView *collectionView;
@@ -33,21 +34,18 @@
     _autoScroll = YES;
     _isZoom = NO;
     _itemWidth = self.bounds.size.width;
+    _height = self.bounds.size.height;
     _itemSpace = 0;
     _autoTime = 2;
     _rollType = KJBannerViewRollDirectionTypeRightToLeft;
     _useCustomCell = NO;
     _useDataSource = NO;
     _showPageControl = YES;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    self.itemClass = [KJBannerViewCell class];
-#pragma clang diagnostic pop
+    _itemClass = [KJBannerViewCell class];
 }
 - (instancetype)initWithCoder:(NSCoder*)aDecoder{
     if (self = [super initWithCoder:aDecoder]) {
         [self kj_config];
-        self.height = self.bounds.size.height;
         [self addSubview:self.collectionView];
         [self addSubview:self.pageControl];
     }
@@ -67,8 +65,7 @@
     self.height = self.bounds.size.height;
     self.collectionView.frame = self.bounds;
     self.layout.itemSize = CGSizeMake(_itemWidth, self.height);
-    self.pageControl.frame = CGRectMake(0, self.bounds.size.height-15, self.bounds.size.width, 15);
-    [self.pageControl performSelector:@selector(kj_useMasonry)];
+    self.pageControl.frame = CGRectMake(0, self.height-kPageHeight, self.bounds.size.width, kPageHeight);
 }
 - (void)willMoveToSuperview:(UIView*)newSuperview{
     [super willMoveToSuperview:newSuperview];
@@ -107,9 +104,9 @@
 - (void)setItemClass:(Class)itemClass{
     _itemClass = itemClass;
     if (![NSStringFromClass(itemClass) isEqualToString:@"KJBannerViewCell"]) {
-        self.useCustomCell = YES;return;
+        self.useCustomCell = YES;
+        [self.collectionView registerClass:itemClass forCellWithReuseIdentifier:NSStringFromClass(itemClass)];
     }
-    [self.collectionView registerClass:itemClass forCellWithReuseIdentifier:@"KJBannerViewCell"];
 }
 - (void)setItemWidth:(CGFloat)itemWidth{
     _itemWidth = itemWidth;
@@ -171,7 +168,6 @@
     NSInteger count = imageDatas.count;
     if (count > 1) {
         _nums = self.infiniteLoop ? count * 100 : count;
-        self.pageControl.hidden = NO;
         self.collectionView.scrollEnabled = YES;
         [self setAutoScroll:self.autoScroll];
         self.pageControl.totalPages = count;
@@ -324,15 +320,18 @@
 
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView*)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.nums;
+    return self.imageDatas.count?self.nums:0;
 }
 - (__kindof UICollectionViewCell*)collectionView:(UICollectionView*)collectionView cellForItemAtIndexPath:(NSIndexPath*)indexPath{
-    KJBannerViewCell *bannerViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
     NSInteger itemIndex = indexPath.item % self.imageDatas.count;
+    if (self.useCustomCell) {
+        KJBannerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(_itemClass) forIndexPath:indexPath];
+        cell.model = self.imageDatas[itemIndex];
+        return cell;
+    }
+    KJBannerViewCell *bannerViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
     if (self.useDataSource) {
         bannerViewCell.itemView = [_dataSource kj_BannerView:self BannerViewCell:bannerViewCell ImageDatas:self.imageDatas Index:itemIndex];
-    }else if (self.useCustomCell) {
-        bannerViewCell.model = self.imageDatas[itemIndex];
     }else{ /// 自带Cell处理
         bannerViewCell.bannerScale  = self.bannerScale;
         bannerViewCell.openGIFCache = self.openGIFCache;
@@ -388,12 +387,13 @@
         _collectionView.showsVerticalScrollIndicator = NO;
         _collectionView.showsHorizontalScrollIndicator = NO;
         _collectionView.backgroundColor = self.backgroundColor;
+        [_collectionView registerClass:_itemClass forCellWithReuseIdentifier:@"KJBannerViewCell"];
     }
     return _collectionView;
 }
 - (KJPageView*)pageControl{
     if(!_pageControl){
-        _pageControl = [[KJPageView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height-15, self.bounds.size.width, 15)];
+        _pageControl = [[KJPageView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height-kPageHeight, self.bounds.size.width, kPageHeight)];
     }
     return _pageControl;
 }

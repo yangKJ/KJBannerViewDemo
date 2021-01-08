@@ -10,9 +10,9 @@
 #import <UIKit/UIKit.h>
 #import "KJBannerViewType.h"
 #import "KJBannerViewProtocol.h"
+#import "KJPageView.h"
 NS_ASSUME_NONNULL_BEGIN
 IB_DESIGNABLE
-@class KJPageView;
 @interface KJBannerView : UIView
 /// 代理方法
 @property (nonatomic,weak) id<KJBannerViewDelegate> delegate;
@@ -46,10 +46,10 @@ IB_DESIGNABLE
 @property (nonatomic,assign) IBInspectable CGFloat itemSpace;
 /// 是否显示分页控件，默认yes
 @property (nonatomic,assign) IBInspectable BOOL showPageControl;
-/// 分页控制器
-@property (nonatomic,strong,readonly) KJPageView *pageControl;
 /// 滚动方向，默认从右到左
 @property (nonatomic,assign) KJBannerViewRollDirectionType rollType;
+/// 分页控制器
+@property (nonatomic,strong,readonly) KJPageView *pageControl;
 
 //************************ 废弃属性方法 *****************************/
 /// 支持自定义Cell，自定义Cell需继承自 KJBannerViewCell

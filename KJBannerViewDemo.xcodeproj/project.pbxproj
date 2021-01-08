@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,7 @@
 		684059E121EB59DA0092F630 /* KJCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 684059DF21EB59DA0092F630 /* KJCollectionViewCell.m */; };
 		68571C73257F779A0079241B /* KJBannerDatasInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 68571C72257F779A0079241B /* KJBannerDatasInfo.m */; };
 		6872ECB823CEBB4100F63970 /* KJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6872ECB623CEBB4100F63970 /* KJTestViewController.m */; };
+		68B55D0425A81DA9009A2FB4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 68B55D0325A81DA9009A2FB4 /* README.md */; };
 		68B5F17F22B0AB2000D71808 /* KJBannerView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 68B5F17E22B0AB2000D71808 /* KJBannerView.bundle */; };
 		68BD69F82580712000D4B3AF /* IMG_0139.GIF in Resources */ = {isa = PBXBuildFile; fileRef = 68BD69F72580712000D4B3AF /* IMG_0139.GIF */; };
 		68BD6A052580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 68BD6A042580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.m */; };
@@ -69,6 +70,7 @@
 		685F5F5824326028001D97C4 /* KJBannerViewProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewProtocol.h; sourceTree = "<group>"; };
 		6872ECB523CEBB4100F63970 /* KJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJTestViewController.h; sourceTree = "<group>"; };
 		6872ECB623CEBB4100F63970 /* KJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJTestViewController.m; sourceTree = "<group>"; };
+		68B55D0325A81DA9009A2FB4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		68B5F17E22B0AB2000D71808 /* KJBannerView.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = KJBannerView.bundle; sourceTree = "<group>"; };
 		68BD69F72580712000D4B3AF /* IMG_0139.GIF */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = IMG_0139.GIF; sourceTree = "<group>"; };
 		68BD6A032580BF4E00D4B3AF /* KJBannerViewCacheManager+KJBannerGIF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KJBannerViewCacheManager+KJBannerGIF.h"; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 				68E26B5C21CE924800F91182 /* LaunchScreen.storyboard */,
 				68E26B5F21CE924800F91182 /* Info.plist */,
 				68E26B6021CE924800F91182 /* main.m */,
+				68B55D0325A81DA9009A2FB4 /* README.md */,
 				6816D19A2581BAE700E828DD /* CHANGELOG.md */,
 				68CC363B229B7226005A78A5 /* KJBannerView.podspec */,
 			);
@@ -266,6 +269,7 @@
 				6816D19B2581BAE700E828DD /* CHANGELOG.md in Resources */,
 				68B5F17F22B0AB2000D71808 /* KJBannerView.bundle in Resources */,
 				68E26B5921CE924700F91182 /* Main.storyboard in Resources */,
+				68B55D0425A81DA9009A2FB4 /* README.md in Resources */,
 				68BD69F82580712000D4B3AF /* IMG_0139.GIF in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

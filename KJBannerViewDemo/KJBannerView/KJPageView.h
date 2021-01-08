@@ -9,13 +9,17 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-typedef enum : NSInteger{
+typedef NS_ENUM(NSInteger, KJPageControlStyle) {
     PageControlStyleRectangle = 0, // 默认类型 长方形
     PageControlStyleCircle, // 圆形
     PageControlStyleSquare, // 正方形
     PageControlStyleSizeDot,// 大小点
-}KJPageControlStyle;
-@class KJDotPageView;
+};
+typedef NS_ENUM(NSInteger, KJPageControlDisplayType) {
+    KJPageControlDisplayTypeCenter,
+    KJPageControlDisplayTypeLeft,
+    KJPageControlDisplayTypeRight,
+};
 @interface KJPageView : UIView
 /// 总共点数
 @property(nonatomic,assign) IBInspectable NSInteger totalPages;
@@ -32,9 +36,11 @@ typedef enum : NSInteger{
 /// 方块高度
 @property(nonatomic,assign) IBInspectable CGFloat dotheight;
 /// 类别，默认长方形
-@property(nonatomic,assign) IBInspectable KJPageControlStyle pageType;
-/// 大小点控件
-@property(nonatomic,strong,readonly) KJDotPageView *loopPageView;
+@property(nonatomic,assign) KJPageControlStyle pageType;
+/// 距离边界间隙，默认10px
+@property(nonatomic,assign) IBInspectable CGFloat space;
+/// 控件位置，默认居中
+@property(nonatomic,assign) KJPageControlDisplayType displayType;
 /// 非自动滚动情况
 - (void)kj_notAutomaticScrollIndex:(NSInteger)index;
 

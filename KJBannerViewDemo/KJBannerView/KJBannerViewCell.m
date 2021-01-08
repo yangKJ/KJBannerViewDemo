@@ -16,7 +16,7 @@
 @implementation KJBannerViewCell
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self=[super initWithFrame:frame]) {
-        self.layer.shouldRasterize = YES;
+//        self.layer.shouldRasterize = YES;
         self.layer.contentsScale = [UIScreen mainScreen].scale;
         self.layer.drawsAsynchronously = YES;
     }

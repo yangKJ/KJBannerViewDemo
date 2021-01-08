@@ -10,7 +10,7 @@
 #import "KJBannerDatasInfo.h"
 
 @interface KJBannerViewCell : UICollectionViewCell
-/// 数据模型 - 用于自定义样式传递数据
+/// 数据模型 - 用于自定义 itemClass 样式传递数据
 @property (nonatomic,strong) NSObject *model;
 
 /// 图片显示方式

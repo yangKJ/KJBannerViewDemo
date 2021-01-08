@@ -5,7 +5,57 @@
 //  Created by 杨科军 on 2018/12/22.
 //  Copyright © 2018 杨科军. All rights reserved.
 //
+/*
+*********************************************************************************
+*
+*⭐️⭐️⭐️ ----- 本人其他库 ----- ⭐️⭐️⭐️
+*
+粒子效果、自定义控件、自定义选中控件
+pod 'KJEmitterView'
+pod 'KJEmitterView/Control' # 自定义控件
+ 
+扩展库 - Button图文混排、点击事件封装、扩大点击域、点赞粒子效果，
+手势封装、圆角渐变、倒影、投影、内阴影、内外发光、渐变色滑块等，
+图片压缩加工处理、滤镜渲染、泛洪算法、识别网址超链接等等
+pod 'KJExtensionHandler'
+pod 'KJExtensionHandler/Foundation'
+pod 'KJExtensionHandler/Language' # 多语言模块
 
+基类库 - 封装整理常用，采用链式处理，提炼独立工具
+pod 'KJBaseHandler'
+pod 'KJBaseHandler/Tool' # 工具相关
+pod 'KJBaseHandler/Router' # 路由相关
+
+播放器 - KJPlayer是一款视频播放器，AVPlayer的封装，继承UIView
+视频可以边下边播，把播放器播放过的数据流缓存到本地，下次直接从缓冲读取播放
+pod 'KJPlayer' # 播放器功能区
+pod 'KJPlayer/KJPlayerView' # 自带展示界面
+
+轮播图 - 支持缩放 多种pagecontrol 支持继承自定义样式 自带网络加载和缓存
+pod 'KJBannerView'  # 轮播图，网络图片加载 支持网络GIF和网络图片和本地图片混合轮播
+
+加载Loading - 多种样式供选择 HUD控件封装
+pod 'KJLoading' # 加载控件
+
+菜单控件 - 下拉控件 选择控件
+pod 'KJMenuView' # 菜单控件
+
+工具库 - 推送工具、网络下载工具、识别网页图片工具等
+pod 'KJWorkbox' # 系统工具
+pod 'KJWorkbox/CommonBox'
+
+异常处理库 - 包含基本的防崩溃处理（数组，字典，字符串）
+pod 'KJExceptionDemo'
+
+Github地址：https://github.com/yangKJ
+简书地址：https://www.jianshu.com/u/c84c00476ab6
+博客地址：https://blog.csdn.net/qq_34534179
+掘金地址：https://juejin.cn/user/1987535102554472/posts
+ 
+* 如果觉得好用,希望您能Star支持,你的 ⭐️ 是我持续更新的动力!
+*
+*********************************************************************************
+*/
 #import "ViewController.h"
 #import "KJBannerHeader.h"
 #import "KJCollectionViewCell.h"
@@ -24,13 +74,14 @@
 
 @interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>
 @property (weak, nonatomic) IBOutlet KJBannerView *banner;
+@property (weak, nonatomic) IBOutlet KJBannerView *banner3;
 @property (weak, nonatomic) IBOutlet UIView *backView;
-@property (weak, nonatomic) IBOutlet UILabel *label;
 @property (weak, nonatomic) IBOutlet UIButton *button;
 @property (weak, nonatomic) IBOutlet UISwitch *Switch;
+@property (weak, nonatomic) IBOutlet UILabel *label;
+@property (nonatomic,strong) UILabel *label1,*label2;
 @property (nonatomic,strong) KJBannerView *banner2;
 @property (nonatomic,strong) NSArray *temp;
-@property (nonatomic,strong) UILabel *label1,*label2;
 @end
 
 @implementation ViewController
@@ -52,6 +103,7 @@
     [self _setDatas];
     [self setXib];
     [self setMasonry];
+    [self setText];
     [self setUI];
     [self setTimer];
 }
@@ -73,8 +125,17 @@
     self.label2.font = [UIFont systemFontOfSize:14];
     [self.view addSubview:self.label2];
     
-    self.label1.text  = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
+    self.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
     self.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
+}
+- (void)setText{
+    self.banner3.showPageControl = NO;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    self.banner3.itemClass = [KJCollectionViewCell class];
+#pragma clang diagnostic pop
+    self.banner3.rollType = KJBannerViewRollDirectionTypeBottomToTop;
+    self.banner3.imageDatas = @[@"测试文本滚动",@"觉得好用请给我点个星",@"有什么问题也可以联系我",@"邮箱: ykj310@126.com"];
 }
 - (void)setMasonry{
     self.banner2 = [[KJBannerView alloc]init];
@@ -86,6 +147,8 @@
     self.banner2.dataSource = self;
     self.banner2.imageType = KJBannerViewImageTypeMix;
     self.banner2.pageControl.pageType = PageControlStyleSizeDot;
+    self.banner2.pageControl.displayType = KJPageControlDisplayTypeRight;
+    self.banner2.pageControl.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
     [self.backView addSubview:self.banner2];
     [self.banner2 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.bottom.mas_equalTo(0);
@@ -100,6 +163,8 @@
     self.banner.pageControl.selectColor = UIColor.greenColor;
     self.banner.pageControl.dotwidth = 20;
     self.banner.pageControl.dotheight = 2;
+    self.banner.pageControl.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
+    self.banner.pageControl.displayType = KJPageControlDisplayTypeLeft;
     self.banner.imageType = KJBannerViewImageTypeMix;
     self.banner.bannerScale = YES;
     self.banner.rollType = KJBannerViewRollDirectionTypeBottomToTop;
@@ -142,10 +207,12 @@
 - (IBAction)pauseRoll:(UIButton *)sender {
     [self.banner kj_pauseTimer];
     [self.banner2 kj_pauseTimer];
+    [self.banner3 kj_pauseTimer];
 }
 - (IBAction)repauseRoll:(UIButton *)sender {
     [self.banner kj_repauseTimer];
     [self.banner2 kj_repauseTimer];
+    [self.banner3 kj_repauseTimer];
 }
 
 #pragma mark - KJBannerViewDelegate
