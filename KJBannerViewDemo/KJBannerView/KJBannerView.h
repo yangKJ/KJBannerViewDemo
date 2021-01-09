@@ -17,9 +17,6 @@ IB_DESIGNABLE
 /// 代理方法
 @property (nonatomic,weak) id<KJBannerViewDelegate> delegate;
 @property (nonatomic,weak) id<KJBannerViewDataSource> dataSource;
-/// Block回调
-@property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner, NSInteger idx);
-@property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner, NSInteger idx);
 /// 暂停计时器滚动处理，备注：在viewDidDisappear当中实现
 - (void)kj_pauseTimer;
 /// 继续计时器滚动，备注：在viewDidAppear当中实现
@@ -74,4 +71,11 @@ IB_DESIGNABLE
 
 @end
 
+@interface KJBannerView (KJBannerBlock)
+/// 点击回调
+@property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner,NSInteger idx);
+/// 滚动回调
+@property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner,NSInteger idx);
+
+@end
 NS_ASSUME_NONNULL_END

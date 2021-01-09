@@ -19,7 +19,7 @@ static KJBannerViewLoadManager *manager = nil;
     [self kj_loadImageWithURL:url complete:complete progress:nil];
 }
 + (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *image))complete progress:(KJLoadProgressBlock)progress{
-    void (^kGetNetImage)(void) = ^{
+    void (^kGetNetworkingImage)(void) = ^{
         if ([self kj_failureNumsForKey:url] >= self.kMaxLoadNum) {
             if (complete) complete(nil);
             return;
@@ -65,7 +65,7 @@ static KJBannerViewLoadManager *manager = nil;
                     if (complete) complete(image);
                 });
             }else{
-                kGetNetImage();
+                kGetNetworkingImage();
             }
         }];
     }else{
@@ -75,7 +75,7 @@ static KJBannerViewLoadManager *manager = nil;
                 if (complete) complete(image);
             });
         }else{
-            kGetNetImage();
+            kGetNetworkingImage();
         }
     }
 }
@@ -92,7 +92,7 @@ static KJBannerViewLoadManager *manager = nil;
     if (count >= KJBannerViewLoadManager.kMaxLoadNum) {
         return nil;
     }
-    NSData * (^kGetData)(NSURL*URL) = ^NSData * (NSURL*URL){
+    NSData *resultData = ({
         if (URL == nil) return nil;
         __block NSData *__data = nil;
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
@@ -111,12 +111,11 @@ static KJBannerViewLoadManager *manager = nil;
             }];
         });
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        return __data;
-    };
-    NSData *data = kGetData(URL);
-    if (data) {
+        __data;
+    });
+    if (resultData) {
         [KJBannerViewLoadManager kj_resetFailureDictForKey:URL.absoluteString];
-        return data;
+        return resultData;
     }else{
         return [self kj_recursionDataWithURL:URL progress:progress];
     }

@@ -104,7 +104,7 @@
         rect.size.width  = image.size.width;
         rect.size.height = image.size.width/size.width * size.height;
     }
-    CGImageRef imageRef   = CGImageCreateWithImageInRect(image.CGImage, rect);
+    CGImageRef imageRef = CGImageCreateWithImageInRect(image.CGImage, rect);
     UIImage *croppedImage = [UIImage imageWithCGImage:imageRef];
     CGImageRelease(imageRef);
     return croppedImage;

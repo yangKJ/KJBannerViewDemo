@@ -323,17 +323,19 @@
     return self.imageDatas.count?self.nums:0;
 }
 - (__kindof UICollectionViewCell*)collectionView:(UICollectionView*)collectionView cellForItemAtIndexPath:(NSIndexPath*)indexPath{
-    NSInteger itemIndex = indexPath.item % self.imageDatas.count;
+    NSInteger count = _imageDatas.count;
+    if (count == 0) return nil;
+    NSInteger itemIndex = indexPath.item % count;
     if (self.useCustomCell) {
         KJBannerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(_itemClass) forIndexPath:indexPath];
-        cell.model = self.imageDatas[itemIndex];
+        cell.model = _imageDatas[itemIndex];
         return cell;
     }
     KJBannerViewCell *bannerViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
     if (self.useDataSource) {
-        bannerViewCell.itemView = [_dataSource kj_BannerView:self BannerViewCell:bannerViewCell ImageDatas:self.imageDatas Index:itemIndex];
+        bannerViewCell.itemView = [_dataSource kj_BannerView:self BannerViewCell:bannerViewCell ImageDatas:_imageDatas Index:itemIndex];
     }else{ /// 自带Cell处理
-        bannerViewCell.bannerScale  = self.bannerScale;
+        bannerViewCell.bannerScale = self.bannerScale;
         bannerViewCell.openGIFCache = self.openGIFCache;
         bannerViewCell.bannerRadius = self.bannerRadius;
         bannerViewCell.placeholderImage = self.placeholderImage;
@@ -361,11 +363,10 @@
 }
 - (CALayer*)topLayer{
     if (!_topLayer){
-        CALayer *topLayer = [[CALayer alloc]init];
-        [topLayer setBounds:self.bounds];
-        [topLayer setPosition:CGPointMake(self.bounds.size.width*.5, self.bounds.size.height*.5)];
-        [topLayer setContents:(id)self.placeholderImage.CGImage];
-        _topLayer = topLayer;
+        _topLayer = [[CALayer alloc]init];
+        [_topLayer setBounds:self.bounds];
+        [_topLayer setPosition:CGPointMake(self.bounds.size.width*.5, self.bounds.size.height*.5)];
+        [_topLayer setContents:(id)self.placeholderImage.CGImage];
     }
     return _topLayer;
 }
@@ -444,4 +445,19 @@
 - (void)setOpenGIFCache:(BOOL)openGIFCache{
     objc_setAssociatedObject(self, @selector(openGIFCache), @(openGIFCache), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
+@end
+@implementation KJBannerView (KJBannerBlock)
+- (void (^)(KJBannerView*,NSInteger))kSelectBlock{
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setKSelectBlock:(void (^)(KJBannerView*,NSInteger))kSelectBlock{
+    objc_setAssociatedObject(self, @selector(kSelectBlock), kSelectBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+- (void (^)(KJBannerView*,NSInteger))kScrollBlock{
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setKScrollBlock:(void (^)(KJBannerView*,NSInteger))kScrollBlock{
+    objc_setAssociatedObject(self, @selector(kScrollBlock), kScrollBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
 @end

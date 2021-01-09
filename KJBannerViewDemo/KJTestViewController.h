@@ -11,10 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KJTestViewController : UIViewController
-//获取当前设备可用内存
-+ (double)availableMemory;
-//获取当前任务所占用内存
-+ (double)usedMemory;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -17,7 +17,7 @@
     _imageUrl = imageUrl;
     __weak __typeof(&*self) weakself = self;
     kGCD_banner_async(^{
-        void (^kDelLocalityImage)(void) = ^{
+        void (^kDealLocalityImage)(void) = ^{
             NSData *data = kGetLocalityGIFData(imageUrl);
             if (data) {
                 weakself.image = [UIImage kj_bannerGIFImageWithData:data];
@@ -27,7 +27,7 @@
                 weakself.type = KJBannerImageInfoTypeLocality;
             }
         };
-        void (^kDelNetImage)(void) = ^{
+        void (^kDealNetworkingImage)(void) = ^{
             NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
             if ([KJBannerTool contentTypeWithImageData:data] == KJBannerImageTypeGif) {
                 weakself.image = [UIImage kj_bannerGIFImageWithData:data];
@@ -41,18 +41,18 @@
         switch (weakself.superType) {
             case KJBannerViewImageTypeMix:
                 if (kLocality(imageUrl)) {
-                    kDelLocalityImage();
+                    kDealLocalityImage();
                 }else{
-                    kDelNetImage();
+                    kDealNetworkingImage();
                 }
                 break;
             case KJBannerViewImageTypeLocality:
-                kDelLocalityImage();
+                kDealLocalityImage();
                 break;
             case KJBannerViewImageTypeGIFAndNet:
             case KJBannerViewImageTypeNetIamge:
             case KJBannerViewImageTypeGIFImage:
-                kDelNetImage();
+                kDealNetworkingImage();
                 break;
             default:
                 break;

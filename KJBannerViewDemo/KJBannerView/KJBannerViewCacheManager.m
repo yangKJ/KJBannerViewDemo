@@ -63,8 +63,8 @@
         NSString *directoryPath = KJBannerLoadImages;
         if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
             NSError *error = nil;
-            BOOL isOK = [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
-            if (isOK && error == nil){}else return;
+            BOOL ok = [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
+            if (ok && error == nil){}else return;
         }
         @autoreleasepool {
             NSString *path = [directoryPath stringByAppendingPathComponent:subpath];

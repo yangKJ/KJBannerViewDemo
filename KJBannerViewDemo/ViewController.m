@@ -62,8 +62,6 @@ Github地址：https://github.com/yangKJ
 #import "KJBannerModel.h"
 #import "KJTestViewController.h"
 #import "KJLoadImageView.h"
-#import "NSTimer+KJSolve.h"
-#import "KJPageView.h"
 #import <Masonry/Masonry.h>
 
 #define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
@@ -105,28 +103,12 @@ Github地址：https://github.com/yangKJ
     [self setMasonry];
     [self setText];
     [self setUI];
-    [self setTimer];
 }
 
 - (void)setUI{
     [self.button addTarget:self action:@selector(clearAction) forControlEvents:(UIControlEventTouchUpInside)];
     [self.Switch addTarget:self action:@selector(qiehuanAction:) forControlEvents:(UIControlEventValueChanged)];
-    
-    int64_t num = [KJLoadImageView kj_imagesCacheSize];
-    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",num / 1024 / 1024.0];
-    
-    CGFloat w = self.view.frame.size.width;
-    CGFloat h = self.label.frame.origin.y + self.label.frame.size.height + 100;
-    self.label1 = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30, w-40, 20)];
-    self.label1.font = [UIFont systemFontOfSize:14];
-    [self.view addSubview:self.label1];
-    
-    self.label2 = [[UILabel alloc]initWithFrame:CGRectMake(20, h + 30 + 30, w-40, 20)];
-    self.label2.font = [UIFont systemFontOfSize:14];
-    [self.view addSubview:self.label2];
-    
-    self.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
-    self.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
+    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
 }
 - (void)setText{
     self.banner3.showPageControl = NO;
@@ -173,7 +155,7 @@ Github地址：https://github.com/yangKJ
     [self.banner kj_makeScrollToIndex:1];
 }
 - (void)_setDatas{
-    NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg",tu1,@"IMG_4931",tu1];
+    NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg",@"IMG_4931",tu1];
     NSMutableArray *arr = [NSMutableArray array];
     for (int i=0; i<images.count; i++) {
         KJBannerModel *model = [[KJBannerModel alloc]init];
@@ -182,17 +164,6 @@ Github地址：https://github.com/yangKJ
         [arr addObject:model];
     }
     self.temp = arr;
-}
-- (void)setTimer{
-    __weak typeof(self) weakself = self;
-    NSTimer *timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:1.0 Repeats:YES Block:^(NSTimer *timer) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weakself.label.text  = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
-            weakself.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.2f MB",[KJTestViewController availableMemory]];
-            weakself.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.2f MB",[KJTestViewController usedMemory]];
-        });
-    }];
-    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
 - (void)qiehuanAction:(UISwitch*)sender{
     if (sender.on) {
@@ -203,6 +174,7 @@ Github地址：https://github.com/yangKJ
 }
 - (void)clearAction{
     [KJLoadImageView kj_clearImagesCache];
+    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
 }
 - (IBAction)pauseRoll:(UIButton *)sender {
     [self.banner kj_pauseTimer];
@@ -232,19 +204,19 @@ Github地址：https://github.com/yangKJ
 #pragma mark - KJBannerViewDataSource
 - (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index{
     KJBannerModel *model = imageDatas[index];
-    CGRect rect = {0, 0, 100, 20};
-    UILabel *label = [[UILabel alloc]initWithFrame:rect];
+    KJLoadImageView *imageView = [[KJLoadImageView alloc]initWithFrame:bannercell.contentView.bounds];
+    imageView.kj_isScale = YES;
+    [imageView kj_setImageWithURLString:model.customImageUrl Placeholder:[UIImage imageNamed:@"tu3"]];
     if (index == 0) {
+        CGRect rect = {0, 0, 100, 20};
+        UILabel *label = [[UILabel alloc]initWithFrame:rect];
+        [imageView addSubview:label];
         label.text = @"定制不同的控件";
         label.frame = CGRectMake(0, 0, bannercell.contentView.frame.size.width, 40);
         label.font = [UIFont boldSystemFontOfSize:35];
         label.textColor = UIColor.greenColor;
         label.textAlignment = NSTextAlignmentCenter;
     }
-    KJLoadImageView *imageView = [[KJLoadImageView alloc]initWithFrame:bannercell.contentView.bounds];
-    imageView.kj_isScale = YES;
-    [imageView kj_setImageWithURLString:model.customImageUrl Placeholder:[UIImage imageNamed:@"tu3"]];
-    [imageView addSubview:label];
     return imageView;
 }
 

@@ -8,8 +8,7 @@
 
 #import "KJTestViewController.h"
 #import "KJBannerHeader.h"
-#import <sys/sysctl.h>
-#import <mach/mach.h>
+
 @interface KJTestViewController ()
 @property (nonatomic,strong) UILabel *label1,*label2,*label3;
 @property (nonatomic,strong) UIImageView *imageView;
@@ -66,12 +65,10 @@
     
     kGCD_async(^{
         [KJBannerViewLoadManager kj_downloadDataWithURL:@"https://mp4.vjshi.com/2018-03-30/1f36dd9819eeef0bc508414494d34ad9.mp4" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-            NSLog(@"1111");
         }];
     });
     kGCD_async(^{
         [KJBannerViewLoadManager kj_downloadDataWithURL:@"https://mp4.vjshi.com/2018-03-30/1f36dd9819eeef0bc508414494d34ad9.mp4" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-            NSLog(@"2222");
         }];
     });
 }
@@ -107,26 +104,6 @@ NS_INLINE void kGCD_main(dispatch_block_t block) {
             dispatch_sync(queue, block);
         }
     }
-}
-//获取当前设备可用内存
-+ (double)availableMemory{
-    vm_statistics_data_t vmStats;
-    mach_msg_type_number_t infoCount = HOST_VM_INFO_COUNT;
-    kern_return_t kernReturn = host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&vmStats, &infoCount);
-    if (kernReturn != KERN_SUCCESS) {
-        return NSNotFound;
-    }
-    return ((vm_page_size * vmStats.free_count)/1024.0)/1024.0;
-}
-//获取当前任务所占用内存
-+ (double)usedMemory{
-    task_basic_info_data_t taskInfo;
-    mach_msg_type_number_t infoCount = TASK_BASIC_INFO_COUNT;
-    kern_return_t kernReturn = task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&taskInfo, &infoCount);
-    if (kernReturn != KERN_SUCCESS) {
-        return NSNotFound;
-    }
-    return taskInfo.resident_size/1024.0/1024.0;
 }
 
 @end

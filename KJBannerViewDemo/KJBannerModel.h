@@ -13,6 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface KJBannerModel : NSObject
 @property (nonatomic,strong) NSString *customImageUrl;
 @property (nonatomic,strong) NSString *customTitle;
+
+//获取当前设备可用内存
++ (double)availableMemory;
+//获取当前任务所占用内存
++ (double)usedMemory;
+
 @end
 
 NS_ASSUME_NONNULL_END
