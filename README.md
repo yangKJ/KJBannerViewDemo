@@ -1,7 +1,7 @@
 # KJBannerView
 
 <p align="left">
-<img src="https://upload-images.jianshu.io/upload_images/1933747-ee4810677d2238b1.gif?imageMogr2/auto-orient/strip" width="" hspace="1px">
+<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1daa64e6ce7f4bed94ba147a8380a2ae~tplv-k3u1fbpfcp-zoom-1.image" width="" hspace="1px">
 </p>
 
 ### 功能介绍

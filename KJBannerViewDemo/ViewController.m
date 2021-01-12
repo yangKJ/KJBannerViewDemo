@@ -149,6 +149,7 @@ Github地址：https://github.com/yangKJ
     self.banner.pageControl.displayType = KJPageControlDisplayTypeLeft;
     self.banner.imageType = KJBannerViewImageTypeMix;
     self.banner.bannerScale = YES;
+//    self.banner.openGIFCache = YES;
     self.banner.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
     self.banner.imageDatas = @[tu2,gif2,@"IMG_0139",@"tu3"];
@@ -194,6 +195,7 @@ Github地址：https://github.com/yangKJ
     [self.navigationController pushViewController:vc animated:YES];
 }
 - (BOOL)kj_BannerView:(KJBannerView *)banner CurrentIndex:(NSInteger)index{
+    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
     if (banner == self.banner2) return NO;
     return NO;
 }

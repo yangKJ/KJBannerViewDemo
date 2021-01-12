@@ -10,54 +10,52 @@
 #import "UIImage+KJBannerGIF.h"
 #import "KJBannerTool.h"
 @implementation KJBannerDatasInfo
-- (NSData*)localityGIFData{
-    return kGetLocalityGIFData(_imageUrl);
-}
 - (void)setImageUrl:(NSString*)imageUrl{
     _imageUrl = imageUrl;
     __weak __typeof(&*self) weakself = self;
-    kGCD_banner_async(^{
-        void (^kDealLocalityImage)(void) = ^{
-            NSData *data = kGetLocalityGIFData(imageUrl);
-            if (data) {
-                weakself.image = [UIImage kj_bannerGIFImageWithData:data];
-                weakself.type = KJBannerImageInfoTypeLocalityGIF;
-            }else{
-                weakself.image = [UIImage imageNamed:imageUrl];
-                weakself.type = KJBannerImageInfoTypeLocality;
-            }
-        };
-        void (^kDealNetworkingImage)(void) = ^{
-            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
-            if ([KJBannerTool contentTypeWithImageData:data] == KJBannerImageTypeGif) {
-                weakself.image = [UIImage kj_bannerGIFImageWithData:data];
-                weakself.type = KJBannerImageInfoTypeGIFImage;
-                data = nil;
-            }else{
-                weakself.type = KJBannerImageInfoTypeNetIamge;
-            }
-        };
-        
-        switch (weakself.superType) {
-            case KJBannerViewImageTypeMix:
-                if (kLocality(imageUrl)) {
-                    kDealLocalityImage();
-                }else{
-                    kDealNetworkingImage();
-                }
-                break;
-            case KJBannerViewImageTypeLocality:
-                kDealLocalityImage();
-                break;
-            case KJBannerViewImageTypeGIFAndNet:
-            case KJBannerViewImageTypeNetIamge:
-            case KJBannerViewImageTypeGIFImage:
-                kDealNetworkingImage();
-                break;
-            default:
-                break;
+    void (^kDealLocalityImage)(void) = ^{
+        weakself.data = kGetLocalityGIFData(imageUrl);
+        if (weakself.data) {
+            kGCD_banner_async(^{
+                weakself.image = [UIImage kj_bannerGIFImageWithData:weakself.data];
+            });
+            weakself.type = KJBannerImageInfoTypeLocalityGIF;
+        }else{
+            weakself.image = [UIImage imageNamed:imageUrl];
+            weakself.type = KJBannerImageInfoTypeLocality;
         }
-    });
+    };
+    void (^kDealNetworkingImage)(void) = ^{
+        weakself.data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+        if ([KJBannerTool contentTypeWithImageData:weakself.data] == KJBannerImageTypeGif) {
+            kGCD_banner_async(^{
+                weakself.image = [UIImage kj_bannerGIFImageWithData:weakself.data];
+            });
+            weakself.type = KJBannerImageInfoTypeGIFImage;
+        }else{
+            weakself.type = KJBannerImageInfoTypeNetIamge;
+        }
+    };
+    
+    switch (weakself.superType) {
+        case KJBannerViewImageTypeMix:
+            if (kLocality(imageUrl)) {
+                kDealLocalityImage();
+            }else{
+                kDealNetworkingImage();
+            }
+            break;
+        case KJBannerViewImageTypeLocality:
+            kDealLocalityImage();
+            break;
+        case KJBannerViewImageTypeGIFAndNet:
+        case KJBannerViewImageTypeNetIamge:
+        case KJBannerViewImageTypeGIFImage:
+            kDealNetworkingImage();
+            break;
+        default:
+            break;
+    }
 }
 #pragma mark - private
 NS_INLINE bool kLocality(NSString *url){
@@ -71,7 +69,7 @@ NS_INLINE NSData * _Nullable kGetLocalityGIFData(NSString *name){
     }
     return data;
 }
-NS_INLINE void kGCD_banner_async(dispatch_block_t block) {
+void kGCD_banner_async(dispatch_block_t block) {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
         block();

@@ -15,6 +15,7 @@ KJBannerView 是一款轮播Banner，支持gif和url混播，自带图片下载�
 # 版本更新日志
 ### [版本2.0.8](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.8)
 - 解决偶尔出现 Thread 1: EXC_ARITHMETIC (code=EXC_I386_DIV, subcode=0x0)
+- 修复首次加载不出现问题，优化性能
 
 ### [版本2.0.7](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.7)
 - KJPageView 新增显示位置属性 displayType 和 距离边界间隙 space

@@ -12,13 +12,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KJBannerDatasInfo : NSObject
+@property (nonatomic,strong) NSData *data;
 @property (nonatomic,strong) UIImage *image;
 @property (nonatomic,strong) NSString *imageUrl;
 @property (nonatomic,assign) KJBannerImageInfoType type;
 @property (nonatomic,assign) KJBannerViewImageType superType;
-/// 本地动态图
-@property (nonatomic,strong,readonly) NSData *localityGIFData;
-
+void kGCD_banner_async(dispatch_block_t block);
 @end
 
 NS_ASSUME_NONNULL_END
