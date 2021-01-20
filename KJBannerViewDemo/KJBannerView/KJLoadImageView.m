@@ -36,7 +36,7 @@
         return;
     }
     KJBannerViewLoadManager.kMaxLoadNum = self.kj_failedTimes;
-    __weak typeof(self) weakself = self;
+    __weak __typeof(&*self) weakself = self;
     [KJBannerViewLoadManager kj_loadImageWithURL:url complete:^(UIImage * _Nullable image) {
         if (image) {
             if (weakself.kj_isScale) {
@@ -63,7 +63,7 @@
     if (url == nil || url.length == 0 || [url isEqualToString:@""]) {
         return;
     }
-    __weak typeof(self) weakself = self;
+    __weak __typeof(&*self) weakself = self;
     NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url];
     if (data) {
         UIImage *image = [UIImage kj_bannerGIFImageWithData:data];

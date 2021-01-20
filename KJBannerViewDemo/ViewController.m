@@ -136,7 +136,6 @@ Github地址：https://github.com/yangKJ
         make.top.left.right.bottom.mas_equalTo(0);
     }];
     [self.banner2 kj_useMasonry];
-    
     self.banner2.imageDatas = self.temp;
 }
 - (void)setXib{
@@ -152,8 +151,10 @@ Github地址：https://github.com/yangKJ
 //    self.banner.openGIFCache = YES;
     self.banner.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
+    CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
     self.banner.imageDatas = @[tu2,gif2,@"IMG_0139",@"tu3"];
     [self.banner kj_makeScrollToIndex:1];
+    NSLog(@"banner_time: %f", CFAbsoluteTimeGetCurrent() - start);
 }
 - (void)_setDatas{
     NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg",@"IMG_4931",tu1];

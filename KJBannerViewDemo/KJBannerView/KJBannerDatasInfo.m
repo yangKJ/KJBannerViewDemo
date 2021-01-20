@@ -8,7 +8,6 @@
 
 #import "KJBannerDatasInfo.h"
 #import "UIImage+KJBannerGIF.h"
-#import "KJBannerTool.h"
 @implementation KJBannerDatasInfo
 - (void)setImageUrl:(NSString*)imageUrl{
     _imageUrl = imageUrl;
@@ -16,24 +15,25 @@
     void (^kDealLocalityImage)(void) = ^{
         weakself.data = kGetLocalityGIFData(imageUrl);
         if (weakself.data) {
-            kGCD_banner_async(^{
-                weakself.image = [UIImage kj_bannerGIFImageWithData:weakself.data];
-            });
+            kGCD_banner_async(^{weakself.image = [UIImage kj_bannerGIFImageWithData:weakself.data];});
             weakself.type = KJBannerImageInfoTypeLocalityGIF;
         }else{
-            weakself.image = [UIImage imageNamed:imageUrl];
+            weakself.image = [UIImage imageNamed:imageUrl]?:weakself.placeholderImage;
             weakself.type = KJBannerImageInfoTypeLocality;
         }
     };
     void (^kDealNetworkingImage)(void) = ^{
-        weakself.data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
-        if ([KJBannerTool contentTypeWithImageData:weakself.data] == KJBannerImageTypeGif) {
-            kGCD_banner_async(^{
-                weakself.image = [UIImage kj_bannerGIFImageWithData:weakself.data];
-            });
-            weakself.type = KJBannerImageInfoTypeGIFImage;
+        if (!kValid(imageUrl)) {
+            weakself.image = weakself.placeholderImage;
+            weakself.type = KJBannerImageInfoTypeLocality;
         }else{
-            weakself.type = KJBannerImageInfoTypeNetIamge;
+            weakself.data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+            if (kContentType(weakself.data) == KJBannerImageTypeGif) {
+                kGCD_banner_async(^{weakself.image = [UIImage kj_bannerGIFImageWithData:weakself.data];});
+                weakself.type = KJBannerImageInfoTypeGIFImage;
+            }else{
+                weakself.type = KJBannerImageInfoTypeNetIamge;
+            }
         }
     };
     
@@ -58,9 +58,7 @@
     }
 }
 #pragma mark - private
-NS_INLINE bool kLocality(NSString *url){
-    return ([url hasPrefix:@"http"] || [url hasPrefix:@"https"]) ? false : true;
-}
+/// 获取动态图资源
 NS_INLINE NSData * _Nullable kGetLocalityGIFData(NSString *name){
     NSBundle *bundle = [NSBundle mainBundle];
     NSData *data = [NSData dataWithContentsOfFile:[bundle pathForResource:name ofType:@"gif"]];
@@ -69,13 +67,37 @@ NS_INLINE NSData * _Nullable kGetLocalityGIFData(NSString *name){
     }
     return data;
 }
-void kGCD_banner_async(dispatch_block_t block) {
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
-        block();
-    }else{
-        dispatch_async(queue, block);
+/// 判断是网络图片还是本地
+NS_INLINE bool kLocality(NSString * urlString){
+    return ([urlString hasPrefix:@"http"] || [urlString hasPrefix:@"https"]) ? false : true;
+}
+/// 判断该字符串是不是一个有效的URL
+NS_INLINE bool kValid(NSString * urlString){
+    NSString *regex = @"[a-zA-z]+://[^\\s]*";
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
+    return [predicate evaluateWithObject:urlString];
+}
+/// 根据DATA判断图片类型
+NS_INLINE KJBannerImageType kContentType(NSData * data){
+    uint8_t c;
+    [data getBytes:&c length:1];
+    switch (c) {
+        case 0xFF:
+            return KJBannerImageTypeJpeg;
+        case 0x89:
+            return KJBannerImageTypePng;
+        case 0x47:
+            return KJBannerImageTypeGif;
+        case 0x49:
+        case 0x4D:
+            return KJBannerImageTypeTiff;
+        case 0x52:
+            if ([data length] < 12) return KJBannerImageTypeUnknown;
+            NSString *testString = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(0, 12)] encoding:NSASCIIStringEncoding];
+            if ([testString hasPrefix:@"RIFF"] && [testString hasSuffix:@"WEBP"]) return KJBannerImageTypeWebp;
+            return KJBannerImageTypeUnknown;
     }
+    return KJBannerImageTypeUnknown;
 }
 
 @end

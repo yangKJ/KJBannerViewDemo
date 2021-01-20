@@ -47,7 +47,7 @@
         }
             break;
         case KJBannerImageInfoTypeLocality:
-            self.loadImageView.image = self.placeholderImage;
+            self.loadImageView.image = self.info.placeholderImage;
             break;
         case KJBannerImageInfoTypeGIFImage:{
             if (self.openGIFCache == NO) {
@@ -60,32 +60,20 @@
                     kGCD_banner_main(^{weakself.loadImageView.image = weakself.info.image;});
                 });
             }else{
-                [self.loadImageView kj_setGIFImageWithURLString:self.info.imageUrl Placeholder:self.placeholderImage Completion:^(UIImage * _Nonnull image) {
+                [self.loadImageView kj_setGIFImageWithURLString:self.info.imageUrl Placeholder:self.info.placeholderImage Completion:^(UIImage * _Nonnull image) {
                     weakself.info.image = image;
                 }];
             }
         }
             break;
         case KJBannerImageInfoTypeNetIamge:{
-            [self.loadImageView kj_setImageWithURLString:self.info.imageUrl Placeholder:self.placeholderImage Completion:^(UIImage * _Nonnull image) {
+            [self.loadImageView kj_setImageWithURLString:self.info.imageUrl Placeholder:self.info.placeholderImage Completion:^(UIImage * _Nonnull image) {
                 weakself.info.image = image;
             }];
         }
             break;
         default:
             break;
-    }
-}
-NS_INLINE void kGCD_banner_main(dispatch_block_t block) {
-    dispatch_queue_t queue = dispatch_get_main_queue();
-    if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
-        block();
-    }else{
-        if ([[NSThread currentThread] isMainThread]) {
-            dispatch_async(queue, block);
-        }else{
-            dispatch_sync(queue, block);
-        }
     }
 }
 

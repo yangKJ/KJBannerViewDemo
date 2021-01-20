@@ -45,41 +45,41 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="缓存数据" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OsQ-Te-g5f">
-                                <rect key="frame" x="20" y="419" width="61.5" height="18"/>
+                                <rect key="frame" x="12.5" y="419" width="61.5" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="352-Wp-Xyg">
-                                <rect key="frame" x="289" y="412" width="66" height="32"/>
+                                <rect key="frame" x="296.5" y="412" width="66" height="32"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <state key="normal" title="清除缓存"/>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="切换数据" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WrR-yr-iqv">
-                                <rect key="frame" x="20" y="457" width="61.5" height="18"/>
+                                <rect key="frame" x="12.5" y="457" width="61.5" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eT1-C3-BDb">
-                                <rect key="frame" x="121.5" y="450.5" width="51" height="31"/>
+                                <rect key="frame" x="114" y="450.5" width="51" height="31"/>
                             </switch>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W4X-vq-w6K">
-                                <rect key="frame" x="293" y="451" width="62" height="30"/>
+                                <rect key="frame" x="300.5" y="451" width="62" height="30"/>
                                 <state key="normal" title="继续滚动"/>
                                 <connections>
                                     <action selector="repauseRoll:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xxa-e8-U2s"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Me2-Ly-rvC">
-                                <rect key="frame" x="211" y="451" width="62" height="30"/>
+                                <rect key="frame" x="203.5" y="451" width="62" height="30"/>
                                 <state key="normal" title="暂停滚动"/>
                                 <connections>
                                     <action selector="pauseRoll:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jjQ-qm-suG"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XHz-S7-bGJ" customClass="KJBannerView">
-                                <rect key="frame" x="12.5" y="491.5" width="350" height="30"/>
+                                <rect key="frame" x="12.5" y="501.5" width="350" height="30"/>
                                 <color key="backgroundColor" red="0.089175753231749214" green="0.46275906735751293" blue="0.15783085618148435" alpha="0.096390845070422532" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="NFG-rG-nR6"/>
@@ -90,26 +90,26 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="W4X-vq-w6K" firstAttribute="centerY" secondItem="Me2-Ly-rvC" secondAttribute="centerY" id="4IK-gE-ndv"/>
-                            <constraint firstItem="W4X-vq-w6K" firstAttribute="trailing" secondItem="352-Wp-Xyg" secondAttribute="trailing" id="6Hb-y9-IlY"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="352-Wp-Xyg" secondAttribute="trailing" constant="20" id="7JR-2w-KOe"/>
                             <constraint firstItem="cfo-aw-2br" firstAttribute="top" secondItem="6Ix-O9-EeV" secondAttribute="bottom" constant="20" id="8ub-Ie-jlb"/>
                             <constraint firstItem="Me2-Ly-rvC" firstAttribute="leading" secondItem="eT1-C3-BDb" secondAttribute="trailing" constant="40.5" id="9HR-ei-dgm"/>
-                            <constraint firstItem="OsQ-Te-g5f" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Bem-d0-3IA"/>
                             <constraint firstItem="6Ix-O9-EeV" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="CMP-jO-eHM"/>
-                            <constraint firstItem="XHz-S7-bGJ" firstAttribute="top" secondItem="eT1-C3-BDb" secondAttribute="bottom" constant="10" id="Icv-Lo-D0s"/>
+                            <constraint firstItem="XHz-S7-bGJ" firstAttribute="top" secondItem="eT1-C3-BDb" secondAttribute="bottom" constant="20" id="Icv-Lo-D0s"/>
                             <constraint firstItem="352-Wp-Xyg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="OsQ-Te-g5f" secondAttribute="trailing" constant="8" symbolic="YES" id="KhE-nb-ygb"/>
+                            <constraint firstItem="W4X-vq-w6K" firstAttribute="trailing" secondItem="6Ix-O9-EeV" secondAttribute="trailing" id="Ouk-tU-RnL"/>
                             <constraint firstItem="eT1-C3-BDb" firstAttribute="centerY" secondItem="WrR-yr-iqv" secondAttribute="centerY" id="QZA-3H-Cjh"/>
                             <constraint firstItem="cfo-aw-2br" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="SUP-0N-OF6"/>
                             <constraint firstItem="XHz-S7-bGJ" firstAttribute="leading" secondItem="cfo-aw-2br" secondAttribute="leading" id="TTF-T0-8kf"/>
                             <constraint firstItem="OsQ-Te-g5f" firstAttribute="top" secondItem="cfo-aw-2br" secondAttribute="bottom" constant="20" id="VbA-9g-a4Y"/>
+                            <constraint firstItem="352-Wp-Xyg" firstAttribute="trailing" secondItem="6Ix-O9-EeV" secondAttribute="trailing" id="XI6-lf-gv7"/>
                             <constraint firstItem="W4X-vq-w6K" firstAttribute="centerY" secondItem="eT1-C3-BDb" secondAttribute="centerY" id="ZeX-K9-VWA"/>
                             <constraint firstItem="WrR-yr-iqv" firstAttribute="top" secondItem="OsQ-Te-g5f" secondAttribute="bottom" constant="20" id="Zub-FJ-eWf"/>
+                            <constraint firstItem="OsQ-Te-g5f" firstAttribute="leading" secondItem="6Ix-O9-EeV" secondAttribute="leading" id="byA-wQ-FQZ"/>
+                            <constraint firstItem="WrR-yr-iqv" firstAttribute="leading" secondItem="6Ix-O9-EeV" secondAttribute="leading" id="eyw-2f-5Hm"/>
                             <constraint firstItem="eT1-C3-BDb" firstAttribute="leading" secondItem="WrR-yr-iqv" secondAttribute="trailing" constant="40" id="gv9-tz-rFm"/>
                             <constraint firstItem="XHz-S7-bGJ" firstAttribute="trailing" secondItem="cfo-aw-2br" secondAttribute="trailing" id="gvC-k2-2rs"/>
                             <constraint firstItem="W4X-vq-w6K" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Me2-Ly-rvC" secondAttribute="trailing" constant="8" symbolic="YES" id="ld9-2u-A8e"/>
                             <constraint firstItem="6Ix-O9-EeV" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="nMX-o2-xx8"/>
                             <constraint firstItem="352-Wp-Xyg" firstAttribute="centerY" secondItem="OsQ-Te-g5f" secondAttribute="centerY" id="nvZ-zw-9hS"/>
-                            <constraint firstItem="WrR-yr-iqv" firstAttribute="leading" secondItem="OsQ-Te-g5f" secondAttribute="leading" id="tb7-Ca-YPd"/>
                             <constraint firstItem="cfo-aw-2br" firstAttribute="width" secondItem="6Ix-O9-EeV" secondAttribute="width" id="ug4-3Q-PBd"/>
                         </constraints>
                     </view>

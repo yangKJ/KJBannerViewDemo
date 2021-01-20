@@ -49,7 +49,7 @@
     [self.view addSubview:button];
     [button addTarget:self action:@selector(buttonAction) forControlEvents:(UIControlEventTouchUpInside)];
     
-    UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, self.view.frame.size.height-180-20, w-40, 180)];
+    UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, self.view.frame.size.height-180-40, w-40, 180)];
     imageView.backgroundColor = [UIColor.greenColor colorWithAlphaComponent:0.3];
     [self.view addSubview:imageView];
     self.imageView = imageView;

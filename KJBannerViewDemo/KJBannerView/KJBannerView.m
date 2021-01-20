@@ -156,6 +156,7 @@
             KJBannerDatasInfo *info = [[KJBannerDatasInfo alloc]init];
             info.superType = self.imageType;
             info.imageUrl = imageDatas[i];
+            info.placeholderImage = self.placeholderImage;
             [self.temps addObject:info];
         }
     }
@@ -186,7 +187,7 @@
 /// 开启计时器
 - (void)setupTimer{
     [self invalidateTimer];
-    __weak typeof(self) weakself = self;
+    __weak __typeof(&*self) weakself = self;
     __block NSUInteger k = 0;
     self.timer = [NSTimer kj_bannerScheduledTimerWithTimeInterval:self.autoTime Repeats:YES Block:^(NSTimer *timer) {
         if (k++>1) [weakself automaticScroll];
@@ -338,7 +339,6 @@
         bannerViewCell.bannerScale = self.bannerScale;
         bannerViewCell.openGIFCache = self.openGIFCache;
         bannerViewCell.bannerRadius = self.bannerRadius;
-        bannerViewCell.placeholderImage = self.placeholderImage;
         bannerViewCell.bannerContentMode = self.bannerContentMode;
         bannerViewCell.info = self.temps[itemIndex];
     }

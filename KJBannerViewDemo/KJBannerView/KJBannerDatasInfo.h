@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong) NSData *data;
 @property (nonatomic,strong) UIImage *image;
 @property (nonatomic,strong) NSString *imageUrl;
+@property (nonatomic,strong) UIImage *placeholderImage;
 @property (nonatomic,assign) KJBannerImageInfoType type;
 @property (nonatomic,assign) KJBannerViewImageType superType;
-void kGCD_banner_async(dispatch_block_t block);
 @end
 
 NS_ASSUME_NONNULL_END

@@ -56,8 +56,6 @@ IB_DESIGNABLE
 
 //******************** 自带KJBannerViewCell可设置属性 ********************
 @interface KJBannerView (KJBannerViewCell)
-/// 是否裁剪，默认NO
-@property (nonatomic,assign) IBInspectable BOOL bannerScale;
 /// imagView圆角，默认为0px
 @property (nonatomic,assign) IBInspectable CGFloat bannerRadius;
 /// cell的占位图，用于网络未加载到图片时
@@ -66,6 +64,8 @@ IB_DESIGNABLE
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
 /// 图片的样式，默认 KJBannerViewImageTypeNetIamge 网络图片
 @property (nonatomic,assign) KJBannerViewImageType imageType;
+/// 是否裁剪，默认NO
+@property (nonatomic,assign) BOOL bannerScale;
 /// 是否采用动态图缓存，默认NO
 @property (nonatomic,assign) BOOL openGIFCache;
 

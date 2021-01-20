@@ -17,8 +17,6 @@
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
 /// 圆角
 @property (nonatomic,assign) CGFloat bannerRadius;
-/// 占位图
-@property (nonatomic,strong) UIImage *placeholderImage;
 /// 是否裁剪，默认NO
 @property (nonatomic,assign) BOOL bannerScale;
 /// 是否采用动态图缓存，默认NO

@@ -41,4 +41,25 @@ typedef NS_ENUM(NSInteger, KJBannerImageInfoType) {
     KJBannerImageInfoTypeGIFImage, /// 网络动态图
 };
 
+NS_INLINE void kGCD_banner_async(dispatch_block_t block) {
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
+        block();
+    }else{
+        dispatch_async(queue, block);
+    }
+}
+NS_INLINE void kGCD_banner_main(dispatch_block_t block) {
+    dispatch_queue_t queue = dispatch_get_main_queue();
+    if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
+        block();
+    }else{
+        if ([[NSThread currentThread] isMainThread]) {
+            dispatch_async(queue, block);
+        }else{
+            dispatch_sync(queue, block);
+        }
+    }
+}
+
 #endif /* KJBannerViewType_h */

@@ -23,15 +23,11 @@ pod 'KJBannerView' # 轮播图
 
 ### API & Property
 ```
-NS_ASSUME_NONNULL_BEGIN
 IB_DESIGNABLE
 @interface KJBannerView : UIView
 /// 代理方法
 @property (nonatomic,weak) id<KJBannerViewDelegate> delegate;
 @property (nonatomic,weak) id<KJBannerViewDataSource> dataSource;
-/// Block回调
-@property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner, NSInteger idx);
-@property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner, NSInteger idx);
 /// 暂停计时器滚动处理，备注：在viewDidDisappear当中实现
 - (void)kj_pauseTimer;
 /// 继续计时器滚动，备注：在viewDidAppear当中实现
@@ -71,8 +67,6 @@ IB_DESIGNABLE
 
 //******************** 自带KJBannerViewCell可设置属性 ********************
 @interface KJBannerView (KJBannerViewCell)
-/// 是否裁剪，默认NO
-@property (nonatomic,assign) IBInspectable BOOL bannerScale;
 /// imagView圆角，默认为0px
 @property (nonatomic,assign) IBInspectable CGFloat bannerRadius;
 /// cell的占位图，用于网络未加载到图片时
@@ -81,12 +75,20 @@ IB_DESIGNABLE
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
 /// 图片的样式，默认 KJBannerViewImageTypeNetIamge 网络图片
 @property (nonatomic,assign) KJBannerViewImageType imageType;
+/// 是否裁剪，默认NO
+@property (nonatomic,assign) BOOL bannerScale;
 /// 是否采用动态图缓存，默认NO
 @property (nonatomic,assign) BOOL openGIFCache;
 
 @end
 
-NS_ASSUME_NONNULL_END
+@interface KJBannerView (KJBannerBlock)
+/// 点击回调
+@property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner,NSInteger idx);
+/// 滚动回调
+@property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner,NSInteger idx);
+
+@end
 ```
 
 ### KJBannerView类介绍
@@ -98,7 +100,6 @@ NS_ASSUME_NONNULL_END
 | KJBannerViewCell | 基类，自定义需继承该Cell |
 | KJBannerDatasInfo | 自带BannerViewCell数据模型 |
 | KJLoadImageView | 不依赖三方网络加载图片显示控件 |
-| KJBannerTool | 工具方法 |
 | KJBannerViewType | 枚举文件夹 |
 | KJBannerViewProtocol | 委托协议相关 |
 | NSTimer+KJSolve | 计时器分类 |

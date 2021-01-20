@@ -12,7 +12,6 @@
 		6817DE40257DCC46007B7055 /* KJBannerViewCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */; };
 		6817DE44257DCD8C007B7055 /* KJBannerViewDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */; };
 		6817DE48257E1B2F007B7055 /* KJBannerViewLoadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */; };
-		68185A9422EFED0500C365DE /* KJBannerTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 68185A9322EFED0500C365DE /* KJBannerTool.m */; };
 		681B899D255E2B0C00622CA8 /* UIImage+KJBannerGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 681B899C255E2B0C00622CA8 /* UIImage+KJBannerGIF.m */; };
 		683A7F3B21CEA4E5008DD08C /* KJBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 683A7F3421CEA4E5008DD08C /* KJBannerView.m */; };
 		683A7F3C21CEA4E5008DD08C /* KJLoadImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 683A7F3521CEA4E5008DD08C /* KJLoadImageView.m */; };
@@ -20,6 +19,7 @@
 		683A7F3E21CEA4E5008DD08C /* KJBannerViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 683A7F3A21CEA4E5008DD08C /* KJBannerViewCell.m */; };
 		684059DD21EA08D00092F630 /* KJBannerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 684059DC21EA08D00092F630 /* KJBannerModel.m */; };
 		684059E121EB59DA0092F630 /* KJCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 684059DF21EB59DA0092F630 /* KJCollectionViewCell.m */; };
+		6847118B25AE8E5D00791904 /* IMG_0661.GIF in Resources */ = {isa = PBXBuildFile; fileRef = 6847118A25AE8E5D00791904 /* IMG_0661.GIF */; };
 		68571C73257F779A0079241B /* KJBannerDatasInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 68571C72257F779A0079241B /* KJBannerDatasInfo.m */; };
 		6872ECB823CEBB4100F63970 /* KJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6872ECB623CEBB4100F63970 /* KJTestViewController.m */; };
 		68B55D0425A81DA9009A2FB4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 68B55D0325A81DA9009A2FB4 /* README.md */; };
@@ -49,8 +49,6 @@
 		6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerViewDownloader.m; sourceTree = "<group>"; };
 		6817DE46257E1B2F007B7055 /* KJBannerViewLoadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewLoadManager.h; sourceTree = "<group>"; };
 		6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerViewLoadManager.m; sourceTree = "<group>"; };
-		68185A9222EFED0500C365DE /* KJBannerTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerTool.h; sourceTree = "<group>"; };
-		68185A9322EFED0500C365DE /* KJBannerTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerTool.m; sourceTree = "<group>"; };
 		681B899B255E2B0C00622CA8 /* UIImage+KJBannerGIF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+KJBannerGIF.h"; sourceTree = "<group>"; };
 		681B899C255E2B0C00622CA8 /* UIImage+KJBannerGIF.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImage+KJBannerGIF.m"; sourceTree = "<group>"; };
 		683A7F3321CEA4E5008DD08C /* KJBannerViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJBannerViewCell.h; sourceTree = "<group>"; };
@@ -65,6 +63,7 @@
 		684059DC21EA08D00092F630 /* KJBannerModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerModel.m; sourceTree = "<group>"; };
 		684059DE21EB59DA0092F630 /* KJCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJCollectionViewCell.h; sourceTree = "<group>"; };
 		684059DF21EB59DA0092F630 /* KJCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJCollectionViewCell.m; sourceTree = "<group>"; };
+		6847118A25AE8E5D00791904 /* IMG_0661.GIF */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = IMG_0661.GIF; sourceTree = "<group>"; };
 		68571C71257F779A0079241B /* KJBannerDatasInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerDatasInfo.h; sourceTree = "<group>"; };
 		68571C72257F779A0079241B /* KJBannerDatasInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerDatasInfo.m; sourceTree = "<group>"; };
 		685F5F5824326028001D97C4 /* KJBannerViewProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewProtocol.h; sourceTree = "<group>"; };
@@ -117,8 +116,6 @@
 			isa = PBXGroup;
 			children = (
 				68B5F17E22B0AB2000D71808 /* KJBannerView.bundle */,
-				68185A9222EFED0500C365DE /* KJBannerTool.h */,
-				68185A9322EFED0500C365DE /* KJBannerTool.m */,
 				68571C71257F779A0079241B /* KJBannerDatasInfo.h */,
 				68571C72257F779A0079241B /* KJBannerDatasInfo.m */,
 				683A7F3921CEA4E5008DD08C /* KJBannerView.h */,
@@ -185,6 +182,7 @@
 				68E26B5721CE924700F91182 /* Main.storyboard */,
 				68E26B5A21CE924800F91182 /* Assets.xcassets */,
 				68BD69F72580712000D4B3AF /* IMG_0139.GIF */,
+				6847118A25AE8E5D00791904 /* IMG_0661.GIF */,
 				68E26B5C21CE924800F91182 /* LaunchScreen.storyboard */,
 				68E26B5F21CE924800F91182 /* Info.plist */,
 				68E26B6021CE924800F91182 /* main.m */,
@@ -266,6 +264,7 @@
 				68E26B5E21CE924800F91182 /* LaunchScreen.storyboard in Resources */,
 				68CC363C229B7226005A78A5 /* KJBannerView.podspec in Resources */,
 				68E26B5B21CE924800F91182 /* Assets.xcassets in Resources */,
+				6847118B25AE8E5D00791904 /* IMG_0661.GIF in Resources */,
 				6816D19B2581BAE700E828DD /* CHANGELOG.md in Resources */,
 				68B5F17F22B0AB2000D71808 /* KJBannerView.bundle in Resources */,
 				68E26B5921CE924700F91182 /* Main.storyboard in Resources */,
@@ -340,7 +339,6 @@
 				681B899D255E2B0C00622CA8 /* UIImage+KJBannerGIF.m in Sources */,
 				68CC363F229B7AC9005A78A5 /* KJPageView.m in Sources */,
 				683A7F3E21CEA4E5008DD08C /* KJBannerViewCell.m in Sources */,
-				68185A9422EFED0500C365DE /* KJBannerTool.m in Sources */,
 				684059E121EB59DA0092F630 /* KJCollectionViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
