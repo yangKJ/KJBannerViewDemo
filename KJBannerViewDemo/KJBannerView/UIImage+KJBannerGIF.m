@@ -23,15 +23,14 @@
 + (UIImage*)kj_bannerGIFImageWithURL:(NSURL*)URL{
     return animatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceCreateWithURL(BANNERGIFTOCF URL, NULL));
 }
-
-static int sum(size_t const count, int const *const values) {
+#pragma mark - private
+static int sum(size_t const count, int const * const values) {
     int theSum = 0;
     for (size_t i = 0; i < count; ++i) {
         theSum += values[i];
     }
     return theSum;
 }
-
 static int pairGCD(int a, int b) {
     if (a < b) return pairGCD(b, a);
     while (true) {
@@ -41,7 +40,6 @@ static int pairGCD(int a, int b) {
         b = r;
     }
 }
-
 static int vectorGCD(size_t const count, int const * const values) {
     int gcd = values[0];
     for (size_t i = 1; i < count; ++i) {
@@ -49,7 +47,6 @@ static int vectorGCD(size_t const count, int const * const values) {
     }
     return gcd;
 }
-
 static NSArray * frameArray(size_t const count, CGImageRef const images[count], int const delayCentiseconds[count], int const totalDurationCentiseconds) {
     int const gcd = vectorGCD(count, delayCentiseconds);
     size_t const frameCount = totalDurationCentiseconds / gcd;
@@ -62,13 +59,11 @@ static NSArray * frameArray(size_t const count, CGImageRef const images[count], 
     }
     return [NSArray arrayWithObjects:frames count:frameCount];
 }
-
 static void releaseImages(size_t const count, CGImageRef const images[count]) {
     for (size_t i = 0; i < count; ++i) {
         CGImageRelease(images[i]);
     }
 }
-
 static void createImagesAndDelays(CGImageSourceRef source, size_t count, CGImageRef imagesOut[count], int delayCentisecondsOut[count]) {
     for (size_t i = 0; i < count; ++i) {
         imagesOut[i] = CGImageSourceCreateImageAtIndex(source, i, NULL);
@@ -102,7 +97,6 @@ static UIImage * animatedImageWithAnimatedGIFImageSource(CGImageSourceRef const 
     releaseImages(count, images);
     return animation;
 }
-
 static UIImage * animatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceRef CF_RELEASES_ARGUMENT source) {
     if (source) {
         UIImage *const image = animatedImageWithAnimatedGIFImageSource(source);

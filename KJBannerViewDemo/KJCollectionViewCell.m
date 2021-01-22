@@ -7,7 +7,6 @@
 //
 
 #import "KJCollectionViewCell.h"
-#import "KJLoadImageView.h"
 @interface KJCollectionViewCell ()
 @property (strong, nonatomic) UILabel *label;
 @end

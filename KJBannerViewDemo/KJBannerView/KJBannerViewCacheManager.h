@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,assign,class)NSUInteger maxCache;
 /// 是否允许写入Cache，默认为YES
 @property(nonatomic,assign,class)BOOL allowCache;
+/// MD5加密
++ (NSString*)kj_bannerMD5WithString:(NSString*)string;
 /// 先从缓存读取，若没有则读取本地文件
 + (UIImage*)kj_getImageWithKey:(NSString*)key;
 /// 先从缓存读取，若没有则读取本地文件并写入缓存
@@ -23,13 +25,25 @@ NS_ASSUME_NONNULL_BEGIN
 /// 将图片写入缓存和存储到本地
 + (void)kj_storeImage:(UIImage*)image Key:(NSString*)key;
 
+@end
+
+//********************* 动态图缓存相关 *********************
+@interface KJBannerViewCacheManager (KJBannerGIF)
+/// 动态图本地获取
++ (NSData*)kj_getGIFImageWithKey:(NSString*)key;
+/// 将动态图写入本地
++ (void)kj_storeGIFData:(NSData*)data Key:(NSString*)key;
+
+@end
+
+//********************* 缓存大小相关 *********************
+@interface KJBannerViewCacheManager (KJBannerCache)
 /// 清理掉缓存和本地文件
 + (BOOL)kj_clearLocalityImageAndCache;
 /// 获取图片本地文件总大小
 + (int64_t)kj_getLocalityImageCacheSize;
-/// MD5加密
-+ (NSString*)kj_bannerMD5WithString:(NSString*)string;
 
 @end
+
 
 NS_ASSUME_NONNULL_END

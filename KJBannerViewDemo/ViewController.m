@@ -61,8 +61,8 @@ Github地址：https://github.com/yangKJ
 #import "KJCollectionViewCell.h"
 #import "KJBannerModel.h"
 #import "KJTestViewController.h"
-#import "KJLoadImageView.h"
 #import <Masonry/Masonry.h>
+#import "UIImageView+KJWebImage.h"
 
 #define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
 #define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
@@ -108,7 +108,7 @@ Github地址：https://github.com/yangKJ
 - (void)setUI{
     [self.button addTarget:self action:@selector(clearAction) forControlEvents:(UIControlEventTouchUpInside)];
     [self.Switch addTarget:self action:@selector(qiehuanAction:) forControlEvents:(UIControlEventValueChanged)];
-    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
+    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJBannerViewCacheManager kj_getLocalityImageCacheSize] / 1024 / 1024.0];
 }
 - (void)setText{
     self.banner3.showPageControl = NO;
@@ -148,12 +148,11 @@ Github地址：https://github.com/yangKJ
     self.banner.pageControl.displayType = KJPageControlDisplayTypeLeft;
     self.banner.imageType = KJBannerViewImageTypeMix;
     self.banner.bannerScale = YES;
-//    self.banner.openGIFCache = YES;
     self.banner.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
     CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
-    self.banner.imageDatas = @[tu2,gif2,@"IMG_0139",@"tu3"];
-    [self.banner kj_makeScrollToIndex:1];
+    self.banner.imageDatas = @[tu2,gif2,@"IMG_0139",@"tu3",gif];
+    [self.banner kj_makeScrollToIndex:2];
     NSLog(@"banner_time: %f", CFAbsoluteTimeGetCurrent() - start);
 }
 - (void)_setDatas{
@@ -175,8 +174,8 @@ Github地址：https://github.com/yangKJ
     }
 }
 - (void)clearAction{
-    [KJLoadImageView kj_clearImagesCache];
-    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
+    [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
+    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJBannerViewCacheManager kj_getLocalityImageCacheSize] / 1024 / 1024.0];
 }
 - (IBAction)pauseRoll:(UIButton *)sender {
     [self.banner kj_pauseTimer];
@@ -196,7 +195,7 @@ Github地址：https://github.com/yangKJ
     [self.navigationController pushViewController:vc animated:YES];
 }
 - (BOOL)kj_BannerView:(KJBannerView *)banner CurrentIndex:(NSInteger)index{
-    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJLoadImageView kj_imagesCacheSize] / 1024 / 1024.0];
+    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJBannerViewCacheManager kj_getLocalityImageCacheSize] / 1024 / 1024.0];
     if (banner == self.banner2) return NO;
     return NO;
 }
@@ -207,9 +206,9 @@ Github地址：https://github.com/yangKJ
 #pragma mark - KJBannerViewDataSource
 - (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index{
     KJBannerModel *model = imageDatas[index];
-    KJLoadImageView *imageView = [[KJLoadImageView alloc]initWithFrame:bannercell.contentView.bounds];
-    imageView.kj_isScale = YES;
-    [imageView kj_setImageWithURLString:model.customImageUrl Placeholder:[UIImage imageNamed:@"tu3"]];
+    UIImageView *imageView = [[UIImageView alloc]initWithFrame:bannercell.contentView.bounds];
+    [imageView kj_setImageWithURL:[NSURL URLWithString:model.customImageUrl] placeholder:[UIImage imageNamed:@"tu3"]];
+//    [imageView kj_setImageWithURLString:model.customImageUrl Placeholder:[UIImage imageNamed:@"tu3"]];
     if (index == 0) {
         CGRect rect = {0, 0, 100, 20};
         UILabel *label = [[UILabel alloc]initWithFrame:rect];

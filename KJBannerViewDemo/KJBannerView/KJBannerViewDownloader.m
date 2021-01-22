@@ -7,7 +7,8 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewDownloader.h"
-
+@implementation KJBannerDownloadProgress
+@end
 @interface KJBannerViewDownloader ()<NSURLSessionDownloadDelegate>
 @property(nonatomic,strong)NSURLSessionTask *task;
 @property(nonatomic,strong)NSOperationQueue *queue;
@@ -59,7 +60,7 @@
     self.task = downloadTask;
 }
 /// 创建请求对象
-static inline NSMutableURLRequest *kGetRequest(NSURL *URL, NSTimeInterval timeoutInterval){
+NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutInterval){
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.timeoutInterval = timeoutInterval;
     request.HTTPShouldUsePipelining = YES;
@@ -134,6 +135,4 @@ static inline NSMutableURLRequest *kGetRequest(NSURL *URL, NSTimeInterval timeou
     }
     return _configuration;
 }
-@end
-@implementation KJBannerDownloadProgress
 @end

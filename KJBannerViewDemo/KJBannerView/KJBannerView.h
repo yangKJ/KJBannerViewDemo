@@ -66,8 +66,6 @@ IB_DESIGNABLE
 @property (nonatomic,assign) KJBannerViewImageType imageType;
 /// 是否裁剪，默认NO
 @property (nonatomic,assign) BOOL bannerScale;
-/// 是否采用动态图缓存，默认NO
-@property (nonatomic,assign) BOOL openGIFCache;
 
 @end
 

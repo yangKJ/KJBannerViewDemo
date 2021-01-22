@@ -10,11 +10,10 @@
 #import "NSTimer+KJSolve.h"
 #import "KJBannerViewCell.h"
 #import "KJBannerViewFlowLayout.h"
-#import "KJPageView.h"
 #import <objc/runtime.h>
 #define kPageHeight (20)
 @interface KJBannerView()<UICollectionViewDataSource,UICollectionViewDelegate>
-@property (nonatomic,strong) NSMutableArray<KJBannerDatasInfo*>*temps;
+@property (nonatomic,strong) NSMutableArray<KJBannerDatas*>*temps;
 @property (nonatomic,strong) UICollectionView *collectionView;
 @property (nonatomic,strong) KJBannerViewFlowLayout *layout;
 @property (nonatomic,strong) KJPageView *pageControl;
@@ -153,10 +152,8 @@
     if (self.useCustomCell == NO && self.useDataSource == NO) {
         [self.temps removeAllObjects];
         for (int i=0; i<imageDatas.count; i++) {
-            KJBannerDatasInfo *info = [[KJBannerDatasInfo alloc]init];
-            info.superType = self.imageType;
-            info.imageUrl = imageDatas[i];
-            info.placeholderImage = self.placeholderImage;
+            KJBannerDatas *info = [[KJBannerDatas alloc]init];
+            info.bannerURLString = imageDatas[i];
             [self.temps addObject:info];
         }
     }
@@ -337,10 +334,10 @@
         bannerViewCell.itemView = [_dataSource kj_BannerView:self BannerViewCell:bannerViewCell ImageDatas:_imageDatas Index:itemIndex];
     }else{ /// 自带Cell处理
         bannerViewCell.bannerScale = self.bannerScale;
-        bannerViewCell.openGIFCache = self.openGIFCache;
         bannerViewCell.bannerRadius = self.bannerRadius;
         bannerViewCell.bannerContentMode = self.bannerContentMode;
-        bannerViewCell.info = self.temps[itemIndex];
+        bannerViewCell.bannerPlaceholder = self.placeholderImage;
+        bannerViewCell.bannerDatas = self.temps[itemIndex];
     }
     return bannerViewCell;
 }
@@ -355,7 +352,7 @@
     }
 }
 #pragma mark - lazy
-- (NSMutableArray<KJBannerDatasInfo*>*)temps{
+- (NSMutableArray<KJBannerDatas*>*)temps{
     if (!_temps){
         _temps = [NSMutableArray array];
     }
@@ -424,9 +421,6 @@
     self.imageType = KJBannerViewImageTypeNetIamge;
     return KJBannerViewImageTypeNetIamge;
 }
-- (BOOL)openGIFCache{
-    return [objc_getAssociatedObject(self, _cmd) boolValue];
-}
 - (void)setBannerScale:(BOOL)bannerScale{
     objc_setAssociatedObject(self, @selector(bannerScale), @(bannerScale), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -434,16 +428,13 @@
     objc_setAssociatedObject(self, @selector(bannerRadius), @(bannerRadius), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 - (void)setPlaceholderImage:(UIImage *)placeholderImage{
-    objc_setAssociatedObject(self, @selector(placeholderImage), placeholderImage, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(bannerPlaceholder), placeholderImage, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 - (void)setBannerContentMode:(UIViewContentMode)bannerContentMode{
     objc_setAssociatedObject(self, @selector(bannerContentMode), @(bannerContentMode), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 - (void)setImageType:(KJBannerViewImageType)imageType{
     objc_setAssociatedObject(self, @selector(imageType), @(imageType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (void)setOpenGIFCache:(BOOL)openGIFCache{
-    objc_setAssociatedObject(self, @selector(openGIFCache), @(openGIFCache), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 @end
 @implementation KJBannerView (KJBannerBlock)

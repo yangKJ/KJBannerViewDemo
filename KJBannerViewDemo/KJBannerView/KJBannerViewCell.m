@@ -7,12 +7,11 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewCell.h"
-#import "KJLoadImageView.h"
+#import "UIImageView+KJWebImage.h"
 #import "UIImage+KJBannerGIF.h"
 @interface KJBannerViewCell()
-@property (nonatomic,strong) KJLoadImageView *loadImageView;
+@property (nonatomic,strong) UIImageView *bannerImageView;
 @end
-
 @implementation KJBannerViewCell
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self=[super initWithFrame:frame]) {
@@ -27,74 +26,52 @@
     [self.contentView addSubview:itemView];
 }
 
-- (void)setInfo:(KJBannerDatasInfo*)info{
-    _info = info;
-    if (info.image) {
-        self.loadImageView.image = info.image;
+- (void)setBannerDatas:(KJBannerDatas*)info{
+    _bannerDatas = info;
+    if (info.bannerImage) {
+        self.bannerImageView.image = info.bannerImage;
     }else{
-        [self performSelector:@selector(kj_loadImageView) withObject:nil afterDelay:0.0 inModes:@[NSDefaultRunLoopMode]];
+        if (kBannerLocality(info.bannerURLString)) {
+            NSData *data = kBannerGetLocalityGIFData(info.bannerURLString);
+            if (data) {
+                self.bannerImageView.image = [UIImage kj_bannerGIFImageWithData:data]?:self.bannerPlaceholder;
+            }else{
+                self.bannerImageView.image = [UIImage imageNamed:info.bannerURLString]?:self.bannerPlaceholder;
+            }
+            info.bannerImage = self.bannerImageView.image;
+        }else{
+            [self performSelector:@selector(kj_bannerImageView) withObject:nil afterDelay:0.0 inModes:@[NSDefaultRunLoopMode]];
+        }
     }
 }
 /// 下载图片，并渲染到cell上显示
-- (void)kj_loadImageView{
-    __weak __typeof(&*self) weakself = self;
-    switch (_info.type) {
-        case KJBannerImageInfoTypeLocalityGIF:{
-            kGCD_banner_async(^{
-                weakself.info.image = [UIImage kj_bannerGIFImageWithData:weakself.info.data];
-                kGCD_banner_main(^{weakself.loadImageView.image = weakself.info.image;});
-            });
-        }
-            break;
-        case KJBannerImageInfoTypeLocality:
-            self.loadImageView.image = self.info.placeholderImage;
-            break;
-        case KJBannerImageInfoTypeGIFImage:{
-            if (self.openGIFCache == NO) {
-                kGCD_banner_async(^{
-                    if (weakself.info.data) {
-                        weakself.info.image = [UIImage kj_bannerGIFImageWithData:weakself.info.data];
-                    }else{
-                        weakself.info.image = [UIImage kj_bannerGIFImageWithURL:[NSURL URLWithString:weakself.info.imageUrl]];
-                    }
-                    kGCD_banner_main(^{weakself.loadImageView.image = weakself.info.image;});
-                });
-            }else{
-                [self.loadImageView kj_setGIFImageWithURLString:self.info.imageUrl Placeholder:self.info.placeholderImage Completion:^(UIImage * _Nonnull image) {
-                    weakself.info.image = image;
-                }];
-            }
-        }
-            break;
-        case KJBannerImageInfoTypeNetIamge:{
-            [self.loadImageView kj_setImageWithURLString:self.info.imageUrl Placeholder:self.info.placeholderImage Completion:^(UIImage * _Nonnull image) {
-                weakself.info.image = image;
-            }];
-        }
-            break;
-        default:
-            break;
-    }
+- (void)kj_bannerImageView{
+    __banner_weakself;
+    [self.bannerImageView kj_setImageWithURL:[NSURL URLWithString:self.bannerDatas.bannerURLString] placeholder:self.bannerPlaceholder completed:^(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data) {
+        weakself.bannerDatas.bannerImage = image;
+    } progress:nil];
 }
 
 #pragma mark - lazy
-- (KJLoadImageView*)loadImageView{
-    if(!_loadImageView){
-        _loadImageView = [[KJLoadImageView alloc]initWithFrame:self.bounds];
-        _loadImageView.contentMode = self.bannerContentMode;
-        _loadImageView.kj_isScale = self.bannerScale;
-        [self.contentView addSubview:_loadImageView];
+- (UIImageView*)bannerImageView{
+    if(!_bannerImageView){
+        _bannerImageView = [[UIImageView alloc]initWithFrame:self.bounds];
+        _bannerImageView.contentMode = self.bannerContentMode;
+        [self.contentView addSubview:_bannerImageView];
         if (self.bannerRadius > 0) {
             CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
             maskLayer.frame = self.bounds;
             maskLayer.path = ({
-                UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:_loadImageView.bounds cornerRadius:self.bannerRadius];
+                UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:_bannerImageView.bounds cornerRadius:self.bannerRadius];
                 path.CGPath;
             });
-            _loadImageView.layer.mask = maskLayer;
+            _bannerImageView.layer.mask = maskLayer;
         }
     }
-    return _loadImageView;
+    return _bannerImageView;
 }
+
+@end
+@implementation KJBannerDatas
 
 @end

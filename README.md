@@ -98,8 +98,6 @@ IB_DESIGNABLE
 | KJPageView | 自定义分页控件 |
 | KJBannerViewFlowLayout | Cell缩放管理 |
 | KJBannerViewCell | 基类，自定义需继承该Cell |
-| KJBannerDatasInfo | 自带BannerViewCell数据模型 |
-| KJLoadImageView | 不依赖三方网络加载图片显示控件 |
 | KJBannerViewType | 枚举文件夹 |
 | KJBannerViewProtocol | 委托协议相关 |
 | NSTimer+KJSolve | 计时器分类 |
@@ -107,6 +105,8 @@ IB_DESIGNABLE
 | KJBannerViewCacheManager | 缓存工具 |
 | KJBannerViewDownloader | 网络请求工具 |
 | KJBannerViewLoadManager | 网图下载工具 |
+| UIImageView+KJWebImage | 网图和动态图显示 |
+| UIButton+KJWebImage | 按钮网图控件显示 |
 
 #### 支持Xib快捷设置属性
 ![Xib](https://upload-images.jianshu.io/upload_images/1933747-0c4b715868e47746.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/666)

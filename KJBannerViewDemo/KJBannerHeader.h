@@ -63,5 +63,7 @@ Github地址：https://github.com/yangKJ
 #import "KJBannerView.h" // 轮播Banner
 #import "KJBannerViewLoadManager.h" // 网图下载工具
 #import "KJPageView.h" // 分页控件
+#import "UIImageView+KJWebImage.h"
+#import "UIButton+KJWebImage.h"
 
 #endif /* KJBannerHeader_h */

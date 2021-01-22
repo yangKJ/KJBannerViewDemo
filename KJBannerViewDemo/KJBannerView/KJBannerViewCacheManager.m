@@ -14,6 +14,17 @@
 @end
 
 @implementation KJBannerViewCacheManager
+/// MD5加密
++ (NSString*)kj_bannerMD5WithString:(NSString*)string{
+    const char *original_str = [string UTF8String];
+    unsigned char digist[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(original_str, (uint)strlen(original_str), digist);
+    NSMutableString *outPutStr = [NSMutableString stringWithCapacity:10];
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [outPutStr appendFormat:@"%02X", digist[i]];
+    }
+    return [outPutStr lowercaseString];
+}
 /// 先从缓存读取，若没有则读取本地文件
 + (UIImage*)kj_getImageWithKey:(NSString*)key{
     if (key == nil || key.length == 0) return nil;
@@ -73,48 +84,6 @@
         }
     });
 }
-/// 清理掉缓存和本地文件
-+ (BOOL)kj_clearLocalityImageAndCache{
-    BOOL boo = NO;
-    [self.cache removeAllObjects];
-    NSString *directoryPath = KJBannerLoadImages;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
-        NSError *error = nil;
-        boo = [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
-    }
-    return boo;
-}
-/// 获取图片本地文件总大小
-+ (int64_t)kj_getLocalityImageCacheSize{
-    NSString *directoryPath = KJBannerLoadImages;
-    BOOL isDir = NO;
-    int64_t total = 0;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:&isDir]) {
-        if (isDir) {
-            NSError *error = nil;
-            NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryPath error:&error];
-            if (error == nil) {
-                for (NSString *subpath in array) {
-                    NSString *path = [directoryPath stringByAppendingPathComponent:subpath];
-                    NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
-                    if (error == nil) total += [dict[NSFileSize] unsignedIntegerValue];
-                }
-            }
-        }
-    }
-    return total;
-}
-/// MD5加密
-+ (NSString*)kj_bannerMD5WithString:(NSString*)string{
-    const char *original_str = [string UTF8String];
-    unsigned char digist[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(original_str, (uint)strlen(original_str), digist);
-    NSMutableString *outPutStr = [NSMutableString stringWithCapacity:10];
-    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
-        [outPutStr appendFormat:@"%02X", digist[i]];
-    }
-    return [outPutStr lowercaseString];
-}
 #pragma mark - private
 static KJBannerViewCacheManager *manager = nil;
 + (KJBannerViewCacheManager*)kj_config{
@@ -162,4 +131,62 @@ static NSUInteger _maxCache = 50;
     self.cache.totalCostLimit = _maxCache * 1024 * 1024;
 }
 
+@end
+@implementation KJBannerViewCacheManager (KJBannerGIF)
++ (NSData*)kj_getGIFImageWithKey:(NSString*)key{
+    if (key == nil || key.length == 0) return nil;
+    NSString *subpath = [self kj_bannerMD5WithString:key];
+    return [NSData dataWithContentsOfFile:[KJBannerLoadImages stringByAppendingPathComponent:subpath]];
+}
+/// 将动态图写入存储到本地
++ (void)kj_storeGIFData:(NSData*)data Key:(NSString*)key{
+    if (data == nil || key == nil || data.length == 0) return;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *subpath = [self kj_bannerMD5WithString:key];
+        NSString *directoryPath = KJBannerLoadImages;
+        if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
+            NSError *error = nil;
+            BOOL isOK = [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
+            if (isOK && error == nil){}else return;
+        }
+        @autoreleasepool {
+            NSString *path = [directoryPath stringByAppendingPathComponent:subpath];
+            [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
+        }
+    });
+}
+
+@end
+@implementation KJBannerViewCacheManager (KJBannerCache)
+/// 清理掉缓存和本地文件
++ (BOOL)kj_clearLocalityImageAndCache{
+    BOOL boo = NO;
+    [self.cache removeAllObjects];
+    NSString *directoryPath = KJBannerLoadImages;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
+        NSError *error = nil;
+        boo = [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
+    }
+    return boo;
+}
+/// 获取图片本地文件总大小
++ (int64_t)kj_getLocalityImageCacheSize{
+    NSString *directoryPath = KJBannerLoadImages;
+    BOOL isDir = NO;
+    int64_t total = 0;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:&isDir]) {
+        if (isDir) {
+            NSError *error = nil;
+            NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryPath error:&error];
+            if (error == nil) {
+                for (NSString *subpath in array) {
+                    NSString *path = [directoryPath stringByAppendingPathComponent:subpath];
+                    NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
+                    if (error == nil) total += [dict[NSFileSize] unsignedIntegerValue];
+                }
+            }
+        }
+    }
+    return total;
+}
 @end
