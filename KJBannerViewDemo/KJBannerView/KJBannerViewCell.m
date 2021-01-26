@@ -47,9 +47,20 @@
 /// 下载图片，并渲染到cell上显示
 - (void)kj_bannerImageView{
     __banner_weakself;
-    [self.bannerImageView kj_setImageWithURL:[NSURL URLWithString:self.bannerDatas.bannerURLString] placeholder:self.bannerPlaceholder completed:^(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data) {
-        weakself.bannerDatas.bannerImage = image;
-    } progress:nil];
+    [self.bannerImageView kj_setImageWithURL:[NSURL URLWithString:self.bannerDatas.bannerURLString] handle:^(id<KJBannerWebImageHandle>handle) {
+        handle.placeholder = weakself.bannerPlaceholder;
+        if (weakself.imageType == KJBannerViewImageTypeNetIamge) {
+            handle.URLType = KJBannerImageURLTypeCommon;
+        }else if (weakself.imageType == KJBannerImageInfoTypeGIFImage) {
+            handle.URLType = KJBannerImageURLTypeGif;
+        }else if (weakself.imageType != KJBannerViewImageTypeNetIamge) {
+            handle.URLType = KJBannerImageURLTypeMixture;
+        }
+        handle.cropScale = weakself.bannerScale;
+        handle.completed = ^(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data) {
+            weakself.bannerDatas.bannerImage = image;
+        };
+    }];
 }
 
 #pragma mark - lazy

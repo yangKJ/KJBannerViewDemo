@@ -69,6 +69,7 @@ Github地址：https://github.com/yangKJ
 
 #define tu1 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg"
 #define tu2 @"http://photos.tuchong.com/285606/f/4374153.jpg"
+#define tu3 @"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fgss0.baidu.com%2F-4o3dSag_xI4khGko9WTAnF6hhy%2Fzhidao%2Fpic%2Fitem%2Ff636afc379310a558f3f592dbb4543a9832610cb.jpg&refer=http%3A%2F%2Fgss0.baidu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1614246801&t=096f32d80f2f04110b4bddde27f2165e"
 
 @interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>
 @property (weak, nonatomic) IBOutlet KJBannerView *banner;
@@ -119,25 +120,6 @@ Github地址：https://github.com/yangKJ
     self.banner3.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner3.imageDatas = @[@"测试文本滚动",@"觉得好用请给我点个星",@"有什么问题也可以联系我",@"邮箱: ykj310@126.com"];
 }
-- (void)setMasonry{
-    self.banner2 = [[KJBannerView alloc]init];
-    self.banner2.autoTime = 2;
-    self.banner2.isZoom = YES;
-    self.banner2.itemSpace = -10;
-    self.banner2.itemWidth = 280;
-    self.banner2.delegate = self;
-    self.banner2.dataSource = self;
-    self.banner2.imageType = KJBannerViewImageTypeMix;
-    self.banner2.pageControl.pageType = PageControlStyleSizeDot;
-    self.banner2.pageControl.displayType = KJPageControlDisplayTypeRight;
-    self.banner2.pageControl.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
-    [self.backView addSubview:self.banner2];
-    [self.banner2 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.bottom.mas_equalTo(0);
-    }];
-    [self.banner2 kj_useMasonry];
-    self.banner2.imageDatas = self.temp;
-}
 - (void)setXib{
     self.banner.delegate = self;
     self.banner.pageControl.pageType = PageControlStyleRectangle;
@@ -155,8 +137,28 @@ Github地址：https://github.com/yangKJ
     [self.banner kj_makeScrollToIndex:2];
     NSLog(@"banner_time: %f", CFAbsoluteTimeGetCurrent() - start);
 }
+- (void)setMasonry{
+    self.banner2 = [[KJBannerView alloc]init];
+    self.banner2.autoTime = 2;
+    self.banner2.isZoom = YES;
+    self.banner2.itemSpace = -10;
+    self.banner2.itemWidth = 280;
+    self.banner2.delegate = self;
+    self.banner2.dataSource = self;
+    self.banner2.bannerScale = YES;
+    self.banner2.imageType = KJBannerViewImageTypeNetIamge;
+    self.banner2.pageControl.pageType = PageControlStyleSizeDot;
+    self.banner2.pageControl.displayType = KJPageControlDisplayTypeRight;
+    self.banner2.pageControl.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
+    [self.backView addSubview:self.banner2];
+    [self.banner2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.bottom.mas_equalTo(0);
+    }];
+    [self.banner2 kj_useMasonry];
+    self.banner2.imageDatas = self.temp;
+}
 - (void)_setDatas{
-    NSArray *images = @[@"http://photos.tuchong.com/285606/f/4374153.jpg",@"IMG_4931",tu1];
+    NSArray *images = @[tu3,@"http://photos.tuchong.com/285606/f/4374153.jpg",tu1];
     NSMutableArray *arr = [NSMutableArray array];
     for (int i=0; i<images.count; i++) {
         KJBannerModel *model = [[KJBannerModel alloc]init];
@@ -207,8 +209,9 @@ Github地址：https://github.com/yangKJ
 - (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index{
     KJBannerModel *model = imageDatas[index];
     UIImageView *imageView = [[UIImageView alloc]initWithFrame:bannercell.contentView.bounds];
-    [imageView kj_setImageWithURL:[NSURL URLWithString:model.customImageUrl] placeholder:[UIImage imageNamed:@"tu3"]];
-//    [imageView kj_setImageWithURLString:model.customImageUrl Placeholder:[UIImage imageNamed:@"tu3"]];
+    [imageView kj_setImageWithURL:[NSURL URLWithString:model.customImageUrl] handle:^(id<KJBannerWebImageHandle> _Nonnull handle) {
+        handle.placeholder = [UIImage imageNamed:@"tu3"];
+    }];
     if (index == 0) {
         CGRect rect = {0, 0, 100, 20};
         UILabel *label = [[UILabel alloc]initWithFrame:rect];

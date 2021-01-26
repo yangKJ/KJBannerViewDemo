@@ -68,6 +68,7 @@
 		685F5F5824326028001D97C4 /* KJBannerViewProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewProtocol.h; sourceTree = "<group>"; };
 		6872ECB523CEBB4100F63970 /* KJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJTestViewController.h; sourceTree = "<group>"; };
 		6872ECB623CEBB4100F63970 /* KJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJTestViewController.m; sourceTree = "<group>"; };
+		6881AF4025BFC52800CFA55F /* KJBannerWebImageHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerWebImageHandle.h; sourceTree = "<group>"; };
 		68B55D0325A81DA9009A2FB4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		68B5F17E22B0AB2000D71808 /* KJBannerView.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = KJBannerView.bundle; sourceTree = "<group>"; };
 		68BD69F72580712000D4B3AF /* IMG_0139.GIF */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = IMG_0139.GIF; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 				6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */,
 				6817DE46257E1B2F007B7055 /* KJBannerViewLoadManager.h */,
 				6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */,
+				6881AF4025BFC52800CFA55F /* KJBannerWebImageHandle.h */,
 				6853F28625BAA3A900BBD8DC /* UIImageView+KJWebImage.h */,
 				6853F28725BAA3A900BBD8DC /* UIImageView+KJWebImage.m */,
 				6853F29A25BAD53E00BBD8DC /* UIButton+KJWebImage.h */,

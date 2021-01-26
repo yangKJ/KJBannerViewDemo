@@ -337,6 +337,7 @@
         bannerViewCell.bannerRadius = self.bannerRadius;
         bannerViewCell.bannerContentMode = self.bannerContentMode;
         bannerViewCell.bannerPlaceholder = self.placeholderImage;
+        bannerViewCell.imageType = self.imageType;
         bannerViewCell.bannerDatas = self.temps[itemIndex];
     }
     return bannerViewCell;

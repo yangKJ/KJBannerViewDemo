@@ -9,7 +9,7 @@
 
 #ifndef KJBannerViewType_h
 #define KJBannerViewType_h
-
+NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, KJBannerImageType) {
     KJBannerImageTypeUnknown = 0, /// 未知
     KJBannerImageTypeJpeg    = 1, /// jpg
@@ -39,6 +39,13 @@ typedef NS_ENUM(NSInteger, KJBannerImageInfoType) {
     KJBannerImageInfoTypeLocalityGIF, /// 本地动态图
     KJBannerImageInfoTypeNetIamge,    /// 网络图片
     KJBannerImageInfoTypeGIFImage,    /// 网络动态图
+};
+/// 图片链接类型
+typedef NS_ENUM(NSInteger, KJBannerImageURLType) {
+    KJBannerImageURLTypeMixture = 0,/// 混合
+    KJBannerImageURLTypeCommon,     /// png和jpg
+    KJBannerImageURLTypeGif,        /// gif
+    KJBannerImageURLTypeWebp,       /// webp
 };
 
 NS_INLINE void kGCD_banner_async(dispatch_block_t _Nonnull block) {
@@ -102,9 +109,41 @@ NS_INLINE NSData * _Nullable kBannerGetLocalityGIFData(NSString * _Nonnull name)
     }
     return data;
 }
+/// 等比改变图片尺寸
+NS_INLINE UIImage * _Nullable kCropImage(UIImage * _Nonnull image, CGSize size){
+    CGFloat scale = UIScreen.mainScreen.scale;
+    float imgHeight = image.size.height;
+    float imgWidth  = image.size.width;
+    float maxHeight = size.width * scale;
+    float maxWidth = size.height * scale;
+    if (imgHeight <= maxHeight && imgWidth <= maxWidth) return image;
+    float imgRatio = imgWidth/imgHeight;
+    float maxRatio = maxWidth/maxHeight;
+    if (imgHeight > maxHeight || imgWidth > maxWidth) {
+        if (imgRatio < maxRatio) {
+            imgRatio = maxHeight / imgHeight;
+            imgWidth = imgRatio * imgWidth;
+            imgHeight = maxHeight;
+        }else if (imgRatio > maxRatio) {
+            imgRatio = maxWidth / imgWidth;
+            imgWidth = maxWidth;
+            imgHeight = imgRatio * imgHeight;
+        }else {
+            imgWidth = maxWidth;
+            imgHeight = maxHeight;
+        }
+    }
+    CGRect rect = CGRectMake(0.0, 0.0, imgWidth, imgHeight);
+    UIGraphicsBeginImageContext(rect.size);
+    [image drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return img;
+}
+
 #define __banner_weakself __weak __typeof(&*self) weakself = self
 
 /// 图片下载完成回调
 typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data);
-
+NS_ASSUME_NONNULL_END
 #endif /* KJBannerViewType_h */

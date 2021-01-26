@@ -13,6 +13,10 @@ KJBannerView 是一款轮播Banner，支持gif和url混播，自带图片下载�
 > 备注：快捷打开浏览器命令，command + shift + 鼠标左键
 
 # 版本更新日志
+### [版本2.0.10](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.10)
+- 修改网图显示，新增 KJBannerWebImageHandle 关联
+- 性能优化，完善逻辑处理
+
 ### [版本2.0.9](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.9)
 - 移除不再使用数据，优化逻辑操作
 - 新增 UIImageView+KJWebImage 图片显示处理

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 网络请求回调
 typedef void (^KJLoadDataBlock)(NSData *_Nullable data, NSError *_Nullable error);
 /// 下载进度回调
-typedef void (^_Nullable KJLoadProgressBlock)(KJBannerDownloadProgress *downloadProgress);
+typedef void (^_Nullable KJLoadProgressBlock)(KJBannerDownloadProgress * downloadProgress);
 @interface KJBannerViewDownloader : NSObject
 /// 超时时长，默认10秒
 @property(nonatomic,assign)NSTimeInterval timeoutInterval;

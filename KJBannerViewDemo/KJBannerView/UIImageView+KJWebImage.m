@@ -7,74 +7,46 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "UIImageView+KJWebImage.h"
-#import "KJBannerViewCacheManager.h"
-#import "UIImage+KJBannerGIF.h"
+
 @implementation UIImageView (KJWebImage)
-/// 显示网络图片，
-- (void)kj_setImageWithURL:(NSURL*)url{
-    [self kj_setImageWithURL:url placeholder:nil];
+- (void)kj_config{
+    self.URLType = KJBannerImageURLTypeCommon;
+    self.cacheDatas = true;
 }
-/// 显示网络图片，带占位图
-- (void)kj_setImageWithURL:(NSURL*)url placeholder:(UIImage * _Nullable)placeholder{
-    [self kj_setImageWithURL:url placeholder:placeholder completed:nil];
-}
-/// 显示网络图片，返回图片资源
-- (void)kj_setImageWithURL:(NSURL*)url placeholder:(UIImage*)placeholder completed:(KJWebImageCompleted)completed{
-    [self kj_setImageWithURL:url placeholder:placeholder completed:completed progress:nil];
-}
-/// 显示网络图片，带下载进度
-- (void)kj_setImageWithURL:(NSURL*)url
-               placeholder:(UIImage*)placeholder
-                 completed:(KJWebImageCompleted)completed
-                  progress:(KJLoadProgressBlock)progress{
-    if (placeholder) self.image = placeholder;
+- (void)kj_setImageWithURL:(NSURL*)url handle:(void(^)(id<KJBannerWebImageHandle>handle))handle{
     if (url == nil) return;
+    [self kj_config];
+    if (handle) handle(self);
+    __block id<KJBannerWebImageHandle> han = (id<KJBannerWebImageHandle>)self;
+    if (han.placeholder) self.image = han.placeholder;
     __banner_weakself;
     kGCD_banner_async(^{
         NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url.absoluteString];
         if (data) {
-            KJBannerImageType imageType = kBannerContentType(data);
-            kGCD_banner_main(^{
-                if (imageType == KJBannerImageTypeGif) {
-                    weakself.image = [UIImage kj_bannerGIFImageWithData:data];
-                }else{
-                    weakself.image = [UIImage imageWithData:data];
-                }
-                if (completed) {
-                    completed(imageType,weakself.image,data);
-                }
-            });
+            [weakself kj_setImageDatas:data Han:han];
         }else{
             void (^kDownloaderAnalysis)(NSData *__data) = ^(NSData *__data){
                 if (__data == nil) return;
-                KJBannerImageType imageType = kBannerContentType(__data);
-                kGCD_banner_main(^{
-                    if (imageType == KJBannerImageTypeGif) {
-                        weakself.image = [UIImage kj_bannerGIFImageWithData:__data];
-                    }else{
-                        weakself.image = [UIImage imageWithData:__data];
-                    }
-                    if (completed) {
-                        completed(imageType,weakself.image,__data);
-                    }
-                });
-                [KJBannerViewCacheManager kj_storeGIFData:__data Key:url.absoluteString];
+                [weakself kj_setImageDatas:__data Han:han];
+                if (han.cacheDatas) {
+                    [KJBannerViewCacheManager kj_storeGIFData:__data Key:url.absoluteString];
+                }
             };
             KJBannerViewDownloader *downloader = [KJBannerViewDownloader new];
-            if (progress) {
-                [downloader kj_startDownloadImageWithURL:url Progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-                    progress(downloadProgress);
-                } Complete:^(NSData * _Nullable data, NSError * _Nullable error) {
-                    if ((error || !data) && completed) {
-                        completed(KJBannerImageTypeUnknown,nil,nil);
+            if (han.progress) {
+                [downloader kj_startDownloadImageWithURL:url Progress:^(KJBannerDownloadProgress * downloadProgress) {
+                    han.progress(downloadProgress);
+                } Complete:^(NSData * data, NSError * error) {
+                    if ((error || !data) && han.completed) {
+                        han.completed(KJBannerImageTypeUnknown,nil,nil);
                     }else{
                         kDownloaderAnalysis(data);
                     }
                 }];
             }else{
-                [downloader kj_startDownloadImageWithURL:url Progress:nil Complete:^(NSData * _Nullable data, NSError * _Nullable error) {
-                    if ((error || !data) && completed) {
-                        completed(KJBannerImageTypeUnknown,nil,nil);
+                [downloader kj_startDownloadImageWithURL:url Progress:nil Complete:^(NSData * data, NSError * error) {
+                    if ((error || !data) && han.completed) {
+                        han.completed(KJBannerImageTypeUnknown,nil,nil);
                     }else{
                         kDownloaderAnalysis(data);
                     }
@@ -83,11 +55,85 @@
         }
     });
 }
-#pragma mark - 非动态图
-/// 非动态图显示网络图片，裁剪图片
-- (void)kj_setImageWithURL:(NSURL*)url placeholder:(UIImage*)placeholder scale:(BOOL)scale completed:(void(^)(UIImage *scaleImage, UIImage *originalImage))completed{
-    if (placeholder) self.image = placeholder;
-    if (url == nil) return;
+- (void)kj_setImageDatas:(NSData*)data Han:(id<KJBannerWebImageHandle>)han{
+    __banner_weakself;
+    kGCD_banner_main(^{
+        KJBannerImageType imageType;
+        if (han.URLType == KJBannerImageURLTypeMixture) {
+            imageType = kBannerContentType(data);
+            if (imageType == KJBannerImageTypeGif) {
+                weakself.image = [UIImage kj_bannerGIFImageWithData:data];
+            }else{
+                [weakself kj_cropImage:[UIImage imageWithData:data] Han:han];
+            }
+        }else if (han.URLType == KJBannerImageURLTypeCommon) {
+            [weakself kj_cropImage:[UIImage imageWithData:data] Han:han];
+            imageType = kBannerContentType(data);
+        }else if (han.URLType == KJBannerImageURLTypeGif) {
+            weakself.image = [UIImage kj_bannerGIFImageWithData:data];
+            imageType = KJBannerImageTypeGif;
+        }else{
+            imageType = KJBannerImageTypeUnknown;
+        }
+        if (han.completed) {
+            han.completed(imageType,weakself.image,data);
+        }
+    });
+}
+/// 裁剪图片操作
+- (void)kj_cropImage:(UIImage*)image Han:(id<KJBannerWebImageHandle>)han{
+    if (han.cropScale) {
+        self.image = kCropImage(image, self.frame.size);
+        if (han.kCropScaleImage) {
+            han.kCropScaleImage(image, self.image);
+        }
+    }else{
+        self.image = image;
+    }
+}
+
+#pragma maek - KJBannerWebImageHandle
+- (UIImage *)placeholder{
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setPlaceholder:(UIImage *)placeholder{
+    objc_setAssociatedObject(self, @selector(placeholder), placeholder, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (KJWebImageCompleted)completed{
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setCompleted:(KJWebImageCompleted)completed{
+    objc_setAssociatedObject(self, @selector(completed), completed, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (KJLoadProgressBlock)progress{
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setProgress:(KJLoadProgressBlock)progress{
+    objc_setAssociatedObject(self, @selector(progress), progress, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (KJBannerImageURLType)URLType{
+    return (KJBannerImageURLType)[objc_getAssociatedObject(self, _cmd) intValue];
+}
+- (void)setURLType:(KJBannerImageURLType)URLType{
+    objc_setAssociatedObject(self, @selector(URLType), @(URLType), OBJC_ASSOCIATION_ASSIGN);
+}
+- (bool)cacheDatas{
+    return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+- (void)setCacheDatas:(bool)cacheDatas{
+    objc_setAssociatedObject(self, @selector(cacheDatas), @(cacheDatas), OBJC_ASSOCIATION_ASSIGN);
+}
+- (bool)cropScale{
+    return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+- (void)setCropScale:(bool)cropScale{
+    objc_setAssociatedObject(self, @selector(cropScale), @(cropScale), OBJC_ASSOCIATION_ASSIGN);
+}
+- (void (^)(UIImage *, UIImage *))kCropScaleImage{
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setKCropScaleImage:(void (^)(UIImage *, UIImage *))kCropScaleImage{
+    objc_setAssociatedObject(self, @selector(kCropScaleImage), kCropScaleImage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

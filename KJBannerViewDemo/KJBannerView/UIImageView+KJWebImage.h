@@ -7,22 +7,12 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import <UIKit/UIKit.h>
-#import "KJBannerViewType.h"
-#import "KJBannerViewDownloader.h"
+#import "KJBannerWebImageHandle.h"
 NS_ASSUME_NONNULL_BEGIN
-@interface UIImageView (KJWebImage)
-/// 显示网络图片，
-- (void)kj_setImageWithURL:(NSURL*)url;
-/// 显示网络图片，带占位图
-- (void)kj_setImageWithURL:(NSURL*)url placeholder:(UIImage * _Nullable)placeholder;
-/// 显示网络图片，返回图片资源
-- (void)kj_setImageWithURL:(NSURL*)url placeholder:(UIImage*)placeholder completed:(KJWebImageCompleted)completed;
-/// 显示网络图片，带下载进度
-- (void)kj_setImageWithURL:(NSURL*)url placeholder:(UIImage*)placeholder completed:(KJWebImageCompleted)completed progress:(KJLoadProgressBlock)progress;
 
-#pragma mark - 非动态图
-/// 非动态图显示网络图片，裁剪图片
-- (void)kj_setImageWithURL:(NSURL*)url placeholder:(UIImage*)placeholder scale:(BOOL)scale completed:(void(^)(UIImage *scaleImage, UIImage *originalImage))completed;
+@interface UIImageView (KJWebImage)<KJBannerWebImageHandle>
+/// 显示网络图片
+- (void)kj_setImageWithURL:(NSURL*)url handle:(void(^)(id<KJBannerWebImageHandle>handle))handle;
 
 @end
 

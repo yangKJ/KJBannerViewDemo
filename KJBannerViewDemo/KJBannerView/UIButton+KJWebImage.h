@@ -7,17 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "KJBannerViewType.h"
-#import "KJBannerViewDownloader.h"
+#import "KJBannerWebImageHandle.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIButton (KJWebImage)
+@interface UIButton (KJWebImage)<KJBannerWebImageHandle>
 /// 显示网络图片
-- (void)kj_setImageWithURL:(NSURL*)url
-               placeholder:(UIImage*)placeholder
-                     state:(UIControlState)state
-                 completed:(KJWebImageCompleted)completed
-                  progress:(KJLoadProgressBlock)progress;
+- (void)kj_setImageWithURL:(NSURL*)url handle:(void(^)(id<KJBannerWebImageHandle>handle))handle;
 
 @end
 
