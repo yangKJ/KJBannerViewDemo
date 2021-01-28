@@ -70,6 +70,7 @@ Github地址：https://github.com/yangKJ
 #define tu1 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg"
 #define tu2 @"http://photos.tuchong.com/285606/f/4374153.jpg"
 #define tu3 @"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fgss0.baidu.com%2F-4o3dSag_xI4khGko9WTAnF6hhy%2Fzhidao%2Fpic%2Fitem%2Ff636afc379310a558f3f592dbb4543a9832610cb.jpg&refer=http%3A%2F%2Fgss0.baidu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1614246801&t=096f32d80f2f04110b4bddde27f2165e"
+#define tu4 @"https://tfile.melinked.com/2021/01/5c071de1-b7e9-4bf4-a1f7-a2f35eff9ed6.jpg"
 
 @interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>
 @property (weak, nonatomic) IBOutlet KJBannerView *banner;
@@ -133,7 +134,7 @@ Github地址：https://github.com/yangKJ
     self.banner.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
     CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
-    self.banner.imageDatas = @[tu2,gif2,@"IMG_0139",@"tu3",gif];
+    self.banner.imageDatas = @[gif,@"IMG_0139",tu2,@"tu3",gif2];
     [self.banner kj_makeScrollToIndex:2];
     NSLog(@"banner_time: %f", CFAbsoluteTimeGetCurrent() - start);
 }

@@ -10,7 +10,7 @@
 #import "KJBannerWebImageHandle.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIImageView (KJWebImage)<KJBannerWebImageHandle>
+@interface UIImageView (KJWebImage)
 /// 显示网络图片
 - (void)kj_setImageWithURL:(NSURL*)url handle:(void(^)(id<KJBannerWebImageHandle>handle))handle;
 

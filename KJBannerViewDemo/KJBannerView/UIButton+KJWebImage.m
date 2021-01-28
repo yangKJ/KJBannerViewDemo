@@ -4,10 +4,11 @@
 //
 //  Created by 杨科军 on 2021/1/22.
 //  Copyright © 2021 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "UIButton+KJWebImage.h"
-
+@interface UIButton()<KJBannerWebImageHandle>
+@end
 @implementation UIButton (KJWebImage)
 - (void)kj_config{
     self.URLType = KJBannerImageURLTypeCommon;
@@ -19,77 +20,23 @@
     [self kj_config];
     if (handle) handle(self);
     __block id<KJBannerWebImageHandle> han = (id<KJBannerWebImageHandle>)self;
+    __block CGSize size = self.imageView.frame.size;
     if (han.placeholder) [self setImage:han.placeholder forState:han.buttonState];
     __banner_weakself;
     kGCD_banner_async(^{
         NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url.absoluteString];
         if (data) {
-            [weakself kj_setImageDatas:data Han:han];
+            kGCD_banner_main(^{
+                [weakself setImage:kBannerWebImageSetImage(data, size, han) forState:han.buttonState];
+            });
         }else{
-            void (^kDownloaderAnalysis)(NSData *__data) = ^(NSData *__data){
-                if (__data == nil) return;
-                [weakself kj_setImageDatas:__data Han:han];
-                if (han.cacheDatas) [KJBannerViewCacheManager kj_storeGIFData:__data Key:url.absoluteString];
-            };
-            KJBannerViewDownloader *downloader = [KJBannerViewDownloader new];
-            if (han.progress) {
-                [downloader kj_startDownloadImageWithURL:url Progress:^(KJBannerDownloadProgress * downloadProgress) {
-                    han.progress(downloadProgress);
-                } Complete:^(NSData * data, NSError * error) {
-                    if ((error || !data) && han.completed) {
-                        han.completed(KJBannerImageTypeUnknown,nil,nil);
-                    }else{
-                        kDownloaderAnalysis(data);
-                    }
-                }];
-            }else{
-                [downloader kj_startDownloadImageWithURL:url Progress:nil Complete:^(NSData * data, NSError * error) {
-                    if ((error || !data) && han.completed) {
-                        han.completed(KJBannerImageTypeUnknown,nil,nil);
-                    }else{
-                        kDownloaderAnalysis(data);
-                    }
-                }];
-            }
+            kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
+                kGCD_banner_main(^{
+                    [weakself setImage:image forState:han.buttonState];
+                });
+            });
         }
     });
-}
-- (void)kj_setImageDatas:(NSData*)data Han:(id<KJBannerWebImageHandle>)han{
-    __banner_weakself;
-    kGCD_banner_main(^{
-        KJBannerImageType imageType;UIImage *image;
-        if (han.URLType == KJBannerImageURLTypeMixture) {
-            imageType = kBannerContentType(data);
-            if (imageType == KJBannerImageTypeGif) {
-                image = [UIImage kj_bannerGIFImageWithData:data];
-            }else{
-                image = [weakself kj_cropImage:[UIImage imageWithData:data] Han:han];
-            }
-        }else if (han.URLType == KJBannerImageURLTypeCommon) {
-            image = [weakself kj_cropImage:[UIImage imageWithData:data] Han:han];
-            imageType = kBannerContentType(data);
-        }else if (han.URLType == KJBannerImageURLTypeGif) {
-            image = [UIImage kj_bannerGIFImageWithData:data];
-            imageType = KJBannerImageTypeGif;
-        }else{
-            imageType = KJBannerImageTypeUnknown;
-        }
-        [weakself setImage:image forState:han.buttonState];
-        if (han.completed) {
-            han.completed(imageType,image,data);
-        }
-    });
-}
-/// 裁剪图片操作
-- (UIImage*)kj_cropImage:(UIImage*)image Han:(id<KJBannerWebImageHandle>)han{
-    if (han.cropScale) {
-        UIImage *newImage = kCropImage(image, self.imageView.frame.size);
-        if (han.kCropScaleImage) {
-            han.kCropScaleImage(image, newImage);
-        }
-        return newImage;
-    }
-    return image;
 }
 
 #pragma maek - KJBannerWebImageHandle

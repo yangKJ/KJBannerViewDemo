@@ -57,7 +57,8 @@
     kGCD_async(^{
         NSData *data = [KJBannerViewLoadManager kj_downloadDataWithURL:@"http://photos.tuchong.com/285606/f/4374153.jpg" progress:nil];
         kGCD_main(^{
-            self.imageView.image = [UIImage imageWithData:data];
+            CALayer *layer = (CALayer*)[self.imageView performSelector:@selector(kj_setLayerImageContents:) withObject:[UIImage imageWithData:data]];
+            layer.contentsGravity = kCAGravityResizeAspect;
         });
     });
     
