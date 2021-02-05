@@ -10,8 +10,15 @@
 @interface UIView()<KJBannerWebImageHandle>
 @end
 @implementation UIView (KJWebImage)
+#pragma maek - Associated
+banner_common_method
+- (CALayerContentsGravity)viewContentsGravity{
+    return objc_getAssociatedObject(self, _cmd);
+}
+- (void)setViewContentsGravity:(CALayerContentsGravity)viewContentsGravity{
+    objc_setAssociatedObject(self, @selector(viewContentsGravity), viewContentsGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
 - (void)kj_config{
-    self.URLType = KJBannerImageURLTypeCommon;
     self.cacheDatas = true;
     self.viewContentsGravity = kCAGravityResize;
 }
@@ -48,55 +55,6 @@
     imageLayer.contents = (id)image.CGImage;
     [self.layer addSublayer:imageLayer];
     return imageLayer;
-}
-#pragma maek - KJBannerWebImageHandle
-- (UIImage *)placeholder{
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setPlaceholder:(UIImage *)placeholder{
-    objc_setAssociatedObject(self, @selector(placeholder), placeholder, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (KJWebImageCompleted)completed{
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setCompleted:(KJWebImageCompleted)completed{
-    objc_setAssociatedObject(self, @selector(completed), completed, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (KJLoadProgressBlock)progress{
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setProgress:(KJLoadProgressBlock)progress{
-    objc_setAssociatedObject(self, @selector(progress), progress, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (KJBannerImageURLType)URLType{
-    return (KJBannerImageURLType)[objc_getAssociatedObject(self, _cmd) intValue];
-}
-- (void)setURLType:(KJBannerImageURLType)URLType{
-    objc_setAssociatedObject(self, @selector(URLType), @(URLType), OBJC_ASSOCIATION_ASSIGN);
-}
-- (bool)cacheDatas{
-    return [objc_getAssociatedObject(self, _cmd) intValue];
-}
-- (void)setCacheDatas:(bool)cacheDatas{
-    objc_setAssociatedObject(self, @selector(cacheDatas), @(cacheDatas), OBJC_ASSOCIATION_ASSIGN);
-}
-- (bool)cropScale{
-    return [objc_getAssociatedObject(self, _cmd) intValue];
-}
-- (void)setCropScale:(bool)cropScale{
-    objc_setAssociatedObject(self, @selector(cropScale), @(cropScale), OBJC_ASSOCIATION_ASSIGN);
-}
-- (void (^)(UIImage *, UIImage *))kCropScaleImage{
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setKCropScaleImage:(void (^)(UIImage *, UIImage *))kCropScaleImage{
-    objc_setAssociatedObject(self, @selector(kCropScaleImage), kCropScaleImage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (CALayerContentsGravity)viewContentsGravity{
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setViewContentsGravity:(CALayerContentsGravity)viewContentsGravity{
-    objc_setAssociatedObject(self, @selector(viewContentsGravity), viewContentsGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

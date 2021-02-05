@@ -62,8 +62,6 @@ IB_DESIGNABLE
 @property (nonatomic,strong) IBInspectable UIImage *placeholderImage;
 /// 轮播图片的ContentMode，默认为 UIViewContentModeScaleToFill
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
-/// 图片的样式，默认 KJBannerViewImageTypeNetIamge 网络图片
-@property (nonatomic,assign) KJBannerViewImageType imageType;
 /// 是否裁剪，默认NO
 @property (nonatomic,assign) BOOL bannerScale;
 

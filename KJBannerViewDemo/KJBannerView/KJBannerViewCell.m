@@ -8,7 +8,6 @@
 
 #import "KJBannerViewCell.h"
 #import "UIImageView+KJWebImage.h"
-#import "UIImage+KJBannerGIF.h"
 @interface KJBannerViewCell()
 @property (nonatomic,strong) UIImageView *bannerImageView;
 @end
@@ -32,13 +31,20 @@
         self.bannerImageView.image = info.bannerImage;
     }else{
         if (kBannerLocality(info.bannerURLString)) {
-            NSData *data = kBannerGetLocalityGIFData(info.bannerURLString);
+            NSData *data = ({
+                NSBundle *bundle = [NSBundle mainBundle];
+                NSData *data = [NSData dataWithContentsOfFile:[bundle pathForResource:info.bannerURLString ofType:@"gif"]];
+                if (data == nil) data = [NSData dataWithContentsOfFile:[bundle pathForResource:info.bannerURLString ofType:@"GIF"]];
+                data;
+            });
             if (data) {
-                self.bannerImageView.image = [UIImage kj_bannerGIFImageWithData:data]?:self.bannerPlaceholder;
+                __banner_weakself;
+                kBannerAsyncPlayImage(^(UIImage * _Nullable image) {
+                    weakself.bannerImageView.image = info.bannerImage = image?:weakself.bannerPlaceholder;
+                }, data);
             }else{
-                self.bannerImageView.image = [UIImage imageNamed:info.bannerURLString]?:self.bannerPlaceholder;
+                self.bannerImageView.image = info.bannerImage = [UIImage imageNamed:info.bannerURLString]?:self.bannerPlaceholder;
             }
-            info.bannerImage = self.bannerImageView.image;
         }else{
             [self performSelector:@selector(kj_bannerImageView) withObject:nil afterDelay:0.0 inModes:@[NSDefaultRunLoopMode]];
         }
@@ -49,15 +55,8 @@
     __banner_weakself;
     [self.bannerImageView kj_setImageWithURL:[NSURL URLWithString:self.bannerDatas.bannerURLString] handle:^(id<KJBannerWebImageHandle>handle) {
         handle.placeholder = weakself.bannerPlaceholder;
-        if (weakself.imageType == KJBannerViewImageTypeNetIamge) {
-            handle.URLType = KJBannerImageURLTypeCommon;
-        }else if (weakself.imageType == KJBannerImageInfoTypeGIFImage) {
-            handle.URLType = KJBannerImageURLTypeGif;
-        }else if (weakself.imageType != KJBannerViewImageTypeNetIamge) {
-            handle.URLType = KJBannerImageURLTypeMixture;
-        }
         handle.cropScale = weakself.bannerScale;
-        handle.completed = ^(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data) {
+        handle.completed = ^(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error) {
             weakself.bannerDatas.bannerImage = image;
         };
     }];

@@ -7,13 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <UIKit/UIKit.h>
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KJBannerModel : NSObject
 @property (nonatomic,strong) NSString *customImageUrl;
 @property (nonatomic,strong) NSString *customTitle;
-
+@property (nonatomic,strong) UIImage *customImage;
 //获取当前设备可用内存
 + (double)availableMemory;
 //获取当前任务所占用内存

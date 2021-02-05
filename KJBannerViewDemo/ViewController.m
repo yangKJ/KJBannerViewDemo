@@ -101,10 +101,13 @@ Github地址：https://github.com/yangKJ
     [super viewDidLoad];
     
     [self _setDatas];
-    [self setXib];
-    [self setMasonry];
-    [self setText];
     [self setUI];
+    [self setText];
+    [self setMasonry];
+    
+    CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
+    [self setXib];
+    NSLog(@"banner_time: %f", CFAbsoluteTimeGetCurrent() - start);
 }
 
 - (void)setUI{
@@ -129,14 +132,11 @@ Github地址：https://github.com/yangKJ
     self.banner.pageControl.dotheight = 2;
     self.banner.pageControl.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
     self.banner.pageControl.displayType = KJPageControlDisplayTypeLeft;
-    self.banner.imageType = KJBannerViewImageTypeMix;
     self.banner.bannerScale = YES;
     self.banner.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
-    CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
     self.banner.imageDatas = @[gif,@"IMG_0139",tu2,@"tu3",gif2];
-    [self.banner kj_makeScrollToIndex:2];
-    NSLog(@"banner_time: %f", CFAbsoluteTimeGetCurrent() - start);
+    [self.banner kj_makeScrollToIndex:1];
 }
 - (void)setMasonry{
     self.banner2 = [[KJBannerView alloc]init];
@@ -147,7 +147,6 @@ Github地址：https://github.com/yangKJ
     self.banner2.delegate = self;
     self.banner2.dataSource = self;
     self.banner2.bannerScale = YES;
-    self.banner2.imageType = KJBannerViewImageTypeNetIamge;
     self.banner2.pageControl.pageType = PageControlStyleSizeDot;
     self.banner2.pageControl.displayType = KJPageControlDisplayTypeRight;
     self.banner2.pageControl.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
@@ -208,11 +207,18 @@ Github地址：https://github.com/yangKJ
 
 #pragma mark - KJBannerViewDataSource
 - (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index{
-    KJBannerModel *model = imageDatas[index];
+    __block KJBannerModel *model = imageDatas[index];
     UIImageView *imageView = [[UIImageView alloc]initWithFrame:bannercell.contentView.bounds];
-    [imageView kj_setImageWithURL:[NSURL URLWithString:model.customImageUrl] handle:^(id<KJBannerWebImageHandle> _Nonnull handle) {
-        handle.placeholder = [UIImage imageNamed:@"tu3"];
-    }];
+    if (model.customImage) {
+        imageView.image = model.customImage;
+    }else{
+        [imageView kj_setImageWithURL:[NSURL URLWithString:model.customImageUrl] handle:^(id<KJBannerWebImageHandle> _Nonnull handle) {
+            handle.placeholder = [UIImage imageNamed:@"tu3"];
+            handle.completed = ^(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error) {
+                model.customImage = image;
+            };
+        }];
+    }
     if (index == 0) {
         CGRect rect = {0, 0, 100, 20};
         UILabel *label = [[UILabel alloc]initWithFrame:rect];

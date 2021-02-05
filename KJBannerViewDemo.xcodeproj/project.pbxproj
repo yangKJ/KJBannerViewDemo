@@ -12,7 +12,6 @@
 		6817DE40257DCC46007B7055 /* KJBannerViewCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */; };
 		6817DE44257DCD8C007B7055 /* KJBannerViewDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */; };
 		6817DE48257E1B2F007B7055 /* KJBannerViewLoadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */; };
-		681B899D255E2B0C00622CA8 /* UIImage+KJBannerGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 681B899C255E2B0C00622CA8 /* UIImage+KJBannerGIF.m */; };
 		683A7F3B21CEA4E5008DD08C /* KJBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 683A7F3421CEA4E5008DD08C /* KJBannerView.m */; };
 		683A7F3D21CEA4E5008DD08C /* KJBannerViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 683A7F3721CEA4E5008DD08C /* KJBannerViewFlowLayout.m */; };
 		683A7F3E21CEA4E5008DD08C /* KJBannerViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 683A7F3A21CEA4E5008DD08C /* KJBannerViewCell.m */; };
@@ -49,8 +48,6 @@
 		6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerViewDownloader.m; sourceTree = "<group>"; };
 		6817DE46257E1B2F007B7055 /* KJBannerViewLoadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewLoadManager.h; sourceTree = "<group>"; };
 		6817DE47257E1B2F007B7055 /* KJBannerViewLoadManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerViewLoadManager.m; sourceTree = "<group>"; };
-		681B899B255E2B0C00622CA8 /* UIImage+KJBannerGIF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+KJBannerGIF.h"; sourceTree = "<group>"; };
-		681B899C255E2B0C00622CA8 /* UIImage+KJBannerGIF.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImage+KJBannerGIF.m"; sourceTree = "<group>"; };
 		683A7F3321CEA4E5008DD08C /* KJBannerViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJBannerViewCell.h; sourceTree = "<group>"; };
 		683A7F3421CEA4E5008DD08C /* KJBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KJBannerView.m; sourceTree = "<group>"; };
 		683A7F3621CEA4E5008DD08C /* KJBannerViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KJBannerViewFlowLayout.h; sourceTree = "<group>"; };
@@ -129,8 +126,6 @@
 				68CC363E229B7AC9005A78A5 /* KJPageView.m */,
 				680DE7F323B2EF9C0061C5B2 /* NSTimer+KJSolve.h */,
 				680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */,
-				681B899B255E2B0C00622CA8 /* UIImage+KJBannerGIF.h */,
-				681B899C255E2B0C00622CA8 /* UIImage+KJBannerGIF.m */,
 				6817DE3E257DCC46007B7055 /* KJBannerViewCacheManager.h */,
 				6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */,
 				6817DE42257DCD8C007B7055 /* KJBannerViewDownloader.h */,
@@ -338,7 +333,6 @@
 				6817DE44257DCD8C007B7055 /* KJBannerViewDownloader.m in Sources */,
 				684059DD21EA08D00092F630 /* KJBannerModel.m in Sources */,
 				6872ECB823CEBB4100F63970 /* KJTestViewController.m in Sources */,
-				681B899D255E2B0C00622CA8 /* UIImage+KJBannerGIF.m in Sources */,
 				68CC363F229B7AC9005A78A5 /* KJPageView.m in Sources */,
 				683A7F3E21CEA4E5008DD08C /* KJBannerViewCell.m in Sources */,
 				684059E121EB59DA0092F630 /* KJCollectionViewCell.m in Sources */,

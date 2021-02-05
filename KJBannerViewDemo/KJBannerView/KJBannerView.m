@@ -337,7 +337,6 @@
         bannerViewCell.bannerRadius = self.bannerRadius;
         bannerViewCell.bannerContentMode = self.bannerContentMode;
         bannerViewCell.bannerPlaceholder = self.placeholderImage;
-        bannerViewCell.imageType = self.imageType;
         bannerViewCell.bannerDatas = self.temps[itemIndex];
     }
     return bannerViewCell;
@@ -416,12 +415,6 @@
     self.bannerContentMode = UIViewContentModeScaleAspectFill;
     return UIViewContentModeScaleAspectFill;
 }
-- (KJBannerViewImageType)imageType{
-    NSNumber *number = objc_getAssociatedObject(self, _cmd);
-    if (number) return number.integerValue;
-    self.imageType = KJBannerViewImageTypeNetIamge;
-    return KJBannerViewImageTypeNetIamge;
-}
 - (void)setBannerScale:(BOOL)bannerScale{
     objc_setAssociatedObject(self, @selector(bannerScale), @(bannerScale), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -433,9 +426,6 @@
 }
 - (void)setBannerContentMode:(UIViewContentMode)bannerContentMode{
     objc_setAssociatedObject(self, @selector(bannerContentMode), @(bannerContentMode), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-- (void)setImageType:(KJBannerViewImageType)imageType{
-    objc_setAssociatedObject(self, @selector(imageType), @(imageType), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 @end
 @implementation KJBannerView (KJBannerBlock)

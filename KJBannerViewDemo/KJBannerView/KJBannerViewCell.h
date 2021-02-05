@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "KJBannerViewType.h"
 @interface KJBannerDatas : NSObject
-@property (nonatomic,strong) UIImage *bannerImage;
+@property (nonatomic,strong) UIImage  *bannerImage;
 @property (nonatomic,strong) NSString *bannerURLString;
 @end
 @interface KJBannerViewCell : UICollectionViewCell
@@ -28,8 +28,6 @@
 @property (nonatomic,strong) KJBannerDatas *bannerDatas;
 /// 占位图
 @property (nonatomic,strong) UIImage *bannerPlaceholder;
-/// 图片的样式
-@property (nonatomic,assign) KJBannerViewImageType imageType;
 /// 图片显示控件
 @property (nonatomic,strong,readonly) UIImageView *bannerImageView;
 

@@ -25,28 +25,6 @@ typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
     KJBannerViewRollDirectionTypeBottomToTop, /// 从下往上
     KJBannerViewRollDirectionTypeTopToBottom, /// 从上往下
 };
-/// 数据源类型
-typedef NS_ENUM(NSInteger, KJBannerViewImageType) {
-    KJBannerViewImageTypeMix = 0,  /// 混合，本地图片、网络图片、网络动态图、本地动态图
-    KJBannerViewImageTypeLocality, /// 本地图片和本地动态图
-    KJBannerViewImageTypeGIFAndNet,/// 网络动态图和网络图片混合
-    KJBannerViewImageTypeNetIamge, /// 网络图片
-    KJBannerViewImageTypeGIFImage, /// 网络动态图
-};
-/// 图片的几种类型
-typedef NS_ENUM(NSInteger, KJBannerImageInfoType) {
-    KJBannerImageInfoTypeLocality = 0,/// 本地图片
-    KJBannerImageInfoTypeLocalityGIF, /// 本地动态图
-    KJBannerImageInfoTypeNetIamge,    /// 网络图片
-    KJBannerImageInfoTypeGIFImage,    /// 网络动态图
-};
-/// 图片链接类型
-typedef NS_ENUM(NSInteger, KJBannerImageURLType) {
-    KJBannerImageURLTypeMixture = 0,/// 混合
-    KJBannerImageURLTypeCommon,     /// png和jpg
-    KJBannerImageURLTypeGif,        /// gif
-    KJBannerImageURLTypeWebp,       /// webp
-};
 
 NS_INLINE void kGCD_banner_async(dispatch_block_t _Nonnull block) {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
@@ -100,17 +78,8 @@ NS_INLINE KJBannerImageType kBannerContentType(NSData * _Nonnull data){
     }
     return KJBannerImageTypeUnknown;
 }
-/// 获取动态图资源
-NS_INLINE NSData * _Nullable kBannerGetLocalityGIFData(NSString * _Nonnull name){
-    NSBundle *bundle = [NSBundle mainBundle];
-    NSData *data = [NSData dataWithContentsOfFile:[bundle pathForResource:name ofType:@"gif"]];
-    if (data == nil) {
-        data = [NSData dataWithContentsOfFile:[bundle pathForResource:name ofType:@"GIF"]];
-    }
-    return data;
-}
 /// 等比改变图片尺寸
-NS_INLINE UIImage * _Nullable kCropImage(UIImage * _Nonnull image, CGSize size){
+NS_INLINE UIImage * _Nullable kBannerCropImage(UIImage * _Nonnull image, CGSize size){
     CGFloat scale = UIScreen.mainScreen.scale;
     float imgHeight = image.size.height;
     float imgWidth  = image.size.width;
@@ -144,6 +113,6 @@ NS_INLINE UIImage * _Nullable kCropImage(UIImage * _Nonnull image, CGSize size){
 #define __banner_weakself __weak __typeof(&*self) weakself = self
 
 /// 图片下载完成回调
-typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data);
+typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error);
 NS_ASSUME_NONNULL_END
 #endif /* KJBannerViewType_h */
