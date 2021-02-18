@@ -19,6 +19,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    
+    [self test];
+    
     self.view.backgroundColor = UIColor.whiteColor;
     CGFloat w = self.view.frame.size.width;
 //    CGFloat h = self.view.frame.size.height;
@@ -81,7 +84,7 @@
                 self.label2.text = [NSString stringWithFormat:@"总大小：%.2fkb",downloadProgress.totalBytes/1024.];
                 self.label3.text = [NSString stringWithFormat:@"下载速度：%.2fkb/s",downloadProgress.speed];
             });
-            NSLog(@"---\nbytesWritten:%lld,\ndownloadBytes:%lld,\ntotalBytes:%lld,\nspeed:%f,\nprogress:%f",downloadProgress.bytesWritten,downloadProgress.downloadBytes,downloadProgress.totalBytes,downloadProgress.speed,downloadProgress.progress);
+//            NSLog(@"---\nbytesWritten:%lld,\ndownloadBytes:%lld,\ntotalBytes:%lld,\nspeed:%f,\nprogress:%f",downloadProgress.bytesWritten,downloadProgress.downloadBytes,downloadProgress.totalBytes,downloadProgress.speed,downloadProgress.progress);
         }];
     });
 }
@@ -105,6 +108,18 @@ NS_INLINE void kGCD_main(dispatch_block_t block) {
             dispatch_sync(queue, block);
         }
     }
+}
+
+- (void)test{
+    NSString *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES).lastObject;
+    NSString *path = [document stringByAppendingPathComponent:@"KJLoadImages"];
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:path];
+    NSMutableArray *temps = [NSMutableArray array];
+    NSString *imageName;
+    while((imageName = [enumerator nextObject]) != nil) {
+        [temps addObject:imageName];
+    }
+    NSLog(@"\n视频文件,%@",temps);
 }
 
 @end

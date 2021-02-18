@@ -86,7 +86,8 @@
 @end
 @implementation KJPageView
 - (instancetype)initWithFrame:(CGRect)frame{
-    if (self==[super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+    if (self) {
         _pageType = PageControlStyleRectangle;
         _normalColor = UIColor.lightGrayColor;
         _selectColor = UIColor.whiteColor;

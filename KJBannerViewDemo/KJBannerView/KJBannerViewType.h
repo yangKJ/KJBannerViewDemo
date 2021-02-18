@@ -25,7 +25,9 @@ typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
     KJBannerViewRollDirectionTypeBottomToTop, /// 从下往上
     KJBannerViewRollDirectionTypeTopToBottom, /// 从上往下
 };
-
+/// 弱引用
+#define __banner_weakself __weak __typeof(&*self) weakself = self
+/// 子线程
 NS_INLINE void kGCD_banner_async(dispatch_block_t _Nonnull block) {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
@@ -34,6 +36,7 @@ NS_INLINE void kGCD_banner_async(dispatch_block_t _Nonnull block) {
         dispatch_async(queue, block);
     }
 }
+/// 主线程
 NS_INLINE void kGCD_banner_main(dispatch_block_t _Nonnull block) {
     dispatch_queue_t queue = dispatch_get_main_queue();
     if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
@@ -49,12 +52,6 @@ NS_INLINE void kGCD_banner_main(dispatch_block_t _Nonnull block) {
 /// 判断是网络图片还是本地
 NS_INLINE bool kBannerLocality(NSString * _Nonnull urlString){
     return ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) ? false : true;
-}
-/// 判断该字符串是不是一个有效的URL
-NS_INLINE bool kBannerValid(NSString * _Nonnull urlString){
-    NSString *regex = @"[a-zA-z]+://[^\\s]*";
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
-    return [predicate evaluateWithObject:urlString];
 }
 /// 根据DATA判断图片类型
 NS_INLINE KJBannerImageType kBannerContentType(NSData * _Nonnull data){
@@ -109,8 +106,39 @@ NS_INLINE UIImage * _Nullable kBannerCropImage(UIImage * _Nonnull image, CGSize 
     UIGraphicsEndImageContext();
     return img;
 }
-
-#define __banner_weakself __weak __typeof(&*self) weakself = self
+/// 异步播放动态图
+NS_INLINE void kBannerAsyncPlayImage(void(^xxblock)(UIImage * _Nullable image), NSData * data){
+    if (xxblock) {
+        if (data == nil) xxblock(nil);
+        kGCD_banner_async(^{
+            CGImageSourceRef imageSource = CGImageSourceCreateWithData(CFBridgingRetain(data), nil);
+            size_t imageCount = CGImageSourceGetCount(imageSource);
+            if (imageCount <= 1) {
+                kGCD_banner_main(^{xxblock([[UIImage alloc] initWithData:data]);});
+            }else{
+                NSMutableArray *scaleImages = [NSMutableArray arrayWithCapacity:imageCount];
+                NSTimeInterval time = 0;
+                for (int i = 0; i<imageCount; i++) {
+                    CGImageRef cgImage = CGImageSourceCreateImageAtIndex(imageSource, i, nil);
+                    UIImage *originalImage = [UIImage imageWithCGImage:cgImage];
+                    [scaleImages addObject:originalImage];
+                    CGImageRelease(cgImage);
+                    CFDictionaryRef const properties = CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
+                    CFDictionaryRef const gifProperties = CFDictionaryGetValue(properties, kCGImagePropertyGIFDictionary);
+                    NSNumber *duration = (__bridge id)CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFUnclampedDelayTime);
+                    if (duration == NULL || [duration doubleValue] == 0) {
+                        duration = (__bridge id)CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFDelayTime);
+                    }
+                    CFRelease(properties);
+                    CFRelease(gifProperties);
+                    time += duration.doubleValue;
+                }
+                kGCD_banner_main(^{xxblock([UIImage animatedImageWithImages:scaleImages duration:time]);});
+            }
+            CFRelease(imageSource);
+        });
+    }
+}
 
 /// 图片下载完成回调
 typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error);
