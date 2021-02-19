@@ -25,7 +25,7 @@
 - (void)kj_startDownloadImageWithURL:(NSURL*)URL Progress:(KJLoadProgressBlock)progress Complete:(KJLoadDataBlock)complete{
     if (URL == nil) {
         if (complete) {
-            NSError *error = [NSError errorWithDomain:@"Domain" code:400 userInfo:@{@"message":@"URL不正确"}];
+            NSError *error = [NSError errorWithDomain:@"url failed" code:400 userInfo:@{@"message":@"URL不正确"}];
             complete(nil, error);
         }
         return;
@@ -43,10 +43,8 @@
 - (void)kj_dataImageWithURL:(NSURL*)URL Complete:(KJLoadDataBlock)complete{
     NSMutableURLRequest *request = kGetRequest(URL, self.timeoutInterval?:10.0);
     NSURLSession *session = [NSURLSession sessionWithConfiguration:self.configuration delegate:self delegateQueue:self.queue];
-    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        if (complete) {
-            complete(data,error);
-        }
+    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * data, NSURLResponse * response, NSError * error) {
+        if (complete) complete(data,error);
     }];
     [dataTask resume];
     self.task = dataTask;

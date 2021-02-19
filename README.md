@@ -6,13 +6,14 @@
 
 ### 功能介绍
 KJBannerView 是一款轮播Banner，支持动态图和网图混播  
-1、缩放无限自动循环滚动  √    
-2、支持四种方向滚动，从左往右、从右往左、从上往下、从下往上  √  
-3、自定义继承，定制不同样式，详情使用请见Demo  √  
-4、支持网络动态图和网络图片和本地图片混合轮播  √  
-5、支持在Storyboard和Xib中创建并配置其属性  √  
-6、提供多种分页控件PageControl显示  √  
-7、自带缓存加载，内部封装网图下载缓存工具  √  
+1. 缩放无限自动循环滚动  √    
+2. 支持四种方向滚动，从左往右、从右往左、从上往下、从下往上  √  
+3. 自定义继承，定制不同样式，详情使用请见Demo  √  
+4. 支持网络动态图和网络图片和本地图片混合轮播  √  
+5. 支持在Storyboard和Xib中创建并配置其属性  √  
+6. 提供多种分页控件PageControl显示  √  
+7. 自带缓存加载，内部封装网图下载缓存工具  √  
+8. 清理指定时间段以前的图片资源数据  √  
 
 ----------------------------------------
 
@@ -105,8 +106,8 @@ IB_DESIGNABLE
 | KJBannerViewCacheManager | 缓存工具 |
 | KJBannerViewDownloader | 网络请求工具 |
 | KJBannerViewLoadManager | 网图下载工具 |
-| UIImageView+KJWebImage | 网图和动态图显示 |
-| UIButton+KJWebImage | 按钮网图控件显示 |
+| KJBannerWebImageHandle | 网图和动态图下载显示协议 |
+| UIView+KJWebImage | 显示网络图片（目前支持设置UIImageView，UIButton，UIView三种） |
 
 #### 支持Xib快捷设置属性
 ![Xib](https://upload-images.jianshu.io/upload_images/1933747-0c4b715868e47746.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/666)

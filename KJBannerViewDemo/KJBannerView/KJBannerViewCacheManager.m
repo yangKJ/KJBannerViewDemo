@@ -8,6 +8,7 @@
 
 #import "KJBannerViewCacheManager.h"
 #import <CommonCrypto/CommonDigest.h>
+#import "KJBannerTimingClearManager.h"
 
 @interface KJBannerViewCacheManager()
 @property(nonatomic,strong,class)NSCache *cache;
@@ -66,6 +67,12 @@
     if (image == nil || key == nil || key.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *subpath = [self kj_bannerMD5WithString:key];
+        if (KJBannerTimingClearManager.openTiming) {
+            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kBannerTimingUserDefaultsKey]];
+            [dict setObject:subpath forKey:[NSString stringWithFormat:@"%f",NSDate.date.timeIntervalSince1970]];
+            [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kBannerTimingUserDefaultsKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
         if (self.allowCache) {
             [self kj_config];
             NSUInteger cost = kImageCacheSize(image);
@@ -143,6 +150,12 @@ static NSUInteger _maxCache = 50;
     if (data == nil || key == nil || data.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *subpath = [self kj_bannerMD5WithString:key];
+        if (KJBannerTimingClearManager.openTiming) {
+            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kBannerTimingUserDefaultsKey]];
+            [dict setObject:subpath forKey:[NSString stringWithFormat:@"%.f",NSDate.date.timeIntervalSince1970]];
+            [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kBannerTimingUserDefaultsKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
         NSString *directoryPath = KJBannerLoadImages;
         if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
             NSError *error = nil;

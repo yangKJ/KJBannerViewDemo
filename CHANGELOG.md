@@ -1,22 +1,23 @@
 # <a id="功能介绍"></a>功能介绍
 KJBannerView 是一款轮播Banner，支持gif和url混播，自带图片下载和缓存    
-1、无任何第三方依赖、自带缓存加载  ☑️  
-2、缩放无限循环滚动  ☑️    
-3、支持四种方向滚动，从左往右、从右往左、从上往下、从下往上  ☑️  
-4、自定义继承 KJBannerViewCell、定制特定样式  ☑️  
-5、支持每种Cell都定制不同的样式，详情使用请见Demo  ☑️  
-6、支持网络动态图GIF和网络图片和本地图片混合轮播  ☑️  
-7、支持在Storyboard和Xib中创建并配置其属性  ☑️  
-8、提供多种Pagecontrol显示  ☑️  
-9、内部封装网图下载缓存工具  ☑️  
+1. 缩放无限自动循环滚动  √    
+2. 支持四种方向滚动，从左往右、从右往左、从上往下、从下往上  √  
+3. 自定义继承，定制不同样式，详情使用请见Demo  √  
+4. 支持网络动态图和网络图片和本地图片混合轮播  √  
+5. 支持在Storyboard和Xib中创建并配置其属性  √  
+6. 提供多种分页控件PageControl显示  √  
+7. 自带缓存加载，内部封装网图下载缓存工具  √  
+8. 清理指定时间段以前的图片资源数据  √  
 
 > 备注：快捷打开浏览器命令，command + shift + 鼠标左键
 
 # 版本更新日志
-### [版本2.0.12](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.12)
+### [版本2.1.0](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.12)
 - 更换动态图处理播放控件，移除数据源类型
-- 廋身处理，移除不必要的操作和属性等
 - 修改为异步播放本地动态图
+- 去除原先的 UIImageView+KJWebImage、UIButton+KJWebImage
+- 合并网图加载分类 UIView+KJWebImage
+- 新增 KJBannerTimingClearManager 清理指定时间段以前的图片资源数据
 
 ### [版本2.0.11](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.11)
 - 简练代码逻辑，整理修改重复代码

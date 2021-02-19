@@ -62,7 +62,8 @@ Github地址：https://github.com/yangKJ
 #import "KJBannerModel.h"
 #import "KJTestViewController.h"
 #import <Masonry/Masonry.h>
-#import "UIImageView+KJWebImage.h"
+#import "BaseImageView.h"
+#import "UIView+KJWebImage.h"
 
 #define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
 #define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
@@ -208,7 +209,7 @@ Github地址：https://github.com/yangKJ
 #pragma mark - KJBannerViewDataSource
 - (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index{
     __block KJBannerModel *model = imageDatas[index];
-    UIImageView *imageView = [[UIImageView alloc]initWithFrame:bannercell.contentView.bounds];
+    BaseImageView *imageView = [[BaseImageView alloc]initWithFrame:bannercell.contentView.bounds];
     if (model.customImage) {
         imageView.image = model.customImage;
     }else{

@@ -7,7 +7,7 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewCell.h"
-#import "UIImageView+KJWebImage.h"
+#import "UIView+KJWebImage.h"
 @interface KJBannerViewCell()
 @property (nonatomic,strong) UIImageView *bannerImageView;
 @end
@@ -60,6 +60,11 @@
             weakself.bannerDatas.bannerImage = image;
         };
     }];
+}
+
+/// 判断是网络图片还是本地
+NS_INLINE bool kBannerLocality(NSString * _Nonnull urlString){
+    return ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) ? false : true;
 }
 
 #pragma mark - lazy
