@@ -8,12 +8,13 @@
 
 #import "KJBannerViewCell.h"
 #import "UIView+KJWebImage.h"
+
 @interface KJBannerViewCell()
 @property (nonatomic,strong) UIImageView *bannerImageView;
 @end
 @implementation KJBannerViewCell
 - (instancetype)initWithFrame:(CGRect)frame{
-    if (self=[super initWithFrame:frame]) {
+    if (self = [super initWithFrame:frame]) {
         self.layer.contentsScale = [UIScreen mainScreen].scale;
         self.layer.drawsAsynchronously = YES;
     }
@@ -22,21 +23,22 @@
 - (void)setItemView:(UIView*)itemView{
     if (_itemView) [_itemView removeFromSuperview];
     _itemView = itemView;
-    [self.contentView addSubview:itemView];
+    [self addSubview:itemView];
 }
-
+/// 判断是网络图片还是本地
+NS_INLINE bool kBannerLocality(NSString * _Nonnull urlString){
+    return ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) ? false : true;
+}
 - (void)setBannerDatas:(KJBannerDatas*)info{
     _bannerDatas = info;
     if (info.bannerImage) {
         self.bannerImageView.image = info.bannerImage;
     }else{
         if (kBannerLocality(info.bannerURLString)) {
-            NSData *data = ({
-                NSBundle *bundle = [NSBundle mainBundle];
-                NSData *data = [NSData dataWithContentsOfFile:[bundle pathForResource:info.bannerURLString ofType:@"gif"]];
-                if (data == nil) data = [NSData dataWithContentsOfFile:[bundle pathForResource:info.bannerURLString ofType:@"GIF"]];
-                data;
-            });
+            NSData *data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:info.bannerURLString ofType:@"gif"]];
+            if (data == nil) {
+                data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:info.bannerURLString ofType:@"GIF"]];
+            }
             if (data) {
                 __banner_weakself;
                 kBannerAsyncPlayImage(^(UIImage * _Nullable image) {
@@ -54,33 +56,34 @@
 - (void)kj_bannerImageView{
     __banner_weakself;
     [self.bannerImageView kj_setImageWithURL:[NSURL URLWithString:self.bannerDatas.bannerURLString] handle:^(id<KJBannerWebImageHandle>handle) {
-        handle.placeholder = weakself.bannerPlaceholder;
+        handle.bannerPlaceholder = weakself.bannerPlaceholder;
         handle.cropScale = weakself.bannerScale;
-        handle.completed = ^(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error) {
+        handle.bannerCompleted = ^(KJBannerImageType imageType, UIImage * image, NSData * data, NSError * error) {
             weakself.bannerDatas.bannerImage = image;
         };
     }];
 }
 
-/// 判断是网络图片还是本地
-NS_INLINE bool kBannerLocality(NSString * _Nonnull urlString){
-    return ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) ? false : true;
-}
-
 #pragma mark - lazy
 - (UIImageView*)bannerImageView{
-    if(!_bannerImageView){
+    if(_bannerImageView == nil){
         _bannerImageView = [[UIImageView alloc]initWithFrame:self.bounds];
         _bannerImageView.contentMode = self.bannerContentMode;
-        [self.contentView addSubview:_bannerImageView];
+        _bannerImageView.image = self.bannerPlaceholder;
+        [self addSubview:_bannerImageView];
         if (self.bannerRadius > 0) {
-            CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-            maskLayer.frame = self.bounds;
-            maskLayer.path = ({
-                UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:_bannerImageView.bounds cornerRadius:self.bannerRadius];
-                path.CGPath;
-            });
-            _bannerImageView.layer.mask = maskLayer;
+            if (self.bannerNoPureBack) {
+                _bannerImageView.layer.cornerRadius = self.bannerRadius;
+                _bannerImageView.layer.masksToBounds = YES;
+            }else{
+                CAShapeLayer *shapeLayer = [[CAShapeLayer alloc] init];
+                shapeLayer.frame = self.bounds;
+                _bannerImageView.clipsToBounds = YES;
+                [_bannerImageView.layer addSublayer:shapeLayer];
+                kBannerAsyncCornerRadius(self.bannerRadius, ^(UIImage *image) {
+                    shapeLayer.contents = (id)image.CGImage;
+                }, self.bannerCornerRadius, _bannerImageView);
+            }
         }
     }
     return _bannerImageView;

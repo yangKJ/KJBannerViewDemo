@@ -14,16 +14,23 @@
 @protocol KJBannerViewDelegate <NSObject>
 @optional
 /// 点击图片回调
-- (void)kj_BannerView:(KJBannerView*)banner SelectIndex:(NSInteger)index;
+- (void)kj_BannerView:(KJBannerView *)banner SelectIndex:(NSInteger)index;
 /// 滚动时候回调，是否隐藏自带的PageControl
-- (BOOL)kj_BannerView:(KJBannerView*)banner CurrentIndex:(NSInteger)index;
+- (BOOL)kj_BannerView:(KJBannerView *)banner CurrentIndex:(NSInteger)index;
 /// 滚动调用
-- (void)kj_BannerViewDidScroll:(KJBannerView*)banner;
+- (void)kj_BannerViewDidScroll:(KJBannerView *)banner;
 
 @end
 
 @protocol KJBannerViewDataSource <NSObject>
-/// 定制不同的控件
-- (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index;
+/// 数据源
+- (NSArray *)kj_setDatasBannerView:(KJBannerView *)banner;
+/// 定制样式
+- (__kindof UIView *)kj_BannerView:(KJBannerView *)banner ItemSize:(CGSize)size Index:(NSInteger)index;
+
+@optional
+/* ****************************************** 黄金分割线 ******************************************/
+/// 定制不同的控件，该方式已废弃
+- (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_BannerView:ItemSize:Index:]");
 
 @end

@@ -4,58 +4,7 @@
 //
 //  Created by 杨科军 on 2018/12/22.
 //  Copyright © 2018 杨科军. All rights reserved.
-//
-/*
-*********************************************************************************
-*
-*⭐️⭐️⭐️ ----- 本人其他库 ----- ⭐️⭐️⭐️
-*
-粒子效果、自定义控件、自定义选中控件
-pod 'KJEmitterView'
-pod 'KJEmitterView/Control' # 自定义控件
- 
-扩展库 - Button图文混排、点击事件封装、扩大点击域、点赞粒子效果，
-手势封装、圆角渐变、倒影、投影、内阴影、内外发光、渐变色滑块等，
-图片压缩加工处理、滤镜渲染、泛洪算法、识别网址超链接等等
-pod 'KJExtensionHandler'
-pod 'KJExtensionHandler/Foundation'
-pod 'KJExtensionHandler/Language' # 多语言模块
-
-基类库 - 封装整理常用，采用链式处理，提炼独立工具
-pod 'KJBaseHandler'
-pod 'KJBaseHandler/Tool' # 工具相关
-pod 'KJBaseHandler/Router' # 路由相关
-
-播放器 - KJPlayer是一款视频播放器，AVPlayer的封装，继承UIView
-视频可以边下边播，把播放器播放过的数据流缓存到本地，下次直接从缓冲读取播放
-pod 'KJPlayer' # 播放器功能区
-pod 'KJPlayer/KJPlayerView' # 自带展示界面
-
-轮播图 - 支持缩放 多种pagecontrol 支持继承自定义样式 自带网络加载和缓存
-pod 'KJBannerView'  # 轮播图，网络图片加载 支持网络GIF和网络图片和本地图片混合轮播
-
-加载Loading - 多种样式供选择 HUD控件封装
-pod 'KJLoading' # 加载控件
-
-菜单控件 - 下拉控件 选择控件
-pod 'KJMenuView' # 菜单控件
-
-工具库 - 推送工具、网络下载工具、识别网页图片工具等
-pod 'KJWorkbox' # 系统工具
-pod 'KJWorkbox/CommonBox'
-
-异常处理库 - 包含基本的防崩溃处理（数组，字典，字符串）
-pod 'KJExceptionDemo'
-
-Github地址：https://github.com/yangKJ
-简书地址：https://www.jianshu.com/u/c84c00476ab6
-博客地址：https://blog.csdn.net/qq_34534179
-掘金地址：https://juejin.cn/user/1987535102554472/posts
- 
-* 如果觉得好用,希望您能Star支持,你的 ⭐️ 是我持续更新的动力!
-*
-*********************************************************************************
-*/
+//  https://github.com/yangKJ/KJBannerViewDemo
 #import "ViewController.h"
 #import "KJBannerHeader.h"
 #import "KJCollectionViewCell.h"
@@ -66,7 +15,6 @@ Github地址：https://github.com/yangKJ
 #import "UIView+KJWebImage.h"
 
 #define gif @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564463770360&di=c93e799328198337ed68c61381bcd0be&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20170714%2F1eed483f1874437990ad84c50ecfc82a_th.jpg"
-#define gif2 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579085817466&di=0c1cba2b5dba938cd33ea7d053b1493a&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Flarge%2F85cc5ccbgy1ffngbkq2c9g20b206k78d.jpg"
 
 #define tu1 @"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579082232413&di=2775dc6e781e712d518bf1cf7a1e675e&imgtype=0&src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fnote%2Fl%2Fpublic%2Fp41813904.jpg"
 #define tu2 @"http://photos.tuchong.com/285606/f/4374153.jpg"
@@ -104,26 +52,70 @@ Github地址：https://github.com/yangKJ
     [self _setDatas];
     [self setUI];
     [self setText];
-    [self setMasonry];
-    
-    CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
     [self setXib];
-    NSLog(@"banner_time: %f", CFAbsoluteTimeGetCurrent() - start);
+    [self setMasonry];
+   
+    //清除三天前缓存的数据
+    [KJBannerTimingClearManager kj_openTimingCrearCached:YES TimingTimeType:(KJBannerViewTimingTimeTypeThreeDay)];
+    
+    BOOL isPhoneX = ({
+        BOOL isPhoneX = NO;
+        if (@available(iOS 13.0, *)) {
+            isPhoneX = [UIApplication sharedApplication].windows.firstObject.safeAreaInsets.bottom > 0.0;
+        }else if (@available(iOS 11.0, *)) {
+            isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bottom > 0.0;
+        }
+        (isPhoneX);
+    });
+    UIButton *button = [UIButton buttonWithType:(UIButtonTypeCustom)];
+    button.frame = CGRectMake(10, self.view.frame.size.height-100-(isPhoneX ? 34.0f : 0.0f), self.view.frame.size.width-20, 100);
+    NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:@"大家觉得好用还请点个星，遇见什么问题也可issues，持续更新ing.." attributes:@{
+        NSUnderlineStyleAttributeName:@(NSUnderlineStyleSingle),
+        NSForegroundColorAttributeName:UIColor.redColor}];
+    [button setAttributedTitle:attrStr forState:(UIControlStateNormal)];
+    button.titleLabel.numberOfLines = 0;
+    button.titleLabel.textAlignment = 1;
+    [button addTarget:self action:@selector(kj_button) forControlEvents:(UIControlEventTouchUpInside)];
+    [self.view addSubview:button];
+    
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(30, button.frame.origin.y - 50, 300, 20)];
+    self.label1 = label;
+    label.textColor = UIColor.blueColor;
+    label.font = [UIFont systemFontOfSize:14];
+    [self.view addSubview:label];
+    
+    UILabel *label2 = [[UILabel alloc]initWithFrame:CGRectMake(30, CGRectGetMaxY(label.frame) + 10, 300, 20)];
+    self.label2 = label2;
+    label2.textColor = UIColor.blueColor;
+    label2.font = [UIFont systemFontOfSize:14];
+    [self.view addSubview:label2];
+    
+    [self kj_bannerCreateAsyncTimer:YES Task:^{
+        kGCD_banner_main(^{
+            self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJBannerViewCacheManager kj_getLocalityImageCacheSize]/1024/1024.0];
+            self.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.02f MB",[KJBannerModel availableMemory]];
+            self.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.02f MB",[KJBannerModel usedMemory]/2.];
+        });
+    } start:0 interval:.5 repeats:YES];
 }
-
+- (void)kj_button{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/yangKJ/KJBannerViewDemo"]];
+#pragma clang diagnostic pop
+}
 - (void)setUI{
     [self.button addTarget:self action:@selector(clearAction) forControlEvents:(UIControlEventTouchUpInside)];
     [self.Switch addTarget:self action:@selector(qiehuanAction:) forControlEvents:(UIControlEventValueChanged)];
-    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJBannerViewCacheManager kj_getLocalityImageCacheSize] / 1024 / 1024.0];
 }
 - (void)setText{
     self.banner3.showPageControl = NO;
+    self.banner3.rollType = KJBannerViewRollDirectionTypeBottomToTop;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     self.banner3.itemClass = [KJCollectionViewCell class];
-#pragma clang diagnostic pop
-    self.banner3.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner3.imageDatas = @[@"测试文本滚动",@"觉得好用请给我点个星",@"有什么问题也可以联系我",@"邮箱: ykj310@126.com"];
+#pragma clang diagnostic pop
 }
 - (void)setXib{
     self.banner.delegate = self;
@@ -133,10 +125,13 @@ Github地址：https://github.com/yangKJ
     self.banner.pageControl.dotheight = 2;
     self.banner.pageControl.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
     self.banner.pageControl.displayType = KJPageControlDisplayTypeLeft;
-    self.banner.bannerScale = YES;
     self.banner.rollType = KJBannerViewRollDirectionTypeBottomToTop;
     self.banner.bannerContentMode = UIViewContentModeScaleAspectFill;
-    self.banner.imageDatas = @[gif,@"IMG_0139",tu2,@"tu3",gif2];
+    self.banner.bannerCornerRadius = UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    self.banner.imageDatas = @[gif,@"IMG_0139",tu2,@"tu3"];
+#pragma clang diagnostic pop
     [self.banner kj_makeScrollToIndex:1];
 }
 - (void)setMasonry{
@@ -147,7 +142,6 @@ Github地址：https://github.com/yangKJ
     self.banner2.itemWidth = 280;
     self.banner2.delegate = self;
     self.banner2.dataSource = self;
-    self.banner2.bannerScale = YES;
     self.banner2.pageControl.pageType = PageControlStyleSizeDot;
     self.banner2.pageControl.displayType = KJPageControlDisplayTypeRight;
     self.banner2.pageControl.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
@@ -156,29 +150,35 @@ Github地址：https://github.com/yangKJ
         make.top.left.right.bottom.mas_equalTo(0);
     }];
     [self.banner2 kj_useMasonry];
-    self.banner2.imageDatas = self.temp;
+    [self.banner2 kj_makeScrollToIndex:1];
 }
+//模拟网络加载
 - (void)_setDatas{
-    NSArray *images = @[tu3,@"http://photos.tuchong.com/285606/f/4374153.jpg",tu1];
-    NSMutableArray *arr = [NSMutableArray array];
-    for (int i=0; i<images.count; i++) {
-        KJBannerModel *model = [[KJBannerModel alloc]init];
-        model.customImageUrl = images[i];
-        model.customTitle = [NSString stringWithFormat:@"图片名称:%d",i];
-        [arr addObject:model];
-    }
-    self.temp = arr;
+    [self kj_bannerAfterTask:^{
+        NSArray *images = @[tu3,tu2,tu1];
+        NSMutableArray *arr = [NSMutableArray array];
+        for (int i=0; i<images.count; i++) {
+            KJBannerModel *model = [[KJBannerModel alloc]init];
+            model.customImageUrl = images[i];
+            model.customTitle = [NSString stringWithFormat:@"图片名称:%d",i];
+            [arr addObject:model];
+        }
+        self.temp = arr;
+        kGCD_banner_main(^{
+            [self.banner2 kj_reloadBannerViewDatas];
+        });
+    } time:0.3 Asyne:YES];
 }
 - (void)qiehuanAction:(UISwitch*)sender{
     if (sender.on) {
-        self.banner2.imageDatas = self.temp;
+        [self _setDatas];
     }else{
-        self.banner2.imageDatas = @[];
+        self.temp = @[];
     }
+    [self.banner2 kj_reloadBannerViewDatas];
 }
 - (void)clearAction{
     [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
-    self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJBannerViewCacheManager kj_getLocalityImageCacheSize] / 1024 / 1024.0];
 }
 - (IBAction)pauseRoll:(UIButton *)sender {
     [self.banner kj_pauseTimer];
@@ -207,25 +207,37 @@ Github地址：https://github.com/yangKJ
 }
 
 #pragma mark - KJBannerViewDataSource
-- (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index{
-    __block KJBannerModel *model = imageDatas[index];
-    BaseImageView *imageView = [[BaseImageView alloc]initWithFrame:bannercell.contentView.bounds];
+/// 数据源
+- (NSArray *)kj_setDatasBannerView:(KJBannerView *)banner{
+    return self.temp;
+}
+- (__kindof UIView *)kj_BannerView:(KJBannerView *)banner ItemSize:(CGSize)size Index:(NSInteger)index{
+    KJBannerModel *model = self.temp[index];
+    BaseImageView *imageView = [[BaseImageView alloc]initWithFrame:CGRectMake(0, 0, size.width, size.height)];
     if (model.customImage) {
         imageView.image = model.customImage;
     }else{
         [imageView kj_setImageWithURL:[NSURL URLWithString:model.customImageUrl] handle:^(id<KJBannerWebImageHandle> _Nonnull handle) {
-            handle.placeholder = [UIImage imageNamed:@"tu3"];
-            handle.completed = ^(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error) {
+            handle.bannerPlaceholder = [UIImage imageNamed:@"tu3"];
+            handle.cropScale = YES;
+            handle.bannerCompleted = ^(KJBannerImageType imageType, UIImage * image, NSData * data, NSError * error) {
                 model.customImage = image;
             };
         }];
     }
+    // 异步绘制圆角，支持特定方位圆角处理，原理就是绘制一个镂空图片盖在上面，所以这种只适用于纯色背景
+//    imageView.backgroundColor = self.backView.backgroundColor;
+//    UIImageView *ciview = [[UIImageView alloc]initWithFrame:imageView.bounds];
+//    [imageView addSubview:ciview];
+//    kBannerAsyncCornerRadius(size.height/4, ^(UIImage * _Nonnull image) {
+//        ciview.image = image;
+//    }, UIRectCornerAllCorners, ciview);
     if (index == 0) {
         CGRect rect = {0, 0, 100, 20};
         UILabel *label = [[UILabel alloc]initWithFrame:rect];
         [imageView addSubview:label];
         label.text = @"定制不同的控件";
-        label.frame = CGRectMake(0, 0, bannercell.contentView.frame.size.width, 40);
+        label.frame = CGRectMake(0, 0, size.width, 40);
         label.font = [UIFont boldSystemFontOfSize:35];
         label.textColor = UIColor.greenColor;
         label.textAlignment = NSTextAlignmentCenter;

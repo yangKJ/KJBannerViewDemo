@@ -4,13 +4,14 @@
 //
 //  Created by 杨科军 on 2020/1/15.
 //  Copyright © 2020 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJTestViewController.h"
 #import "KJBannerHeader.h"
+#import <objc/message.h>
 
 @interface KJTestViewController ()
-@property (nonatomic,strong) UILabel *label1,*label2,*label3;
+@property (nonatomic,strong) UILabel *label1,*label2,*label3,*label4;
 @property (nonatomic,strong) UIImageView *imageView;
 @end
 
@@ -42,6 +43,12 @@
     label3.textColor = UIColor.blueColor;
     label3.font = [UIFont systemFontOfSize:14];
     [self.view addSubview:label3];
+    
+    UILabel *label4 = [[UILabel alloc]initWithFrame:CGRectMake(20, CGRectGetMaxY(label3.frame) + 20, w-40, 20)];
+    self.label4 = label4;
+    label4.textColor = UIColor.blueColor;
+    label4.font = [UIFont systemFontOfSize:14];
+    [self.view addSubview:label4];
         
     UIButton *button = [UIButton buttonWithType:(UIButtonTypeCustom)];
     button.frame = CGRectMake(0, 0, 150, 40);
@@ -58,23 +65,19 @@
     self.imageView = imageView;
     
     kGCD_async(^{
-        NSData *data = [KJBannerViewLoadManager kj_downloadDataWithURL:@"http://photos.tuchong.com/285606/f/4374153.jpg" progress:nil];
+        NSData *data = [KJBannerViewLoadManager kj_downloadDataWithURL:@"http://photos.tuchong.com/285606/f/4374153.jpg" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
+//            NSLog(@"----progress:%.2f",downloadProgress.progress);
+        }];
         kGCD_main(^{
-            CALayer *layer = (CALayer*)[self.imageView performSelector:@selector(kj_setLayerImageContents:) withObject:[UIImage imageWithData:data]];
-            layer.contentsGravity = kCAGravityResizeAspect;
+            SEL sel = NSSelectorFromString(@"kj_setLayerImageContents:");
+            if ([self.imageView respondsToSelector:sel]) {
+                CALayer *layer = ((CALayer*(*)(id, SEL, UIImage*))(void*)objc_msgSend)(self.imageView, sel, [UIImage imageWithData:data]);
+                layer.contentsGravity = kCAGravityResize;
+            }
         });
     });
     
     [self buttonAction];
-    
-    kGCD_async(^{
-        [KJBannerViewLoadManager kj_downloadDataWithURL:@"https://mp4.vjshi.com/2018-03-30/1f36dd9819eeef0bc508414494d34ad9.mp4" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-        }];
-    });
-    kGCD_async(^{
-        [KJBannerViewLoadManager kj_downloadDataWithURL:@"https://mp4.vjshi.com/2018-03-30/1f36dd9819eeef0bc508414494d34ad9.mp4" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-        }];
-    });
 }
 - (void)buttonAction{
     kGCD_async(^{
@@ -83,8 +86,8 @@
                 self.label1.text = [NSString stringWithFormat:@"已下载：%.2fkb",downloadProgress.downloadBytes/1024.];
                 self.label2.text = [NSString stringWithFormat:@"总大小：%.2fkb",downloadProgress.totalBytes/1024.];
                 self.label3.text = [NSString stringWithFormat:@"下载速度：%.2fkb/s",downloadProgress.speed];
+                self.label4.text = [NSString stringWithFormat:@"下载进度：%.5f",downloadProgress.progress];
             });
-//            NSLog(@"---\nbytesWritten:%lld,\ndownloadBytes:%lld,\ntotalBytes:%lld,\nspeed:%f,\nprogress:%f",downloadProgress.bytesWritten,downloadProgress.downloadBytes,downloadProgress.totalBytes,downloadProgress.speed,downloadProgress.progress);
         }];
     });
 }

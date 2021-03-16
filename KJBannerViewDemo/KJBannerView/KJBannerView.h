@@ -11,6 +11,7 @@
 #import "KJBannerViewType.h"
 #import "KJBannerViewProtocol.h"
 #import "KJPageView.h"
+#import "NSObject+KJGCDTimer.h"
 NS_ASSUME_NONNULL_BEGIN
 IB_DESIGNABLE
 @interface KJBannerView : UIView
@@ -25,10 +26,10 @@ IB_DESIGNABLE
 - (void)kj_makeScrollToIndex:(NSInteger)index;
 /// 使用Masonry自动布局，请在设置布局之后调用该方法
 - (void)kj_useMasonry;
+/// 设置完数据之后，请刷新
+- (void)kj_reloadBannerViewDatas;
 
-//************************ 数据源API ************************
-/// 数据源
-@property (nonatomic,strong) NSArray<NSString*>*imageDatas;
+//************************ API ************************
 /// 自动滚动间隔时间，默认2s
 @property (nonatomic,assign) IBInspectable CGFloat autoTime;
 /// 是否无线循环，默认yes
@@ -47,10 +48,14 @@ IB_DESIGNABLE
 @property (nonatomic,assign) KJBannerViewRollDirectionType rollType;
 /// 分页控制器
 @property (nonatomic,strong,readonly) KJPageView *pageControl;
+/// 当前位置
+@property (nonatomic,assign,readonly) NSInteger currentIndex;
 
 //************************ 废弃属性方法 *****************************/
 /// 支持自定义Cell，自定义Cell需继承自 KJBannerViewCell
-@property (nonatomic,strong) Class itemClass DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_BannerView:BannerViewCell:ImageDatas:Index:]");
+@property (nonatomic,strong) Class itemClass DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_BannerView:ItemSize:Index:]");
+/// 数据源
+@property (nonatomic,strong) NSArray<NSString*>*imageDatas DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_setDatasBannerView:]");
 
 @end
 
@@ -62,16 +67,20 @@ IB_DESIGNABLE
 @property (nonatomic,strong) IBInspectable UIImage *placeholderImage;
 /// 轮播图片的ContentMode，默认为 UIViewContentModeScaleToFill
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
-/// 是否裁剪，默认NO
+/// 定制特定方位圆角，默认四个位置
+@property (nonatomic,assign) UIRectCorner bannerCornerRadius;
+/// 是否裁剪，默认yes
 @property (nonatomic,assign) BOOL bannerScale;
+/// 如果背景不是纯色并且需要切圆角，请设置为yes
+@property (nonatomic,assign) BOOL bannerNoPureBack;
 
 @end
 
 @interface KJBannerView (KJBannerBlock)
 /// 点击回调
-@property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner,NSInteger idx);
+@property (nonatomic,readwrite,copy) void(^kSelectBlock)(KJBannerView *banner, NSInteger idx);
 /// 滚动回调
-@property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner,NSInteger idx);
+@property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner, NSInteger idx);
 
 @end
 NS_ASSUME_NONNULL_END

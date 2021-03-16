@@ -4,7 +4,7 @@
 //
 //  Created by 杨科军 on 2021/2/19.
 //  Copyright © 2021 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "BaseImageView.h"
 

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		680DE7F523B2EF9C0061C5B2 /* NSTimer+KJSolve.m in Sources */ = {isa = PBXBuildFile; fileRef = 680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */; };
+		6807BF7D25FF9F82008C57BA /* NSObject+KJGCDTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6807BF7C25FF9F82008C57BA /* NSObject+KJGCDTimer.m */; };
 		6816D19B2581BAE700E828DD /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 6816D19A2581BAE700E828DD /* CHANGELOG.md */; };
 		6817DE40257DCC46007B7055 /* KJBannerViewCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */; };
 		6817DE44257DCD8C007B7055 /* KJBannerViewDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6817DE43257DCD8C007B7055 /* KJBannerViewDownloader.m */; };
@@ -37,8 +37,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		680DE7F323B2EF9C0061C5B2 /* NSTimer+KJSolve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSTimer+KJSolve.h"; sourceTree = "<group>"; };
-		680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+KJSolve.m"; sourceTree = "<group>"; };
+		6807BF7B25FF9F82008C57BA /* NSObject+KJGCDTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+KJGCDTimer.h"; sourceTree = "<group>"; };
+		6807BF7C25FF9F82008C57BA /* NSObject+KJGCDTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+KJGCDTimer.m"; sourceTree = "<group>"; };
 		6814AB6021CEA59B000AE6AB /* KJBannerHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerHeader.h; sourceTree = "<group>"; };
 		6816D19A2581BAE700E828DD /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
 		6817DE3D257DCBC0007B7055 /* KJBannerViewType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewType.h; sourceTree = "<group>"; };
@@ -121,11 +121,11 @@
 				683A7F3621CEA4E5008DD08C /* KJBannerViewFlowLayout.h */,
 				683A7F3721CEA4E5008DD08C /* KJBannerViewFlowLayout.m */,
 				685F5F5824326028001D97C4 /* KJBannerViewProtocol.h */,
+				6807BF7B25FF9F82008C57BA /* NSObject+KJGCDTimer.h */,
+				6807BF7C25FF9F82008C57BA /* NSObject+KJGCDTimer.m */,
 				6817DE3D257DCBC0007B7055 /* KJBannerViewType.h */,
 				68CC363D229B7AC9005A78A5 /* KJPageView.h */,
 				68CC363E229B7AC9005A78A5 /* KJPageView.m */,
-				680DE7F323B2EF9C0061C5B2 /* NSTimer+KJSolve.h */,
-				680DE7F423B2EF9C0061C5B2 /* NSTimer+KJSolve.m */,
 				6817DE3E257DCC46007B7055 /* KJBannerViewCacheManager.h */,
 				6817DE3F257DCC46007B7055 /* KJBannerViewCacheManager.m */,
 				6817DE42257DCD8C007B7055 /* KJBannerViewDownloader.h */,
@@ -320,12 +320,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				6817DE48257E1B2F007B7055 /* KJBannerViewLoadManager.m in Sources */,
+				6807BF7D25FF9F82008C57BA /* NSObject+KJGCDTimer.m in Sources */,
 				68E26B5621CE924700F91182 /* ViewController.m in Sources */,
 				68E26B6121CE924800F91182 /* main.m in Sources */,
 				684A645925DECB370000AE72 /* BaseImageView.m in Sources */,
 				683A7F3D21CEA4E5008DD08C /* KJBannerViewFlowLayout.m in Sources */,
 				68625F7625C2950200337BA8 /* UIView+KJWebImage.m in Sources */,
-				680DE7F523B2EF9C0061C5B2 /* NSTimer+KJSolve.m in Sources */,
 				68E26B5321CE924700F91182 /* AppDelegate.m in Sources */,
 				683A7F3B21CEA4E5008DD08C /* KJBannerView.m in Sources */,
 				6817DE40257DCC46007B7055 /* KJBannerViewCacheManager.m in Sources */,

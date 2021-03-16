@@ -76,6 +76,12 @@ static BOOL _openTiming = NO;
         [[NSUserDefaults standardUserDefaults] synchronize];
     });
 }
+/* 自动清理大于多少的数据源 */
++ (void)kj_autoClearCachedMaxBytes:(NSInteger)maxBytes{
+    //TODO:
+}
+
+#pragma mark - private
 /// 快速排序
 + (void)kj_quickSortArrary:(NSMutableArray*)array leftIndex:(NSInteger)leftIndex rightIndex:(NSInteger)rightIndex{
     if (leftIndex > rightIndex) return;
@@ -117,12 +123,11 @@ static BOOL _openTiming = NO;
 }
 /// 删除路径文件
 + (BOOL)kj_removePath:(NSString*)path{
-    BOOL boo = NO;
     NSString *directoryPath = [KJBannerLoadImages stringByAppendingPathComponent:path];
     if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
-        boo = [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:nil];
+        return [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:nil];
     }
-    return boo;
+    return YES;
 }
 
 @end

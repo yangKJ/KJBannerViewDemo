@@ -7,6 +7,7 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewFlowLayout.h"
+#import <objc/message.h>
 
 @implementation KJBannerViewFlowLayout
 /*  多次调用 只要滑出范围就会 调用
@@ -21,6 +22,12 @@
 /// 在CollectionView的第一次布局的时候被调用
 - (void)prepareLayout{
     [super prepareLayout];
+    
+//    if (self.collectionView.superview) {
+//        if ([self.collectionView.superview valueForKey:@"autoScroll"]) {
+//            [self.collectionView.superview setValue:@(YES) forKey:@"autoScroll"];
+//        }
+//    }
 }
 /*  重写方法
  *  此方法会计算并返回每个item的位置和大小，换句话说就是collectionView里面的布局是怎样布局的就根这个方法的返回值有关

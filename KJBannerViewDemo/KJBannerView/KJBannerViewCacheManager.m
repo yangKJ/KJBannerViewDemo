@@ -9,6 +9,7 @@
 #import "KJBannerViewCacheManager.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "KJBannerTimingClearManager.h"
+#import <objc/message.h>
 
 @interface KJBannerViewCacheManager()
 @property(nonatomic,strong,class)NSCache *cache;
@@ -67,12 +68,7 @@
     if (image == nil || key == nil || key.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *subpath = [self kj_bannerMD5WithString:key];
-        if (KJBannerTimingClearManager.openTiming) {
-            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kBannerTimingUserDefaultsKey]];
-            [dict setObject:subpath forKey:[NSString stringWithFormat:@"%f",NSDate.date.timeIntervalSince1970]];
-            [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kBannerTimingUserDefaultsKey];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        }
+        [self kj_saveExtensionPath:subpath];
         if (self.allowCache) {
             [self kj_config];
             NSUInteger cost = kImageCacheSize(image);
@@ -111,6 +107,16 @@ static KJBannerViewCacheManager *manager = nil;
 static inline NSUInteger kImageCacheSize(UIImage *image){
   return image.size.height * image.size.width * image.scale * image.scale;
 }
+//存储扩展
++ (void)kj_saveExtensionPath:(NSString*)subpath{
+    if (KJBannerTimingClearManager.openTiming) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kBannerTimingUserDefaultsKey]];
+        [dict setObject:subpath forKey:[NSString stringWithFormat:@"%f",NSDate.date.timeIntervalSince1970]];
+        [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kBannerTimingUserDefaultsKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+}
+
 #pragma mark - lazy
 static NSCache *_cache = nil;
 + (NSCache*)cache{
@@ -142,19 +148,16 @@ static NSUInteger _maxCache = 50;
 @implementation KJBannerViewCacheManager (KJBannerGIF)
 + (NSData*)kj_getGIFImageWithKey:(NSString*)key{
     if (key == nil || key.length == 0) return nil;
-    NSString *subpath = [self kj_bannerMD5WithString:key];
-    return [NSData dataWithContentsOfFile:[KJBannerLoadImages stringByAppendingPathComponent:subpath]];
+    return [NSData dataWithContentsOfFile:[KJBannerLoadImages stringByAppendingPathComponent:[self kj_bannerMD5WithString:key]]];
 }
 /// 将动态图写入存储到本地
 + (void)kj_storeGIFData:(NSData*)data Key:(NSString*)key{
     if (data == nil || key == nil || data.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *subpath = [self kj_bannerMD5WithString:key];
-        if (KJBannerTimingClearManager.openTiming) {
-            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kBannerTimingUserDefaultsKey]];
-            [dict setObject:subpath forKey:[NSString stringWithFormat:@"%.f",NSDate.date.timeIntervalSince1970]];
-            [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kBannerTimingUserDefaultsKey];
-            [[NSUserDefaults standardUserDefaults] synchronize];
+        SEL sel = NSSelectorFromString(@"kj_saveExtensionPath:");
+        if ([self respondsToSelector:sel]) {
+            ((void(*)(id, SEL, NSString*))(void*)objc_msgSend)((id)self, sel, subpath);
         }
         NSString *directoryPath = KJBannerLoadImages;
         if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
@@ -173,20 +176,18 @@ static NSUInteger _maxCache = 50;
 @implementation KJBannerViewCacheManager (KJBannerCache)
 /// 清理掉缓存和本地文件
 + (BOOL)kj_clearLocalityImageAndCache{
-    BOOL boo = NO;
     [self.cache removeAllObjects];
     NSString *directoryPath = KJBannerLoadImages;
     if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
-        NSError *error = nil;
-        boo = [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
+        return [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:nil];
     }
-    return boo;
+    return YES;
 }
 /// 获取图片本地文件总大小
 + (int64_t)kj_getLocalityImageCacheSize{
-    NSString *directoryPath = KJBannerLoadImages;
     BOOL isDir = NO;
     int64_t total = 0;
+    NSString *directoryPath = KJBannerLoadImages;
     if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:&isDir]) {
         if (isDir) {
             NSError *error = nil;

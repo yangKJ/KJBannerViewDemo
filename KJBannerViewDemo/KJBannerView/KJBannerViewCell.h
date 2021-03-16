@@ -18,6 +18,8 @@
 /// 使用 KJBannerViewDataSource 方式时候使用
 @property (nonatomic,strong) UIView *itemView;
 
+/// 定制特定方位圆角
+@property (nonatomic,assign) UIRectCorner bannerCornerRadius;
 /// 图片显示方式
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
 /// 圆角
@@ -28,6 +30,8 @@
 @property (nonatomic,strong) KJBannerDatas *bannerDatas;
 /// 占位图
 @property (nonatomic,strong) UIImage *bannerPlaceholder;
+/// 如果背景不是纯色，请设置为yes
+@property (nonatomic,assign) BOOL bannerNoPureBack;
 /// 图片显示控件
 @property (nonatomic,strong,readonly) UIImageView *bannerImageView;
 
