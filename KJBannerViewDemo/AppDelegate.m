@@ -4,10 +4,10 @@
 //
 //  Created by 杨科军 on 2018/12/22.
 //  Copyright © 2018 杨科军. All rights reserved.
-//
+//  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "AppDelegate.h"
-#import "KJBannerTimingClearManager.h"
+
 @interface AppDelegate ()
 
 @end
@@ -17,7 +17,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [KJBannerTimingClearManager kj_openTimingCrearCached:YES TimingTimeType:(KJBannerViewTimingTimeTypeThreeDay)];
+    
     return YES;
 }
 

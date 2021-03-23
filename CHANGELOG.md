@@ -12,7 +12,14 @@ KJBannerView 是一款轮播Banner，支持gif和url混播，自带图片下载�
 > 备注：快捷打开浏览器命令，command + shift + 鼠标左键
 
 # 版本更新日志
-### [版本2.1.0](https://github.com/yangKJ/KJBannerViewDemo/tree/2.0.12)
+### [版本2.1.2](https://github.com/yangKJ/KJBannerViewDemo/tree/2.1.2)
+- 图片预渲染处理，优化提升性能
+- 更高效的圆角切割，避免离屏渲染
+- 更换计时器，替换为异步GCD计时器
+- 新增定制特定方位圆角字段
+- 修复字段重名情况
+
+### [版本2.1.0](https://github.com/yangKJ/KJBannerViewDemo/tree/2.1.0)
 - 更换动态图处理播放控件，移除数据源类型
 - 修改为异步播放本地动态图
 - 去除原先的 UIImageView+KJWebImage、UIButton+KJWebImage
@@ -96,7 +103,7 @@ KJBannerView 是一款轮播Banner，支持gif和url混播，自带图片下载�
 
 ### [版本1.3.0](https://github.com/yangKJ/KJBannerViewDemo/tree/1.3.0)
 - 新增KJBannerViewDataSource委托，更方便的自定义方式 不需要再继承 KJBannerViewCell
-- `kj_BannerView:BannerViewCell:ImageDatas:Index: `此方法和 `itemClass` 互斥
+- `kj_BannerView:BannerViewCell:ImageDatas:Index:`此方法和 `itemClass` 互斥
 - Banner支持在Storyboard和Xib中创建并配置其属性
 - 新增裁剪网络图片从而提高效率 bannerScale
 
@@ -132,7 +139,7 @@ KJBannerView 是一款轮播Banner，支持gif和url混播，自带图片下载�
 - 新增设置滚动方向属性 `rollType`
 
 ### [版本1.1.0](https://github.com/yangKJ/KJBannerViewDemo/tree/1.1.0)
-- 新增 支持自定义Cell
+- 新增支持自定义Cell
 - 继承KJBannerViewCell，然后在model设置数据
 
 ### 版本1.0.2

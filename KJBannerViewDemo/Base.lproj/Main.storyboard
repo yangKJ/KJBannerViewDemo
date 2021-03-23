@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="uBS-w7-M4r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="uBS-w7-M4r">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--KJBannerViewDemo-->
+        <!--KJBannerViewDemo ⛳️-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
@@ -28,7 +28,7 @@
                                     <userDefinedRuntimeAttribute type="number" keyPath="autoTime">
                                         <real key="value" value="3"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="image" keyPath="placeholderImage" value="IMG_4931"/>
+                                    <userDefinedRuntimeAttribute type="image" keyPath="placeholderImage" value="KJBannerPlaceholderImage.png"/>
                                     <userDefinedRuntimeAttribute type="number" keyPath="rollType">
                                         <integer key="value" value="3"/>
                                     </userDefinedRuntimeAttribute>
@@ -113,7 +113,7 @@
                             <constraint firstItem="cfo-aw-2br" firstAttribute="width" secondItem="6Ix-O9-EeV" secondAttribute="width" id="ug4-3Q-PBd"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="KJBannerViewDemo" id="sNI-AU-iLq"/>
+                    <navigationItem key="navigationItem" title="KJBannerViewDemo ⛳️" id="sNI-AU-iLq"/>
                     <connections>
                         <outlet property="Switch" destination="eT1-C3-BDb" id="ALY-zN-Za0"/>
                         <outlet property="backView" destination="cfo-aw-2br" id="z29-da-fMS"/>
@@ -125,7 +125,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1025" y="81"/>
+            <point key="canvasLocation" x="972" y="81"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="voe-hm-P06">
@@ -147,7 +147,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="IMG_4931" width="1241" height="1211"/>
+        <image name="KJBannerPlaceholderImage.png" width="620" height="349"/>
         <systemColor name="systemIndigoColor">
             <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

@@ -30,7 +30,7 @@
         }
         return;
     }
-    self.maxConcurrentOperationCount = 1;
+    self.maxConcurrentOperationCount = 2;
     if (progress) {
         self.dataBlock = complete;
         self.progressBlock = progress;
@@ -63,12 +63,19 @@ NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutI
     request.timeoutInterval = timeoutInterval;
     request.HTTPShouldUsePipelining = YES;
     request.cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-    request.allHTTPHeaderFields = @{@"Accept":@"image/webp,image/*;q=0.8"};
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [param setValue:@"image/webp,image/*;q=0.8" forKey:@"Accept"];
+//    [param setValue:@"" forKey:@"Accept-Encoding"];
+    [request setAllHTTPHeaderFields:param];
     return request;
 }
 #pragma mark - NSURLSessionDataDelegate
 - (void)URLSession:(NSURLSession*)session dataTask:(NSURLSessionDataTask*)dataTask didReceiveResponse:(NSURLResponse*)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler{
     completionHandler(NSURLSessionResponseAllow);
+}
+- (void)URLSession:(NSURLSession*)session didReceiveChallenge:(NSURLAuthenticationChallenge*)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *))completionHandler{
+    NSURLCredential *card = [[NSURLCredential alloc] initWithTrust:challenge.protectionSpace.serverTrust];
+    completionHandler(NSURLSessionAuthChallengeUseCredential, card);
 }
 
 #pragma mark - NSURLSessionDownloadDelegate
@@ -80,10 +87,14 @@ NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutI
     @synchronized (self.downloadProgress) {
         self.downloadProgress.bytesWritten = bytesWritten;
         self.downloadProgress.downloadBytes = totalBytesWritten;
-        self.downloadProgress.totalBytes = totalBytesExpectedToWrite;
         self.downloadProgress.speed = bytesWritten / 1024.;
-        self.downloadProgress.progress = (double)totalBytesWritten / totalBytesExpectedToWrite;
-        
+        if (totalBytesExpectedToWrite == -1) {
+            self.downloadProgress.totalBytes = 0;
+            self.downloadProgress.progress = 0;
+        }else{
+            self.downloadProgress.totalBytes = totalBytesExpectedToWrite;
+            self.downloadProgress.progress = (double)totalBytesWritten / totalBytesExpectedToWrite;
+        }
         self.progressBlock(self.downloadProgress);
     }
 }

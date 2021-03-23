@@ -19,11 +19,11 @@ typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType, UIIma
 @optional;
 #pragma mark - common
 /// 占位图
-@property(nonatomic,strong)UIImage *placeholder;
+@property(nonatomic,strong)UIImage *bannerPlaceholder;
 /// 图片下载完成回调
-@property(nonatomic,copy,readwrite)KJWebImageCompleted completed;
+@property(nonatomic,copy,readwrite)KJWebImageCompleted bannerCompleted;
 /// 下载进度回调
-@property(nonatomic,copy,readwrite)KJLoadProgressBlock progress;
+@property(nonatomic,copy,readwrite)KJLoadProgressBlock bannerProgress;
 /// 是否缓存数据至本地，默认开启
 @property(nonatomic,assign)bool cacheDatas;
 /// 是否等比裁剪图片，默认关闭
@@ -33,46 +33,12 @@ typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType, UIIma
 
 #pragma mark - button
 /// 按钮状态
-@property(nonatomic,assign)UIControlState buttonState;
+@property(nonatomic,assign)UIControlState bannerButtonState;
 
 #pragma mark - view
 /// 图片填充方式
-@property(nonatomic,copy)CALayerContentsGravity viewContentsGravity;
+@property(nonatomic,copy)CALayerContentsGravity bannerViewContentsGravity;
 
 @end
-//************ 公共方法 *************
-/// 异步播放动态图
-NS_INLINE void kBannerAsyncPlayImage(void(^xxblock)(UIImage * _Nullable image), NSData * data){
-    if (xxblock) {
-        if (data == nil) xxblock(nil);
-        kGCD_banner_async(^{
-            CGImageSourceRef imageSource = CGImageSourceCreateWithData(CFBridgingRetain(data), nil);
-            size_t imageCount = CGImageSourceGetCount(imageSource);
-            if (imageCount <= 1) {
-                kGCD_banner_main(^{xxblock([[UIImage alloc] initWithData:data]);});
-            }else{
-                NSMutableArray *scaleImages = [NSMutableArray arrayWithCapacity:imageCount];
-                NSTimeInterval time = 0;
-                for (int i = 0; i<imageCount; i++) {
-                    CGImageRef cgImage = CGImageSourceCreateImageAtIndex(imageSource, i, nil);
-                    UIImage *originalImage = [UIImage imageWithCGImage:cgImage];
-                    [scaleImages addObject:originalImage];
-                    CGImageRelease(cgImage);
-                    CFDictionaryRef const properties = CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
-                    CFDictionaryRef const gifProperties = CFDictionaryGetValue(properties, kCGImagePropertyGIFDictionary);
-                    NSNumber *duration = (__bridge id)CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFUnclampedDelayTime);
-                    if (duration == NULL || [duration doubleValue] == 0) {
-                        duration = (__bridge id)CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFDelayTime);
-                    }
-                    CFRelease(properties);
-                    CFRelease(gifProperties);
-                    time += duration.doubleValue;
-                }
-                kGCD_banner_main(^{xxblock([UIImage animatedImageWithImages:scaleImages duration:time]);});
-            }
-            CFRelease(imageSource);
-        });
-    }
-}
 
 NS_ASSUME_NONNULL_END

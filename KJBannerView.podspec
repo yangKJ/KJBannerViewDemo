@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "KJBannerView"
-  s.version      = "2.1.0"
+  s.version      = "2.1.2"
   s.summary      = "KJBannerView是一款自带图片下载和缓存轮播Banner，支持动态图和网图混合显示"
   s.homepage     = "https://github.com/yangKJ/KJBannerViewDemo"
   s.description  = 'https://github.com/yangKJ/KJBannerViewDemo/blob/master/README.md'

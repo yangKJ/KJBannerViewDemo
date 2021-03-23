@@ -26,6 +26,9 @@ extern NSString *kBannerTimingUserDefaultsKey;
 /* 开启清理功能，清除时间以前的数据 */
 + (void)kj_openTimingCrearCached:(BOOL)crear TimingTimeType:(KJBannerViewTimingTimeType)type;
 
+/* 自动清理大于多少的数据源，单位kb */
++ (void)kj_autoClearCachedMaxBytes:(NSInteger)maxBytes;
+
 /* ****************** 内部使用 *********/
 @property(nonatomic,assign,class,readonly)BOOL openTiming;
 

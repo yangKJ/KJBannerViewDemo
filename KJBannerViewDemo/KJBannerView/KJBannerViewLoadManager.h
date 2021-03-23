@@ -19,8 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,assign,class)BOOL useAsync;
 
 /// 带缓存机制的下载图片
-+ (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *_Nullable image))complete;
-+ (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *_Nullable image))complete progress:(KJLoadProgressBlock)progress;
++ (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *image))complete;
++ (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *image))complete progress:(KJLoadProgressBlock)progress;
 
 /// 下载数据，未使用缓存机制
 + (NSData*)kj_downloadDataWithURL:(NSString*)url progress:(KJLoadProgressBlock)progress;

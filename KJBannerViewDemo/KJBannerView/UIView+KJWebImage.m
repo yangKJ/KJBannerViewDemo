@@ -28,7 +28,7 @@
 - (void)kj_setImageViewImageWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
     __block UIImageView *imageView = (UIImageView*)self;
     __block CGSize size = imageView.frame.size;
-    if (han.placeholder) imageView.image = han.placeholder;
+    if (han.bannerPlaceholder) imageView.image = han.bannerPlaceholder;
     kGCD_banner_async(^{
         NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url.absoluteString];
         if (data) {
@@ -44,26 +44,26 @@
 }
 
 #pragma mark - UIButton
-- (UIControlState)buttonState{
+- (UIControlState)bannerButtonState{
     return (UIControlState)[objc_getAssociatedObject(self, _cmd) intValue];
 }
-- (void)setButtonState:(UIControlState)buttonState{
-    objc_setAssociatedObject(self, @selector(buttonState), @(buttonState), OBJC_ASSOCIATION_ASSIGN);
+- (void)setBannerButtonState:(UIControlState)bannerButtonState{
+    objc_setAssociatedObject(self, @selector(bannerButtonState), @(bannerButtonState), OBJC_ASSOCIATION_ASSIGN);
 }
 - (void)kj_setButtonImageWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
     __block UIButton *button = (UIButton*)self;
     __block CGSize size = button.imageView.frame.size;
-    if (han.placeholder) [button setImage:han.placeholder forState:han.buttonState];
+    if (han.bannerPlaceholder) [button setImage:han.bannerPlaceholder forState:han.bannerButtonState];
     kGCD_banner_async(^{
         NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url.absoluteString];
         if (data) {
             kGCD_banner_main(^{
-                [button setImage:kBannerWebImageSetImage(data, size, han) forState:han.buttonState?:UIControlStateNormal];
+                [button setImage:kBannerWebImageSetImage(data, size, han) forState:han.bannerButtonState?:UIControlStateNormal];
             });
         }else{
             kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
                 kGCD_banner_main(^{
-                    [button setImage:image forState:han.buttonState?:UIControlStateNormal];
+                    [button setImage:image forState:han.bannerButtonState?:UIControlStateNormal];
                 });
             });
         }
@@ -71,11 +71,11 @@
 }
 
 #pragma mark - UIView
-- (CALayerContentsGravity)viewContentsGravity{
+- (CALayerContentsGravity)bannerViewContentsGravity{
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)setViewContentsGravity:(CALayerContentsGravity)viewContentsGravity{
-    objc_setAssociatedObject(self, @selector(viewContentsGravity), viewContentsGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setBannerViewContentsGravity:(CALayerContentsGravity)bannerViewContentsGravity{
+    objc_setAssociatedObject(self, @selector(bannerViewContentsGravity), bannerViewContentsGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 - (void)kj_setViewImageContentsWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
     __banner_weakself;
@@ -85,14 +85,14 @@
         if (data) {
             kGCD_banner_main(^{
                 UIImage *image = kBannerWebImageSetImage(data, size, han);
-                CALayer *layer = [weakself kj_setLayerImageContents:image?:han.placeholder];
-                layer.contentsGravity = han.viewContentsGravity?:kCAGravityResize;
+                CALayer *layer = [weakself kj_setLayerImageContents:image?:han.bannerPlaceholder];
+                layer.contentsGravity = han.bannerViewContentsGravity?:kCAGravityResize;
             });
         }else{
             kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
                 kGCD_banner_main(^{
-                    CALayer *layer = [weakself kj_setLayerImageContents:image?:han.placeholder];
-                    layer.contentsGravity = han.viewContentsGravity?:kCAGravityResize;
+                    CALayer *layer = [weakself kj_setLayerImageContents:image?:han.bannerPlaceholder];
+                    layer.contentsGravity = han.bannerViewContentsGravity?:kCAGravityResize;
                 });
             });
         }
@@ -111,11 +111,11 @@
 #pragma mark - function
 /// 播放图片
 NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebImageHandle> _Nullable han){
-    if (data == nil) return nil;
+    if (data == nil || data.length == 0) return nil;
     CGImageSourceRef imageSource = CGImageSourceCreateWithData(CFBridgingRetain(data), nil);
     size_t imageCount = CGImageSourceGetCount(imageSource);
     UIImage *animatedImage;
-    if (imageCount <= 1) {
+    if (imageCount == 1) {
         animatedImage = [[UIImage alloc] initWithData:data];
         if (han.cropScale) {
             UIImage * scaleImage = kBannerCropImage(animatedImage, size);
@@ -143,7 +143,6 @@ NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebI
                 duration = (__bridge id)CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFDelayTime);
             }
             CFRelease(properties);
-            CFRelease(gifProperties);
             time += duration.doubleValue;
         }
         animatedImage = [UIImage animatedImageWithImages:scaleImages duration:time];
@@ -159,8 +158,8 @@ NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebI
 NS_INLINE UIImage * kBannerWebImageSetImage(NSData * data, CGSize size, id<KJBannerWebImageHandle> han){
     UIImage *image = kBannerPlayImage(data, size, han);
     kGCD_banner_main(^{
-        if (han.completed) {
-            han.completed(kBannerContentType(data), image, data, nil);
+        if (han.bannerCompleted) {
+            han.bannerCompleted(kBannerContentType(data), image, data, nil);
         }
     });
     return image;
@@ -177,12 +176,12 @@ NS_INLINE void kBannerWebImageDownloader(NSURL * url, CGSize size, id<KJBannerWe
         }
     };
     KJBannerViewDownloader *downloader = [KJBannerViewDownloader new];
-    if (han.progress) {
+    if (han.bannerProgress) {
         [downloader kj_startDownloadImageWithURL:url Progress:^(KJBannerDownloadProgress * downloadProgress) {
-            han.progress(downloadProgress);
+            han.bannerProgress(downloadProgress);
         } Complete:^(NSData * _Nullable data, NSError * _Nullable error) {
             if (error) {
-                if (han.completed) han.completed(KJBannerImageTypeUnknown, nil, nil, error);
+                if (han.bannerCompleted) han.bannerCompleted(KJBannerImageTypeUnknown, nil, nil, error);
             }else{
                 kDownloaderAnalysis(data);
             }
@@ -190,7 +189,7 @@ NS_INLINE void kBannerWebImageDownloader(NSURL * url, CGSize size, id<KJBannerWe
     }else{
         [downloader kj_startDownloadImageWithURL:url Progress:nil Complete:^(NSData * data, NSError * error) {
             if (error) {
-                if (han.completed) han.completed(KJBannerImageTypeUnknown, nil, nil, error);
+                if (han.bannerCompleted) han.bannerCompleted(KJBannerImageTypeUnknown, nil, nil, error);
             }else{
                 kDownloaderAnalysis(data);
             }
@@ -238,7 +237,7 @@ NS_INLINE UIImage * _Nullable kBannerCropImage(UIImage * _Nonnull image, CGSize 
             imgRatio = maxWidth / imgWidth;
             imgWidth = maxWidth;
             imgHeight = imgRatio * imgHeight;
-        }else {
+        }else{
             imgWidth = maxWidth;
             imgHeight = maxHeight;
         }
@@ -252,23 +251,23 @@ NS_INLINE UIImage * _Nullable kBannerCropImage(UIImage * _Nonnull image, CGSize 
 }
 
 #pragma maek - Associated
-- (UIImage *)placeholder{
+- (UIImage *)bannerPlaceholder{
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)setPlaceholder:(UIImage *)placeholder{
-    objc_setAssociatedObject(self, @selector(placeholder), placeholder, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setBannerPlaceholder:(UIImage *)bannerPlaceholder{
+    objc_setAssociatedObject(self, @selector(bannerPlaceholder), bannerPlaceholder, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (KJWebImageCompleted)completed{
+- (KJWebImageCompleted)bannerCompleted{
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)setCompleted:(KJWebImageCompleted)completed{
-    objc_setAssociatedObject(self, @selector(completed), completed, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setBannerCompleted:(KJWebImageCompleted)bannerCompleted{
+    objc_setAssociatedObject(self, @selector(bannerCompleted), bannerCompleted, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (KJLoadProgressBlock)progress{
+- (KJLoadProgressBlock)bannerProgress{
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)setProgress:(KJLoadProgressBlock)progress{
-    objc_setAssociatedObject(self, @selector(progress), progress, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setBannerProgress:(KJLoadProgressBlock)bannerProgress{
+    objc_setAssociatedObject(self, @selector(bannerProgress), bannerProgress, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 - (bool)cacheDatas{
     return [objc_getAssociatedObject(self, _cmd) intValue];
