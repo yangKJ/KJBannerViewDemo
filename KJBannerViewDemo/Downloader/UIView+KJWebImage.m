@@ -13,6 +13,7 @@
 - (void)kj_setImageWithURL:(NSURL*)url handle:(void(^)(id<KJBannerWebImageHandle>handle))handle{
     if (url == nil) return;
     self.cacheDatas = true;
+    self.preRendering = true;
     if (handle) handle(self);
     id<KJBannerWebImageHandle> han = (id<KJBannerWebImageHandle>)self;
     if ([self isKindOfClass:[UIImageView class]]) {
@@ -26,15 +27,15 @@
 
 #pragma mark - UIImageView
 - (void)kj_setImageViewImageWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
-    __block UIImageView *imageView = (UIImageView*)self;
-    __block CGSize size = imageView.frame.size;
+    UIImageView *imageView = (UIImageView*)self;
+    CGSize size = imageView.frame.size;
     if (han.bannerPlaceholder) imageView.image = han.bannerPlaceholder;
     kGCD_banner_async(^{
         NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url.absoluteString];
         if (data) {
-            kGCD_banner_main(^{
-                imageView.image = kBannerWebImageSetImage(data, size, han);
-            });
+            kBannerWebImageSetImage(^(UIImage *image) {
+                imageView.image = image;
+            }, data, size, han);
         }else{
             kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
                 kGCD_banner_main(^{ imageView.image = image;});
@@ -51,15 +52,15 @@
     objc_setAssociatedObject(self, @selector(bannerButtonState), @(bannerButtonState), OBJC_ASSOCIATION_ASSIGN);
 }
 - (void)kj_setButtonImageWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
-    __block UIButton *button = (UIButton*)self;
-    __block CGSize size = button.imageView.frame.size;
+    UIButton *button = (UIButton*)self;
+    CGSize size = button.imageView.frame.size;
     if (han.bannerPlaceholder) [button setImage:han.bannerPlaceholder forState:han.bannerButtonState];
     kGCD_banner_async(^{
         NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url.absoluteString];
         if (data) {
-            kGCD_banner_main(^{
-                [button setImage:kBannerWebImageSetImage(data, size, han) forState:han.bannerButtonState?:UIControlStateNormal];
-            });
+            kBannerWebImageSetImage(^(UIImage *image) {
+                [button setImage:image forState:han.bannerButtonState?:UIControlStateNormal];
+            }, data, size, han);
         }else{
             kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
                 kGCD_banner_main(^{
@@ -79,15 +80,14 @@
 }
 - (void)kj_setViewImageContentsWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
     __banner_weakself;
-    __block CGSize size = weakself.frame.size;
+    CGSize size = weakself.frame.size;
     kGCD_banner_async(^{
         NSData *data = [KJBannerViewCacheManager kj_getGIFImageWithKey:url.absoluteString];
         if (data) {
-            kGCD_banner_main(^{
-                UIImage *image = kBannerWebImageSetImage(data, size, han);
+            kBannerWebImageSetImage(^(UIImage *image) {
                 CALayer *layer = [weakself kj_setLayerImageContents:image?:han.bannerPlaceholder];
                 layer.contentsGravity = han.bannerViewContentsGravity?:kCAGravityResize;
-            });
+            }, data, size, han);
         }else{
             kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
                 kGCD_banner_main(^{
@@ -155,22 +155,31 @@ NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebI
     return animatedImage;
 }
 /// 获取图片
-NS_INLINE UIImage * kBannerWebImageSetImage(NSData * data, CGSize size, id<KJBannerWebImageHandle> han){
-    UIImage *image = kBannerPlayImage(data, size, han);
-    kGCD_banner_main(^{
-        if (han.bannerCompleted) {
-            han.bannerCompleted(kBannerContentType(data), image, data, nil);
+NS_INLINE void kBannerWebImageSetImage(void(^imageblock)(UIImage *image) ,NSData * data, CGSize size, id<KJBannerWebImageHandle> han){
+    kGCD_banner_async(^{
+        UIImage *image = kBannerPlayImage(data, size, han);
+        KJBannerImageType type = kBannerContentType(data);
+        if (han.preRendering && type != KJBannerImageTypeGif) {
+            UIGraphicsBeginImageContextWithOptions(image.size, YES, 0);
+            [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+            image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
         }
+        kGCD_banner_main(^{
+            if (imageblock) {
+                imageblock(image);
+            }
+            if (han.bannerCompleted) {
+                han.bannerCompleted(type, image, data, nil);
+            }
+        });
     });
-    return image;
 }
 /// 下载图片
 NS_INLINE void kBannerWebImageDownloader(NSURL * url, CGSize size, id<KJBannerWebImageHandle> han, void(^imageblock)(UIImage *image)){
     void (^kDownloaderAnalysis)(NSData *__data) = ^(NSData *__data){
         if (__data == nil) return;
-        if (imageblock) {
-            imageblock(kBannerWebImageSetImage(__data, size, han));
-        }
+        kBannerWebImageSetImage(imageblock, __data, size, han);
         if (han.cacheDatas) {
             [KJBannerViewCacheManager kj_storeGIFData:__data Key:url.absoluteString];
         }
@@ -280,6 +289,12 @@ NS_INLINE UIImage * _Nullable kBannerCropImage(UIImage * _Nonnull image, CGSize 
 }
 - (void)setCropScale:(bool)cropScale{
     objc_setAssociatedObject(self, @selector(cropScale), @(cropScale), OBJC_ASSOCIATION_ASSIGN);
+}
+- (bool)preRendering{
+    return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+- (void)setPreRendering:(bool)preRendering{
+    objc_setAssociatedObject(self, @selector(preRendering), @(preRendering), OBJC_ASSOCIATION_ASSIGN);
 }
 - (void (^)(UIImage *, UIImage *))kCropScaleImage{
     return objc_getAssociatedObject(self, _cmd);

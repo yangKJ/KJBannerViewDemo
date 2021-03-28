@@ -12,7 +12,7 @@
 
 @interface KJTestViewController ()
 @property (nonatomic,strong) UILabel *label1,*label2,*label3,*label4;
-@property (nonatomic,strong) UIImageView *imageView;
+@property (nonatomic,strong) UIButton *imageView;
 @end
 
 @implementation KJTestViewController
@@ -59,23 +59,26 @@
     [self.view addSubview:button];
     [button addTarget:self action:@selector(buttonAction) forControlEvents:(UIControlEventTouchUpInside)];
     
-    UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, self.view.frame.size.height-180-40, w-40, 180)];
+    UIButton *imageView = [[UIButton alloc]initWithFrame:CGRectMake(20, self.view.frame.size.height-180-40, w-40, 180)];
     imageView.backgroundColor = [UIColor.greenColor colorWithAlphaComponent:0.3];
     [self.view addSubview:imageView];
     self.imageView = imageView;
+    [imageView kj_setImageWithURL:[NSURL URLWithString:@"http://photos.tuchong.com/285606/f/4374153.jpg" ] handle:^(id<KJBannerWebImageHandle>  _Nonnull handle) {
+            
+    }];
     
-    kGCD_async(^{
-        NSData *data = [KJBannerViewLoadManager kj_downloadDataWithURL:@"http://photos.tuchong.com/285606/f/4374153.jpg" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-//            NSLog(@"----progress:%.2f",downloadProgress.progress);
-        }];
-        kGCD_main(^{
-            SEL sel = NSSelectorFromString(@"kj_setLayerImageContents:");
-            if ([self.imageView respondsToSelector:sel]) {
-                CALayer *layer = ((CALayer*(*)(id, SEL, UIImage*))(void*)objc_msgSend)(self.imageView, sel, [UIImage imageWithData:data]);
-                layer.contentsGravity = kCAGravityResize;
-            }
-        });
-    });
+//    kGCD_async(^{
+//        NSData *data = [KJBannerViewLoadManager kj_downloadDataWithURL:@"http://photos.tuchong.com/285606/f/4374153.jpg" progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
+////            NSLog(@"----progress:%.2f",downloadProgress.progress);
+//        }];
+//        kGCD_main(^{
+//            SEL sel = NSSelectorFromString(@"kj_setLayerImageContents:");
+//            if ([self.imageView respondsToSelector:sel]) {
+//                CALayer *layer = ((CALayer*(*)(id, SEL, UIImage*))(void*)objc_msgSend)(self.imageView, sel, [UIImage imageWithData:data]);
+//                layer.contentsGravity = kCAGravityResize;
+//            }
+//        });
+//    });
     
     [self buttonAction];
 }

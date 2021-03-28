@@ -11,7 +11,7 @@
 #import "KJBannerViewType.h"
 #import "KJBannerViewProtocol.h"
 #import "KJPageView.h"
-#import "NSObject+KJGCDTimer.h"
+#import "KJBannerViewFlowLayout.h"
 NS_ASSUME_NONNULL_BEGIN
 IB_DESIGNABLE
 @interface KJBannerView : UIView
@@ -50,29 +50,35 @@ IB_DESIGNABLE
 @property (nonatomic,strong,readonly) KJPageView *pageControl;
 /// 当前位置
 @property (nonatomic,assign,readonly) NSInteger currentIndex;
+/// 布局信息
+@property (nonatomic,strong,readonly) KJBannerViewFlowLayout *layout;
 
 //************************ 废弃属性方法 *****************************/
-/// 支持自定义Cell，自定义Cell需继承自 KJBannerViewCell
+/// 支持自定义Cell，自定义Cell需继承自 KJBannerViewCell，和委托的自定义方式互斥
+/// 备注：性能上面这种自定义方式其实优于委托的自定义方式，只是这种方式要创建继承于KJBannerViewCell的Cell，略显麻烦
 @property (nonatomic,strong) Class itemClass DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_BannerView:ItemSize:Index:]");
 /// 数据源
-@property (nonatomic,strong) NSArray<NSString*>*imageDatas DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_setDatasBannerView:]");
+@property (nonatomic,strong) NSArray *imageDatas DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_setDatasBannerView:]");
 
 @end
 
 //******************** 自带KJBannerViewCell可设置属性 ********************
+//备注：必须引入网络加载模块 pod 'KJBannerView/Downloader'
 @interface KJBannerView (KJBannerViewCell)
-/// imagView圆角，默认为0px
-@property (nonatomic,assign) IBInspectable CGFloat bannerRadius;
-/// cell的占位图，用于网络未加载到图片时
-@property (nonatomic,strong) IBInspectable UIImage *placeholderImage;
+/// 如果背景不是纯色并且需要切圆角，请设置为yes
+@property (nonatomic,assign) BOOL bannerNoPureBack;
+/// 切圆角，默认为0px
+@property (nonatomic,assign) CGFloat bannerRadius;
+/// 占位图，用于网络未加载到图片时
+@property (nonatomic,strong) UIImage *placeholderImage;
 /// 轮播图片的ContentMode，默认为 UIViewContentModeScaleToFill
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
 /// 定制特定方位圆角，默认四个位置
 @property (nonatomic,assign) UIRectCorner bannerCornerRadius;
 /// 是否裁剪，默认yes
 @property (nonatomic,assign) BOOL bannerScale;
-/// 如果背景不是纯色并且需要切圆角，请设置为yes
-@property (nonatomic,assign) BOOL bannerNoPureBack;
+/// 是否预渲染图片处理，默认yes
+@property (nonatomic,assign) BOOL bannerPreRendering;
 
 @end
 

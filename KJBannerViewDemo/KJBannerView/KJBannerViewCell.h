@@ -14,7 +14,7 @@
 @end
 @interface KJBannerViewCell : UICollectionViewCell
 /// 数据模型，用于自定义 itemClass 样式传递数据
-@property (nonatomic,strong) NSObject *model;
+@property (nonatomic,strong) NSObject *itemModel;
 /// 使用 KJBannerViewDataSource 方式时候使用
 @property (nonatomic,strong) UIView *itemView;
 
@@ -32,6 +32,8 @@
 @property (nonatomic,strong) UIImage *bannerPlaceholder;
 /// 如果背景不是纯色，请设置为yes
 @property (nonatomic,assign) BOOL bannerNoPureBack;
+/// 是否预渲染图片处理，默认yes
+@property (nonatomic,assign) BOOL bannerPreRendering;
 /// 图片显示控件
 @property (nonatomic,strong,readonly) UIImageView *bannerImageView;
 

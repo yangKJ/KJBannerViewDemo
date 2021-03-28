@@ -11,6 +11,7 @@
 #import <objc/runtime.h>
 #import "KJBannerViewType.h"
 #import "KJBannerViewDownloader.h"
+#import "KJBannerViewLoadManager.h"
 #import "KJBannerViewCacheManager.h"
 NS_ASSUME_NONNULL_BEGIN
 /// 图片下载完成回调
@@ -28,6 +29,8 @@ typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType, UIIma
 @property(nonatomic,assign)bool cacheDatas;
 /// 是否等比裁剪图片，默认关闭
 @property(nonatomic,assign)bool cropScale;
+/// 是否使用预渲染图像，默认开启（动态图暂不支持预渲染处理）
+@property(nonatomic,assign)bool preRendering;
 /// 获取原始图回调，裁剪开启才有效果
 @property(nonatomic,copy,readwrite)void(^kCropScaleImage)(UIImage * originalImgae, UIImage * scaleImage);
 

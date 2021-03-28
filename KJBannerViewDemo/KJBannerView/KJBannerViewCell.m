@@ -7,7 +7,9 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewCell.h"
+#if __has_include("UIView+KJWebImage.h")
 #import "UIView+KJWebImage.h"
+#endif
 
 @interface KJBannerViewCell()
 @property (nonatomic,strong) UIImageView *bannerImageView;
@@ -25,12 +27,9 @@
     _itemView = itemView;
     [self addSubview:itemView];
 }
-/// 判断是网络图片还是本地
-NS_INLINE bool kBannerLocality(NSString * _Nonnull urlString){
-    return ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) ? false : true;
-}
 - (void)setBannerDatas:(KJBannerDatas*)info{
     _bannerDatas = info;
+#if __has_include("UIView+KJWebImage.h")
     if (info.bannerImage) {
         self.bannerImageView.image = info.bannerImage;
     }else{
@@ -45,23 +44,45 @@ NS_INLINE bool kBannerLocality(NSString * _Nonnull urlString){
                     weakself.bannerImageView.image = info.bannerImage = image?:weakself.bannerPlaceholder;
                 }, data);
             }else{
-                self.bannerImageView.image = info.bannerImage = [UIImage imageNamed:info.bannerURLString]?:self.bannerPlaceholder;
+                if (self.bannerPreRendering) {
+                    __banner_weakself;
+                    kGCD_banner_async(^{
+                        UIImage *image = [UIImage imageNamed:info.bannerURLString]?:weakself.bannerPlaceholder;
+                        UIGraphicsBeginImageContextWithOptions(image.size, YES, 0);
+                        [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+                        image = UIGraphicsGetImageFromCurrentImageContext();
+                        UIGraphicsEndImageContext();
+                        info.bannerImage = image;
+                        kGCD_banner_main(^{
+                            weakself.bannerImageView.image = image;
+                        });
+                    });
+                }else{
+                    self.bannerImageView.image = info.bannerImage = [UIImage imageNamed:info.bannerURLString]?:self.bannerPlaceholder;
+                }
             }
         }else{
             [self performSelector:@selector(kj_bannerImageView) withObject:nil afterDelay:0.0 inModes:@[NSDefaultRunLoopMode]];
         }
     }
+#endif
 }
+#if __has_include("UIView+KJWebImage.h")
 /// 下载图片，并渲染到cell上显示
 - (void)kj_bannerImageView{
     __banner_weakself;
     [self.bannerImageView kj_setImageWithURL:[NSURL URLWithString:self.bannerDatas.bannerURLString] handle:^(id<KJBannerWebImageHandle>handle) {
         handle.bannerPlaceholder = weakself.bannerPlaceholder;
         handle.cropScale = weakself.bannerScale;
+        handle.preRendering = weakself.bannerPreRendering;
         handle.bannerCompleted = ^(KJBannerImageType imageType, UIImage * image, NSData * data, NSError * error) {
             weakself.bannerDatas.bannerImage = image;
         };
     }];
+}
+/// 判断是网络图片还是本地
+NS_INLINE bool kBannerLocality(NSString * _Nonnull urlString){
+    return ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) ? false : true;
 }
 /// 异步播放动态图
 NS_INLINE void kBannerAsyncPlayImage(void(^xxblock)(UIImage * _Nullable image), NSData * data){
@@ -99,7 +120,7 @@ NS_INLINE void kBannerAsyncPlayImage(void(^xxblock)(UIImage * _Nullable image), 
         });
     }
 }
-
+#endif
 #pragma mark - lazy
 - (UIImageView*)bannerImageView{
     if(_bannerImageView == nil){

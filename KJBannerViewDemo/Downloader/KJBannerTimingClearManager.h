@@ -12,12 +12,12 @@
 NS_ASSUME_NONNULL_BEGIN
 //清理时间周期
 typedef NS_ENUM(NSInteger, KJBannerViewTimingTimeType) {
-    KJBannerViewTimingTimeTypeOneDay,//1天
+    KJBannerViewTimingTimeTypeOneDay,  //1天
     KJBannerViewTimingTimeTypeThreeDay,//3天
-    KJBannerViewTimingTimeTypeOneWeek,//1周
+    KJBannerViewTimingTimeTypeOneWeek, //1周
     KJBannerViewTimingTimeTypeOneMonth,//1月
-    KJBannerViewTimingTimeTypeOneYear,//1年
-    KJBannerViewTimingTimeTypeAll,//清理全部
+    KJBannerViewTimingTimeTypeOneYear, //1年
+    KJBannerViewTimingTimeTypeAll,     //清理全部
 };
 extern NSString *kBannerTimingUserDefaultsKey;
 @interface KJBannerTimingClearManager : NSObject

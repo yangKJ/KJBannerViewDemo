@@ -31,6 +31,19 @@ typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
     KJBannerViewRollDirectionTypeBottomToTop, /// 从下往上
     KJBannerViewRollDirectionTypeTopToBottom, /// 从上往下
 };
+/// 分页控件类型
+typedef NS_ENUM(NSInteger, KJPageControlStyle) {
+    PageControlStyleRectangle = 0, // 默认类型 长方形
+    PageControlStyleCircle, // 圆形
+    PageControlStyleSquare, // 正方形
+    PageControlStyleSizeDot,// 大小点
+};
+/// 分页控件显示位置
+typedef NS_ENUM(NSInteger, KJPageControlDisplayType) {
+    KJPageControlDisplayTypeCenter,
+    KJPageControlDisplayTypeLeft,
+    KJPageControlDisplayTypeRight,
+};
 /// 弱引用
 #define __banner_weakself __weak __typeof(self) weakself = self
 /// 子线程
@@ -68,7 +81,8 @@ NS_INLINE void kBannerAsyncCornerRadius(CGFloat radius, void(^xxblock)(UIImage *
     CGRect bounds = view.bounds;
     if (xxblock) {
         kGCD_banner_async(^{
-            UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 1);
+            CGFloat scale = [UIScreen mainScreen].scale;
+            UIGraphicsBeginImageContextWithOptions(bounds.size, NO, scale);
             CGContextRef context = UIGraphicsGetCurrentContext();
             UIBezierPath *path = [UIBezierPath bezierPathWithRect:bounds];
             UIBezierPath *cornerPath = [[UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:corners cornerRadii:CGSizeMake(radius, radius)] bezierPathByReversingPath];
@@ -77,9 +91,7 @@ NS_INLINE void kBannerAsyncCornerRadius(CGFloat radius, void(^xxblock)(UIImage *
             [bgColor set];
             CGContextFillPath(context);
             UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-            kGCD_banner_main(^{
-                xxblock(image);
-            });
+            kGCD_banner_main(^{ xxblock(image);});
             UIGraphicsEndImageContext();
         });
     }

@@ -8,7 +8,7 @@
 
 #import "KJBannerView.h"
 #import "KJBannerViewCell.h"
-#import "KJBannerViewFlowLayout.h"
+#import "NSObject+KJGCDTimer.h"
 #import <objc/runtime.h>
 #define kPageHeight (20)
 @interface KJBannerView()<UICollectionViewDataSource,UICollectionViewDelegate>
@@ -23,7 +23,7 @@
 @property (nonatomic,assign) CGFloat lastX,lastY;
 @property (nonatomic,assign) BOOL useCustomCell;
 @property (nonatomic,assign) BOOL useDataSource;
-@property (nonatomic,strong) dispatch_source_t timer;
+@property (nonatomic,assign) dispatch_source_t timer;
 @end
 
 @implementation KJBannerView
@@ -108,8 +108,8 @@
     self.collectionView.frame = self.bounds;
     self.layout.itemSize = CGSizeMake(_itemWidth, self.height);
     self.pageControl.frame = CGRectMake(0, self.height-kPageHeight, self.bounds.size.width, kPageHeight);
-    [_topLayer setBounds:self.bounds];
-    [_topLayer setPosition:CGPointMake(self.bounds.size.width*.5, self.bounds.size.height*.5)];
+    [self.topLayer setBounds:self.bounds];
+    [self.topLayer setPosition:CGPointMake(self.bounds.size.width*.5, self.bounds.size.height*.5)];
 }
 /// 滚动到指定位置
 - (void)kj_makeScrollToIndex:(NSInteger)index{
@@ -136,7 +136,9 @@
 }
 - (void)setDataSource:(id<KJBannerViewDataSource>)dataSource{
     _dataSource = dataSource;
-    self.useDataSource = YES;
+    if ([dataSource respondsToSelector:@selector(kj_BannerView:ItemSize:Index:)]) {
+        self.useDataSource = YES;
+    }
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     self.imageDatas = [dataSource kj_setDatasBannerView:self];
@@ -163,7 +165,8 @@
 }
 - (void)setRollType:(KJBannerViewRollDirectionType)rollType{
     _rollType = rollType;
-    if (rollType == KJBannerViewRollDirectionTypeRightToLeft || rollType == KJBannerViewRollDirectionTypeLeftToRight) {
+    if (rollType == KJBannerViewRollDirectionTypeRightToLeft ||
+        rollType == KJBannerViewRollDirectionTypeLeftToRight) {
         self.layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     }else{
         self.layout.scrollDirection = UICollectionViewScrollDirectionVertical;
@@ -376,12 +379,11 @@
     if (self.useDataSource) {
         KJBannerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
         cell.itemView = [_dataSource kj_BannerView:self ItemSize:cell.bounds.size Index:itemIndex];
-//        cell.itemView = [_dataSource kj_BannerView:self BannerViewCell:cell ImageDatas:_imageDatas Index:itemIndex];
         return cell;
     }
     if (self.useCustomCell) {
         KJBannerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(_itemClass) forIndexPath:indexPath];
-        cell.model = _imageDatas[itemIndex];
+        cell.itemModel = _imageDatas[itemIndex];
         return cell;
     }
     /// 自带Cell处理
@@ -393,6 +395,7 @@
     bannerViewCell.bannerRadius = self.bannerRadius;
     bannerViewCell.bannerContentMode = self.bannerContentMode;
     bannerViewCell.bannerPlaceholder = self.placeholderImage;
+    bannerViewCell.bannerPreRendering = self.bannerPreRendering;
     bannerViewCell.bannerDatas = self.temps[itemIndex];
     return bannerViewCell;
 }
@@ -488,6 +491,17 @@
 }
 - (BOOL)bannerNoPureBack{
     return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+- (BOOL)bannerPreRendering{
+    NSNumber *number = objc_getAssociatedObject(self, _cmd);
+    if (number == nil) {
+        return YES;
+    }else{
+        return [number boolValue];
+    }
+}
+- (void)setBannerPreRendering:(BOOL)bannerPreRendering{
+    objc_setAssociatedObject(self, @selector(bannerPreRendering), @(bannerPreRendering), OBJC_ASSOCIATION_ASSIGN);
 }
 - (void)setBannerNoPureBack:(BOOL)bannerNoPureBack{
     objc_setAssociatedObject(self, @selector(bannerNoPureBack), @(bannerNoPureBack), OBJC_ASSOCIATION_ASSIGN);

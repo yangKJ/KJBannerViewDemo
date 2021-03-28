@@ -10,11 +10,16 @@
 #define KJBannerHeader_h
 
 #import "KJBannerView.h" // 轮播Banner
-#import "KJBannerViewLoadManager.h" // 网图下载工具
 #import "KJPageView.h" // 分页控件
-#import "UIView+KJWebImage.h"// 显示网络图片（目前支持设置UIImageView，UIButton，UIView三种）
-#import "KJBannerTimingClearManager.h" // 定时清理指定时间段以前图片资源缓存
 #import "NSObject+KJGCDTimer.h" // GCD计时器
+
+// 显示网络图片（目前支持设置UIImageView，UIButton，UIView三种）
+#if __has_include(<KJBannerView/UIView+KJWebImage.h>)
+#import <KJBannerView/UIView+KJWebImage.h>
+#elif __has_include("UIView+KJWebImage.h")
+#import "UIView+KJWebImage.h"
+#else
+#endif
 
 #endif /* KJBannerHeader_h */
 /*
@@ -51,7 +56,7 @@ pod 'KJLoading' # 加载控件
 菜单控件 - 下拉控件 选择控件
 pod 'KJMenuView' # 菜单控件
 
-异常处理库 - 包含基本的防崩溃处理（数组，字典，字符串）
+异常处理库 - 包含基本的防崩溃处理
 pod 'KJExceptionDemo'
 
 Github地址：https://github.com/yangKJ

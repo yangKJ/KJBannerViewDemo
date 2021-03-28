@@ -25,12 +25,9 @@
 @protocol KJBannerViewDataSource <NSObject>
 /// 数据源
 - (NSArray *)kj_setDatasBannerView:(KJBannerView *)banner;
-/// 定制样式
-- (__kindof UIView *)kj_BannerView:(KJBannerView *)banner ItemSize:(CGSize)size Index:(NSInteger)index;
 
 @optional
-/* ****************************************** 黄金分割线 ******************************************/
-/// 定制不同的控件，该方式已废弃
-- (UIView*)kj_BannerView:(KJBannerView*)banner BannerViewCell:(KJBannerViewCell*)bannercell ImageDatas:(NSArray*)imageDatas Index:(NSInteger)index DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_BannerView:ItemSize:Index:]");
+/// 定制样式，如无必须需求，请不要使用这种自定义创建方式，内部我做了很多性能优化处理
+- (__kindof UIView *)kj_BannerView:(KJBannerView *)banner ItemSize:(CGSize)size Index:(NSInteger)index;
 
 @end

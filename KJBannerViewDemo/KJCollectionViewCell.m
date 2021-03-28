@@ -20,7 +20,7 @@
     return self;
 }
 
-- (void)setModel:(NSObject*)model{
+- (void)setItemModel:(NSObject*)model{
     self.label.text = (NSString*)model;
 }
 - (UILabel*)label{

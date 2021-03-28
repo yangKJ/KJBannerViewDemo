@@ -7,19 +7,9 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import <UIKit/UIKit.h>
-
+#import "KJBannerViewType.h"
 NS_ASSUME_NONNULL_BEGIN
-typedef NS_ENUM(NSInteger, KJPageControlStyle) {
-    PageControlStyleRectangle = 0, // 默认类型 长方形
-    PageControlStyleCircle, // 圆形
-    PageControlStyleSquare, // 正方形
-    PageControlStyleSizeDot,// 大小点
-};
-typedef NS_ENUM(NSInteger, KJPageControlDisplayType) {
-    KJPageControlDisplayTypeCenter,
-    KJPageControlDisplayTypeLeft,
-    KJPageControlDisplayTypeRight,
-};
+
 @interface KJPageView : UIView
 /// 总共点数
 @property(nonatomic,assign) IBInspectable NSInteger totalPages;
