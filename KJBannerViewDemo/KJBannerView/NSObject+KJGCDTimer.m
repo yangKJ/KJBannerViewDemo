@@ -40,10 +40,9 @@
 /* 取消计时器 */
 - (void)kj_bannerStopTimer:(dispatch_source_t)timer{
     self.isHangUp = NO;
-    dispatch_source_t __timer = timer;
-    if (__timer) {
-        dispatch_source_cancel(__timer);
-        __timer = nil;
+    if (timer) {
+        dispatch_source_cancel(timer);
+        timer = nil;
     }
 }
 /* 暂停计时器 */

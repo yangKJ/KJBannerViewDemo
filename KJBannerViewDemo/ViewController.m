@@ -51,7 +51,6 @@
     [super viewDidLoad];
     
     [self _setDatas];
-    [self setUI];
     [self setText];
     [self setXib];
     [self setMasonry];
@@ -68,6 +67,8 @@
         }
         (isPhoneX);
     });
+    [self.button addTarget:self action:@selector(clearAction) forControlEvents:(UIControlEventTouchUpInside)];
+    [self.Switch addTarget:self action:@selector(qiehuanAction:) forControlEvents:(UIControlEventValueChanged)];
     UIButton *button = [UIButton buttonWithType:(UIButtonTypeCustom)];
     button.frame = CGRectMake(10, self.view.frame.size.height-100-(isPhoneX ? 34.0f : 0.0f), self.view.frame.size.width-20, 100);
     NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:@"大家觉得好用还请点个星，遇见什么问题也可issues，持续更新ing.." attributes:@{
@@ -97,17 +98,13 @@
             self.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.02f MB",[KJBannerModel availableMemory]];
             self.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.02f MB",[KJBannerModel usedMemory]/2.];
         });
-    } start:0 interval:.5 repeats:YES];
+    } start:2 interval:.5 repeats:YES];
 }
 - (void)kj_button{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/yangKJ/KJBannerViewDemo"]];
 #pragma clang diagnostic pop
-}
-- (void)setUI{
-    [self.button addTarget:self action:@selector(clearAction) forControlEvents:(UIControlEventTouchUpInside)];
-    [self.Switch addTarget:self action:@selector(qiehuanAction:) forControlEvents:(UIControlEventValueChanged)];
 }
 - (void)setText{
     self.banner3.showPageControl = NO;
@@ -152,7 +149,6 @@
         make.top.left.right.bottom.mas_equalTo(0);
     }];
     [self.banner2 kj_useMasonry];
-    [self.banner2 kj_makeScrollToIndex:1];
 }
 //模拟多网络加载
 - (void)_setDatas{
@@ -190,6 +186,7 @@
     dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^(){
         weakself.temp = arr;
         [weakself.banner2 kj_reloadBannerViewDatas];
+        [weakself.banner2 kj_makeScrollToIndex:2];
     });
 }
 - (void)qiehuanAction:(UISwitch*)sender{
@@ -197,8 +194,8 @@
         [self _setDatas];
     }else{
         self.temp = @[];
+        [self.banner2 kj_reloadBannerViewDatas];
     }
-    [self.banner2 kj_reloadBannerViewDatas];
 }
 - (void)clearAction{
     [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
