@@ -28,6 +28,8 @@
 
 @optional
 /// 定制样式，如无必须需求，请不要使用这种自定义创建方式，内部我做了很多性能优化处理
-- (__kindof UIView *)kj_BannerView:(KJBannerView *)banner ItemSize:(CGSize)size Index:(NSInteger)index;
+- (__kindof UIView *)kj_BannerView:(KJBannerView *)banner
+                          ItemSize:(CGSize)size
+                             Index:(NSInteger)index;
 
 @end

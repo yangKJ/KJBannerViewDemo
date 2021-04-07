@@ -11,7 +11,9 @@
 #import "UIView+KJWebImage.h"
 #endif
 
-@interface KJBannerViewCell()
+@interface KJBannerViewCell(){
+    char _divisor;
+}
 @property (nonatomic,strong) UIImageView *bannerImageView;
 @end
 @implementation KJBannerViewCell
@@ -19,6 +21,7 @@
     if (self = [super initWithFrame:frame]) {
         self.layer.contentsScale = [UIScreen mainScreen].scale;
         self.layer.drawsAsynchronously = YES;
+        _divisor = 0b00000000;
     }
     return self;
 }
@@ -121,23 +124,54 @@ NS_INLINE void kBannerAsyncPlayImage(void(^xxblock)(UIImage * _Nullable image), 
     }
 }
 #endif
+
+#pragma mark - setter/getter
+- (BOOL)bannerScale{
+    return !!(_divisor & 1);
+}
+- (void)setBannerScale:(BOOL)bannerScale{
+    if (bannerScale) {
+        _divisor |= 1;
+    }else{
+        _divisor &= 0;
+    }
+}
+- (BOOL)bannerNoPureBack{
+    return !!(_divisor & 2);
+}
+- (void)setBannerNoPureBack:(BOOL)bannerNoPureBack{
+    if (bannerNoPureBack) {
+        _divisor |=  (1<<1);
+    }else{
+        _divisor &= ~(1<<1);
+    }
+}
+- (BOOL)bannerPreRendering{
+    return !!(_divisor & 4);
+}
+- (void)setBannerPreRendering:(BOOL)bannerPreRendering{
+    if (bannerPreRendering) {
+        _divisor |=  (1<<2);
+    }else{
+        _divisor &= ~(1<<2);
+    }
+}
+
 #pragma mark - lazy
 - (UIImageView*)bannerImageView{
-    if(_bannerImageView == nil){
+    if (_bannerImageView == nil) {
         _bannerImageView = [[UIImageView alloc]initWithFrame:self.bounds];
         _bannerImageView.contentMode = self.bannerContentMode;
         _bannerImageView.image = self.bannerPlaceholder;
         [self addSubview:_bannerImageView];
         if (self.bannerRadius > 0) {
+            CAShapeLayer *shapeLayer = [[CAShapeLayer alloc] init];
+            shapeLayer.frame = self.bounds;
+            [_bannerImageView.layer addSublayer:shapeLayer];
             if (self.bannerNoPureBack) {
-//                shapeLayer.path = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:self.bannerRadius].CGPath;
-//                _bannerImageView.layer.mask = shapeLayer;
-                _bannerImageView.layer.cornerRadius = self.bannerRadius;
-                _bannerImageView.layer.masksToBounds = YES;
+                shapeLayer.path = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:self.bannerRadius].CGPath;
+                _bannerImageView.layer.mask = shapeLayer;
             }else{
-                CAShapeLayer *shapeLayer = [[CAShapeLayer alloc] init];
-                shapeLayer.frame = self.bounds;
-                [_bannerImageView.layer addSublayer:shapeLayer];
                 _bannerImageView.clipsToBounds = YES;
                 kBannerAsyncCornerRadius(self.bannerRadius, ^(UIImage *image) {
                     shapeLayer.contents = (id)image.CGImage;

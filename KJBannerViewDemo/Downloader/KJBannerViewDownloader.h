@@ -21,7 +21,9 @@ typedef void (^_Nullable KJLoadProgressBlock)(KJBannerDownloadProgress * downloa
 /// 设置最大并发队列数，默认为2条
 @property(nonatomic,assign)NSUInteger maxConcurrentOperationCount;
 /// 下载数据
-- (void)kj_startDownloadImageWithURL:(NSURL*)URL Progress:(KJLoadProgressBlock)progress Complete:(KJLoadDataBlock)complete;
+- (void)kj_startDownloadImageWithURL:(NSURL*)URL
+                            Progress:(KJLoadProgressBlock)progress
+                            Complete:(KJLoadDataBlock)complete;
 /// 取消下载
 - (void)kj_cancelRequest;
 

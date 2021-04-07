@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "KJBannerView"
-  s.version      = "2.1.3"
+  s.version      = "2.1.6"
   s.summary      = "KJBannerView是一款自带图片下载和缓存轮播Banner，支持动态图和网图混合显示"
   s.homepage     = "https://github.com/yangKJ/KJBannerViewDemo"
   s.description  = 'https://github.com/yangKJ/KJBannerViewDemo/blob/master/README.md'
@@ -23,8 +23,7 @@ Pod::Spec.new do |s|
   
   s.subspec 'Downloader' do |dd|
     dd.source_files = "KJBannerViewDemo/Downloader/*.{h,m}"
+    dd.dependency 'KJBannerView/KJBannerView'
   end
-
-  s.frameworks = 'Foundation','UIKit'
   
 end

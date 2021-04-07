@@ -30,20 +30,20 @@ IB_DESIGNABLE
 - (void)kj_reloadBannerViewDatas;
 
 //************************ API ************************
-/// 自动滚动间隔时间，默认2s
-@property (nonatomic,assign) IBInspectable CGFloat autoTime;
+/// 是否缩放，默认no
+@property (nonatomic,assign) IBInspectable BOOL isZoom;
 /// 是否无线循环，默认yes
 @property (nonatomic,assign) IBInspectable BOOL infiniteLoop;
 /// 是否自动滑动，默认yes
 @property (nonatomic,assign) IBInspectable BOOL autoScroll;
-/// 是否缩放，默认不缩放
-@property (nonatomic,assign) IBInspectable BOOL isZoom;
+/// 是否显示分页控件，默认yes
+@property (nonatomic,assign) IBInspectable BOOL showPageControl;
+/// 自动滚动间隔时间，默认2s
+@property (nonatomic,assign) IBInspectable CGFloat autoTime;
 /// cell宽度，左右宽度
 @property (nonatomic,assign) IBInspectable CGFloat itemWidth;
 /// cell间距，默认为0
 @property (nonatomic,assign) IBInspectable CGFloat itemSpace;
-/// 是否显示分页控件，默认yes
-@property (nonatomic,assign) IBInspectable BOOL showPageControl;
 /// 滚动方向，默认从右到左
 @property (nonatomic,assign) KJBannerViewRollDirectionType rollType;
 /// 分页控制器
@@ -67,6 +67,10 @@ IB_DESIGNABLE
 @interface KJBannerView (KJBannerViewCell)
 /// 如果背景不是纯色并且需要切圆角，请设置为yes
 @property (nonatomic,assign) BOOL bannerNoPureBack;
+/// 是否裁剪，默认yes
+@property (nonatomic,assign) BOOL bannerScale;
+/// 是否预渲染图片处理，默认yes
+@property (nonatomic,assign) BOOL bannerPreRendering;
 /// 切圆角，默认为0px
 @property (nonatomic,assign) CGFloat bannerRadius;
 /// 占位图，用于网络未加载到图片时
@@ -75,10 +79,6 @@ IB_DESIGNABLE
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
 /// 定制特定方位圆角，默认四个位置
 @property (nonatomic,assign) UIRectCorner bannerCornerRadius;
-/// 是否裁剪，默认yes
-@property (nonatomic,assign) BOOL bannerScale;
-/// 是否预渲染图片处理，默认yes
-@property (nonatomic,assign) BOOL bannerPreRendering;
 
 @end
 

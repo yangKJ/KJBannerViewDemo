@@ -13,7 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSObject (KJGCDTimer)
 /* 创建异步定时器 */
-- (dispatch_source_t)kj_bannerCreateAsyncTimer:(BOOL)async Task:(void(^)(void))task start:(NSTimeInterval)start interval:(NSTimeInterval)interval repeats:(BOOL)repeats;
+- (dispatch_source_t)kj_bannerCreateAsyncTimer:(BOOL)async
+                                          Task:(void(^)(void))task
+                                         start:(NSTimeInterval)start
+                                      interval:(NSTimeInterval)interval
+                                       repeats:(BOOL)repeats;
 /* 取消计时器 */
 - (void)kj_bannerStopTimer:(dispatch_source_t)timer;
 /* 暂停计时器 */

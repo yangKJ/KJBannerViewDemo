@@ -24,12 +24,12 @@
 @property (nonatomic,assign) UIViewContentMode bannerContentMode;
 /// 圆角
 @property (nonatomic,assign) CGFloat bannerRadius;
-/// 是否裁剪
-@property (nonatomic,assign) BOOL bannerScale;
 /// 自带数据模型
 @property (nonatomic,strong) KJBannerDatas *bannerDatas;
 /// 占位图
 @property (nonatomic,strong) UIImage *bannerPlaceholder;
+/// 是否裁剪
+@property (nonatomic,assign) BOOL bannerScale;
 /// 如果背景不是纯色，请设置为yes
 @property (nonatomic,assign) BOOL bannerNoPureBack;
 /// 是否预渲染图片处理，默认yes

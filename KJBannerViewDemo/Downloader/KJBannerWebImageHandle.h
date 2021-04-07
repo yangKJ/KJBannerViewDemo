@@ -15,7 +15,10 @@
 #import "KJBannerViewCacheManager.h"
 NS_ASSUME_NONNULL_BEGIN
 /// 图片下载完成回调
-typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType, UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error);
+typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType,
+                                              UIImage * _Nullable image,
+                                              NSData * _Nullable data,
+                                              NSError * _Nullable error);
 @protocol KJBannerWebImageHandle <NSObject>
 @optional;
 #pragma mark - common
