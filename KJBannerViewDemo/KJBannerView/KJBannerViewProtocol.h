@@ -9,6 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
 @class KJBannerView;
 @class KJBannerViewCell;
 @protocol KJBannerViewDelegate <NSObject>

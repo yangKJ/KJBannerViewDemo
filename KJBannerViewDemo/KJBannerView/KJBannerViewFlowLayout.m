@@ -37,7 +37,7 @@
  *  2.返回的是包含UICollectionViewLayoutAttributes的NSArray
  *  3.UICollectionViewLayoutAttributes可以是cell，追加视图或装饰视图的信息
  */
-- (NSArray<UICollectionViewLayoutAttributes*>*)layoutAttributesForElementsInRect:(CGRect)rect{
+- (NSArray <UICollectionViewLayoutAttributes * > *)layoutAttributesForElementsInRect:(CGRect)rect{
     NSArray *temps = [[NSArray alloc] initWithArray:[super layoutAttributesForElementsInRect:rect] copyItems:YES];
     if(self.isZoom == NO) return temps;
     CGFloat centerX = self.collectionView.contentOffset.x + self.collectionView.bounds.size.width * 0.5;

@@ -21,7 +21,7 @@
 }
 
 - (void)setItemModel:(NSObject*)model{
-    self.label.text = (NSString*)model;
+    self.label.text = (NSString *)model;
 }
 - (UILabel*)label{
     if (!_label) {

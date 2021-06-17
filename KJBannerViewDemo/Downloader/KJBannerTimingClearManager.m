@@ -83,7 +83,7 @@ static BOOL _openTiming = NO;
 
 #pragma mark - private
 /// 快速排序
-+ (void)kj_quickSortArrary:(NSMutableArray*)array leftIndex:(NSInteger)leftIndex rightIndex:(NSInteger)rightIndex{
++ (void)kj_quickSortArrary:(NSMutableArray *)array leftIndex:(NSInteger)leftIndex rightIndex:(NSInteger)rightIndex{
     if (leftIndex > rightIndex) return;
     NSInteger i = leftIndex;
     NSInteger j = rightIndex;
@@ -105,7 +105,7 @@ static BOOL _openTiming = NO;
     [self kj_quickSortArrary:array leftIndex:i + 1 rightIndex:rightIndex];
 }
 /// 二分查找，找到当前index
-+ (NSInteger)kj_binarySearchKeys:(NSArray*)keys TimingTime:(NSInteger)time{
++ (NSInteger)kj_binarySearchKeys:(NSArray *)keys TimingTime:(NSInteger)time{
     NSInteger mid = 0;
     NSInteger frist = 0;
     NSInteger last = keys.count - 1;
@@ -122,7 +122,7 @@ static BOOL _openTiming = NO;
     return mid;
 }
 /// 删除路径文件
-+ (BOOL)kj_removePath:(NSString*)path{
++ (BOOL)kj_removePath:(NSString *)path{
     NSString *directoryPath = [KJBannerLoadImages stringByAppendingPathComponent:path];
     if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
         return [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:nil];

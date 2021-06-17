@@ -12,12 +12,14 @@
 #import <objc/message.h>
 
 @interface KJBannerViewCacheManager()
+
 @property(nonatomic,strong,class)NSCache *cache;
+
 @end
 
 @implementation KJBannerViewCacheManager
 /// MD5加密
-+ (NSString*)kj_bannerMD5WithString:(NSString*)string{
++ (NSString *)kj_bannerMD5WithString:(NSString *)string{
     const char *original_str = [string UTF8String];
     unsigned char digist[CC_MD5_DIGEST_LENGTH];
     CC_MD5(original_str, (uint)strlen(original_str), digist);
@@ -28,7 +30,7 @@
     return [outPutStr lowercaseString];
 }
 /// 先从缓存读取，若没有则读取本地文件
-+ (UIImage*)kj_getImageWithKey:(NSString*)key{
++ (UIImage *)kj_getImageWithKey:(NSString *)key{
     if (key == nil || key.length == 0) return nil;
     NSString *subpath = [self kj_bannerMD5WithString:key];
     UIImage *image = [self.cache objectForKey:subpath];
@@ -39,7 +41,7 @@
     return image;
 }
 /// 先从缓存读取，若没有则读取本地文件并写入缓存
-+ (void)kj_getImageWithKey:(NSString*)key completion:(void(^)(UIImage *image))completion{
++ (void)kj_getImageWithKey:(NSString *)key completion:(void(^)(UIImage *image))completion{
     if (key == nil || key.length == 0) {
         dispatch_async(dispatch_get_main_queue(), ^{        
             if (completion) completion(nil);
@@ -64,7 +66,7 @@
     });
 }
 /// 将图片写入缓存和存储到本地
-+ (void)kj_storeImage:(UIImage*)image Key:(NSString*)key{
++ (void)kj_storeImage:(UIImage *)image Key:(NSString *)key{
     if (image == nil || key == nil || key.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *subpath = [self kj_bannerMD5WithString:key];
@@ -108,7 +110,7 @@ static inline NSUInteger kImageCacheSize(UIImage *image){
   return image.size.height * image.size.width * image.scale * image.scale;
 }
 //存储扩展
-+ (void)kj_saveExtensionPath:(NSString*)subpath{
++ (void)kj_saveExtensionPath:(NSString *)subpath{
     if (KJBannerTimingClearManager.openTiming) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kBannerTimingUserDefaultsKey]];
         [dict setObject:subpath forKey:[NSString stringWithFormat:@"%f",NSDate.date.timeIntervalSince1970]];
@@ -145,13 +147,15 @@ static NSUInteger _maxCache = 50;
 }
 
 @end
+
+
 @implementation KJBannerViewCacheManager (KJBannerGIF)
-+ (NSData*)kj_getGIFImageWithKey:(NSString*)key{
++ (NSData *)kj_getGIFImageWithKey:(NSString *)key{
     if (key == nil || key.length == 0) return nil;
     return [NSData dataWithContentsOfFile:[KJBannerLoadImages stringByAppendingPathComponent:[self kj_bannerMD5WithString:key]]];
 }
 /// 将动态图写入存储到本地
-+ (void)kj_storeGIFData:(NSData*)data Key:(NSString*)key{
++ (void)kj_storeGIFData:(NSData *)data Key:(NSString *)key{
     if (data == nil || key == nil || data.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSString *subpath = [self kj_bannerMD5WithString:key];

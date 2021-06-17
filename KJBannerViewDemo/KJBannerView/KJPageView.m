@@ -9,6 +9,7 @@
 #import "KJPageView.h"
 /// 大小点控件
 @interface KJDotPageView : UIView
+
 @property(nonatomic,strong)UIView *backView;
 @property(nonatomic,assign)NSInteger pages;
 @property(nonatomic,assign)NSInteger currentPage;
@@ -17,8 +18,11 @@
 @property(nonatomic,assign)CGFloat normalWidth,selectWidth;
 @property(nonatomic,assign)CGFloat space;
 @property(nonatomic,assign)KJPageControlDisplayType displayType;
+
 @end
+
 @implementation KJDotPageView
+
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         self.backView = [UIView new];
@@ -80,11 +84,17 @@
     }
 }
 @end
+
+//************************* 大小点 ******************************
 @interface KJPageView ()
+
 @property(nonatomic,strong)UIView *backView;
 @property(nonatomic,strong)KJDotPageView *loopPageView;
+
 @end
+
 @implementation KJPageView
+
 - (instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {

@@ -9,6 +9,7 @@
 
 #ifndef KJBannerViewType_h
 #define KJBannerViewType_h
+
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
@@ -33,7 +34,7 @@ typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
 };
 /// 分页控件类型
 typedef NS_ENUM(NSInteger, KJPageControlStyle) {
-    PageControlStyleRectangle = 0, // 默认类型 长方形
+    PageControlStyleRectangle = 0,// 长方形
     PageControlStyleCircle, // 圆形
     PageControlStyleSquare, // 正方形
     PageControlStyleSizeDot,// 大小点
@@ -46,6 +47,8 @@ typedef NS_ENUM(NSInteger, KJPageControlDisplayType) {
 };
 /// 弱引用
 #define __banner_weakself __weak __typeof(self) weakself = self
+
+#pragma mark - 简单函数
 /// 子线程
 NS_INLINE void kGCD_banner_async(dispatch_block_t _Nonnull block) {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
@@ -70,18 +73,18 @@ NS_INLINE void kGCD_banner_main(dispatch_block_t _Nonnull block) {
 }
 /// 异步绘制圆角，支持特定方位圆角处理，原理就是绘制一个镂空图片盖在上面，所以这种只适用于纯色背景
 NS_INLINE void kBannerAsyncCornerRadius(CGFloat radius, void(^xxblock)(UIImage *image), UIRectCorner corners, UIView *view){
-    UIColor *bgColor;
-    if (view.backgroundColor) {
-        bgColor = view.backgroundColor;
-    }else if (view.superview.backgroundColor){
-        bgColor = view.superview.backgroundColor;
-    }else{
-        bgColor = UIColor.whiteColor;
-    }
-    CGRect bounds = view.bounds;
     if (xxblock) {
+        UIColor *bgColor;
+        if (view.backgroundColor) {
+            bgColor = view.backgroundColor;
+        }else if (view.superview.backgroundColor) {
+            bgColor = view.superview.backgroundColor;
+        }else{
+            bgColor = UIColor.whiteColor;
+        }
+        CGRect bounds = view.bounds;
+        CGFloat scale = [UIScreen mainScreen].scale;
         kGCD_banner_async(^{
-            CGFloat scale = [UIScreen mainScreen].scale;
             UIGraphicsBeginImageContextWithOptions(bounds.size, NO, scale);
             CGContextRef context = UIGraphicsGetCurrentContext();
             UIBezierPath *path = [UIBezierPath bezierPathWithRect:bounds];
@@ -91,11 +94,14 @@ NS_INLINE void kBannerAsyncCornerRadius(CGFloat radius, void(^xxblock)(UIImage *
             [bgColor set];
             CGContextFillPath(context);
             UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-            kGCD_banner_main(^{ xxblock(image);});
+            kGCD_banner_main(^{
+                xxblock(image);
+            });
             UIGraphicsEndImageContext();
         });
     }
 }
 
 NS_ASSUME_NONNULL_END
+
 #endif /* KJBannerViewType_h */

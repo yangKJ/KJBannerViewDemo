@@ -11,7 +11,6 @@
 
 #import "KJBannerView.h" // 轮播Banner
 #import "KJPageView.h" // 分页控件
-#import "NSObject+KJGCDTimer.h" // GCD计时器
 
 // 显示网络图片（目前支持设置UIImageView，UIButton，UIView三种）
 #if __has_include(<KJBannerView/UIView+KJWebImage.h>)
@@ -28,11 +27,14 @@
 *⭐️⭐️⭐️ ----- 本人其他库 ----- ⭐️⭐️⭐️
 *
 扩展库 - Button图文混排、点击事件封装、扩大点击域、点赞粒子效果，
-手势封装、圆角渐变、倒影、投影、内阴影、内外发光、渐变色滑块等，
+手势封装、圆角渐变、渐变色滑块等，
 图片压缩加工处理、滤镜渲染、泛洪算法、识别网址超链接等等
-pod 'KJExtensionHandler'
-pod 'KJExtensionHandler/Foundation'
-pod 'KJExtensionHandler/Language' # 多语言模块
+图片处理封装，霍夫矫正，特征提取，形态学处理，滤镜处理等等
+pod 'KJEmitterView'
+pod 'KJEmitterView/Foundation'
+pod 'KJEmitterView/Language' # 多语言模块
+pod 'KJEmitterView/Opencv' # Opencv封装使用
+pod 'KJEmitterView/LeetCode'
 
 播放器 - 动态切换内核，支持边下边播的播放器方案
 * 支持音/视频播放，midi文件播放，直播流媒体播放

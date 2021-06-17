@@ -7,22 +7,27 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewDownloader.h"
+
 @implementation KJBannerDownloadProgress
+
 @end
+
 @interface KJBannerViewDownloader ()<NSURLSessionDownloadDelegate>
+
 @property(nonatomic,strong)NSURLSessionTask *task;
 @property(nonatomic,strong)NSOperationQueue *queue;
 @property(nonatomic,strong)NSURLSessionConfiguration *configuration;
 @property(nonatomic,strong)KJBannerDownloadProgress *downloadProgress;
 @property(nonatomic,copy,readwrite)KJLoadProgressBlock progressBlock;
 @property(nonatomic,copy,readwrite)KJLoadDataBlock dataBlock;
+
 @end
 
 @implementation KJBannerViewDownloader
 - (void)kj_cancelRequest{
     [self.task cancel];
 }
-- (void)kj_startDownloadImageWithURL:(NSURL*)URL Progress:(KJLoadProgressBlock)progress Complete:(KJLoadDataBlock)complete{
+- (void)kj_startDownloadImageWithURL:(NSURL *)URL Progress:(KJLoadProgressBlock)progress Complete:(KJLoadDataBlock)complete{
     if (URL == nil) {
         if (complete) {
             NSError *error = [NSError errorWithDomain:@"url failed" code:400 userInfo:@{@"message":@"URL不正确"}];
@@ -40,7 +45,7 @@
     }
 }
 /// 不需要下载进度的网络请求
-- (void)kj_dataImageWithURL:(NSURL*)URL Complete:(KJLoadDataBlock)complete{
+- (void)kj_dataImageWithURL:(NSURL *)URL Complete:(KJLoadDataBlock)complete{
     NSMutableURLRequest *request = kGetRequest(URL, self.timeoutInterval?:10.0);
     NSURLSession *session = [NSURLSession sessionWithConfiguration:self.configuration delegate:self delegateQueue:self.queue];
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * data, NSURLResponse * response, NSError * error) {
@@ -50,7 +55,7 @@
     self.task = dataTask;
 }
 /// 下载进度的请求方式
-- (void)kj_downloadImageWithURL:(NSURL*)URL{
+- (void)kj_downloadImageWithURL:(NSURL *)URL{
     NSMutableURLRequest *request = kGetRequest(URL, self.timeoutInterval?:10.0);
     NSURLSession *session = [NSURLSession sessionWithConfiguration:self.configuration delegate:self delegateQueue:self.queue];
     NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithRequest:request];
@@ -70,20 +75,20 @@ NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutI
     return request;
 }
 #pragma mark - NSURLSessionDataDelegate
-- (void)URLSession:(NSURLSession*)session dataTask:(NSURLSessionDataTask*)dataTask didReceiveResponse:(NSURLResponse*)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler{
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask*)dataTask didReceiveResponse:(NSURLResponse*)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler{
     completionHandler(NSURLSessionResponseAllow);
 }
-- (void)URLSession:(NSURLSession*)session didReceiveChallenge:(NSURLAuthenticationChallenge*)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *))completionHandler{
+- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge*)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *))completionHandler{
     NSURLCredential *card = [[NSURLCredential alloc] initWithTrust:challenge.protectionSpace.serverTrust];
     completionHandler(NSURLSessionAuthChallengeUseCredential, card);
 }
 
 #pragma mark - NSURLSessionDownloadDelegate
-- (void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask*)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes{
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes{
     
 }
 /// 下载中
-- (void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask*)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite{
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite{
     @synchronized (self.downloadProgress) {
         self.downloadProgress.bytesWritten = bytesWritten;
         self.downloadProgress.downloadBytes = totalBytesWritten;
@@ -99,7 +104,7 @@ NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutI
     }
 }
 /// 下载完成调用
-- (void)URLSession:(NSURLSession*)session downloadTask:(NSURLSessionDownloadTask*)downloadTask didFinishDownloadingToURL:(NSURL*)location{
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location{
     if (self.dataBlock) {
         NSData *data = [NSData dataWithContentsOfURL:location];
         self.dataBlock(data, nil);
@@ -107,7 +112,7 @@ NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutI
     }
 }
 /// 下载失败
-- (void)URLSession:(NSURLSession*)session task:(NSURLSessionTask*)task didCompleteWithError:(NSError*)error{
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError*)error{
     if ([error code] != NSURLErrorCancelled) {
         if (self.dataBlock) {
             self.dataBlock(nil, error);
@@ -116,7 +121,7 @@ NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutI
     }
 }
 /// 后台下载
-- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession*)session{
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session{
     
 }
 #pragma mark - getter/setter
@@ -144,4 +149,5 @@ NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutI
     }
     return _configuration;
 }
+
 @end

@@ -12,7 +12,9 @@
 #import "KJBannerViewProtocol.h"
 #import "KJPageView.h"
 #import "KJBannerViewFlowLayout.h"
+
 NS_ASSUME_NONNULL_BEGIN
+
 IB_DESIGNABLE
 @interface KJBannerView : UIView
 /// 代理方法
@@ -67,7 +69,7 @@ IB_DESIGNABLE
 @interface KJBannerView (KJBannerViewCell)
 /// 如果背景不是纯色并且需要切圆角，请设置为yes
 @property (nonatomic,assign) BOOL bannerNoPureBack;
-/// 是否裁剪，默认yes
+/// 是否裁剪，默认NO
 @property (nonatomic,assign) BOOL bannerScale;
 /// 是否预渲染图片处理，默认yes
 @property (nonatomic,assign) BOOL bannerPreRendering;
@@ -89,4 +91,5 @@ IB_DESIGNABLE
 @property (nonatomic,readwrite,copy) void(^kScrollBlock)(KJBannerView *banner, NSInteger idx);
 
 @end
+
 NS_ASSUME_NONNULL_END

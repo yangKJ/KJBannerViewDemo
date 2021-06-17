@@ -9,16 +9,18 @@
 #import "KJBannerViewLoadManager.h"
 
 @interface KJBannerViewLoadManager ()
+
 @property(nonatomic,strong,class)NSMutableDictionary *dict;
+
 @end
 
 @implementation KJBannerViewLoadManager
 static KJBannerViewLoadManager *manager = nil;
 /// 带缓存机制的下载图片
-+ (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *image))complete{
++ (void)kj_loadImageWithURL:(NSString *)url complete:(void(^)(UIImage *image))complete{
     [self kj_loadImageWithURL:url complete:complete progress:nil];
 }
-+ (void)kj_loadImageWithURL:(NSString*)url complete:(void(^)(UIImage *image))complete progress:(KJLoadProgressBlock)progress{
++ (void)kj_loadImageWithURL:(NSString *)url complete:(void(^)(UIImage *image))complete progress:(KJLoadProgressBlock)progress{
     void (^kGetNetworkingImage)(void) = ^{
         if ([self kj_failureNumsForKey:url] >= self.kMaxLoadNum) {
             if (complete) complete(nil);
@@ -80,14 +82,14 @@ static KJBannerViewLoadManager *manager = nil;
     }
 }
 /// 下载数据，未使用缓存机制
-+ (NSData*)kj_downloadDataWithURL:(NSString*)url progress:(KJLoadProgressBlock)progress{
++ (NSData *)kj_downloadDataWithURL:(NSString *)url progress:(KJLoadProgressBlock)progress{
     @synchronized (self) {
         if (manager == nil) manager = [self new];
     }
     return [manager kj_recursionDataWithURL:[NSURL URLWithString:url] progress:progress];
 }
 /// 递归拿到DATA
-- (NSData*)kj_recursionDataWithURL:(NSURL*)URL progress:(KJLoadProgressBlock)progress{
+- (NSData *)kj_recursionDataWithURL:(NSURL *)URL progress:(KJLoadProgressBlock)progress{
     NSInteger count = [KJBannerViewLoadManager kj_failureNumsForKey:URL.absoluteString];
     if (count >= KJBannerViewLoadManager.kMaxLoadNum) {
         return nil;
@@ -122,18 +124,18 @@ static KJBannerViewLoadManager *manager = nil;
 }
 #pragma mark - private
 /// 重置失败次数
-+ (void)kj_resetFailureDictForKey:(NSString*)key{
++ (void)kj_resetFailureDictForKey:(NSString *)key{
     key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
     [self.dict setObject:@(0) forKey:key];
 }
 /// 失败次数
-+ (NSUInteger)kj_failureNumsForKey:(NSString*)key{
++ (NSUInteger)kj_failureNumsForKey:(NSString *)key{
     key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
     NSNumber *number = [self.dict objectForKey:key];
     return (number && [number respondsToSelector:@selector(integerValue)]) ? number.integerValue : 0;
 }
 /// 缓存失败
-+ (void)kj_cacheFailureForKey:(NSString*)key{
++ (void)kj_cacheFailureForKey:(NSString *)key{
     key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
     NSNumber *number = [self.dict objectForKey:key];
     NSUInteger index = 0;

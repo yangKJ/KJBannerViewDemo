@@ -92,13 +92,13 @@
     label2.font = [UIFont systemFontOfSize:14];
     [self.view addSubview:label2];
     
-    [self kj_bannerCreateAsyncTimer:YES Task:^{
-        kGCD_banner_main(^{
+//    [self kj_bannerCreateAsyncTimer:YES Task:^{
+//        kGCD_banner_main(^{
             self.label.text = [NSString stringWithFormat:@"缓存大小：%.02f MB",[KJBannerViewCacheManager kj_getLocalityImageCacheSize]/1024/1024.0];
             self.label1.text = [NSString stringWithFormat:@"当前设备可用内存：%.02f MB",[KJBannerModel availableMemory]];
             self.label2.text = [NSString stringWithFormat:@"当前任务所占用内存：%.02f MB",[KJBannerModel usedMemory]/2.];
-        });
-    } start:2 interval:.5 repeats:YES];
+//        });
+//    } start:2 interval:.5 repeats:YES];
 }
 - (void)kj_button{
 #pragma clang diagnostic push
@@ -157,7 +157,7 @@
     dispatch_group_t dispatchGroup = dispatch_group_create();
     dispatch_group_enter(dispatchGroup);
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [weakself kj_bannerAfterTask:^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_global_queue(0, 0), ^{
             NSArray *images = @[tu3,tu2,tu1];
             for (int i = 0; i<images.count; i++) {
                 KJBannerModel *model = [[KJBannerModel alloc]init];
@@ -167,11 +167,11 @@
                 [arr addObject:model];
             }
             dispatch_group_leave(dispatchGroup);
-        } time:1. Asyne:YES];
+        });
     });
     dispatch_group_enter(dispatchGroup);
     dispatch_group_async(dispatchGroup, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [weakself kj_bannerAfterTask:^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_global_queue(0, 0), ^{
             NSArray *images = @[tu2,tu2,tu2];
             for (int i = 0; i<images.count; i++) {
                 KJBannerModel *model = [[KJBannerModel alloc]init];
@@ -181,7 +181,7 @@
                 NSLog(@"----%@",model.customTitle);
             }
             dispatch_group_leave(dispatchGroup);
-        } time:.5 Asyne:YES];
+        });
     });
     dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^(){
         weakself.temp = arr;
@@ -239,7 +239,7 @@
     }else{
         [imageView kj_setImageWithURL:[NSURL URLWithString:model.customImageUrl] handle:^(id<KJBannerWebImageHandle> _Nonnull handle) {
             handle.bannerPlaceholder = [UIImage imageNamed:@"tu3"];
-            handle.cropScale = YES;
+            handle.bannerCropScale = YES;
             handle.bannerCompleted = ^(KJBannerImageType imageType, UIImage * image, NSData * data, NSError * error) {
                 model.customImage = image;
             };

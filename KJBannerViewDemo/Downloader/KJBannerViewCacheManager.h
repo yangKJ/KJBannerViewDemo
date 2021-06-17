@@ -9,7 +9,9 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
 NS_ASSUME_NONNULL_BEGIN
+
 #define KJBannerLoadImages [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/KJLoadImages"]
 @interface KJBannerViewCacheManager : NSObject
 /// 最大缓存，默认50mb
@@ -17,22 +19,23 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否允许写入Cache，默认为YES
 @property(nonatomic,assign,class)BOOL allowCache;
 /// MD5加密
-+ (NSString*)kj_bannerMD5WithString:(NSString*)string;
++ (NSString *)kj_bannerMD5WithString:(NSString *)string;
 /// 先从缓存读取，若没有则读取本地文件
-+ (UIImage*)kj_getImageWithKey:(NSString*)key;
++ (UIImage *)kj_getImageWithKey:(NSString *)key;
 /// 先从缓存读取，若没有则读取本地文件并写入缓存
-+ (void)kj_getImageWithKey:(NSString*)key completion:(void(^)(UIImage*image))completion;
++ (void)kj_getImageWithKey:(NSString *)key completion:(void(^)(UIImage*image))completion;
 /// 将图片写入缓存和存储到本地
-+ (void)kj_storeImage:(UIImage*)image Key:(NSString*)key;
++ (void)kj_storeImage:(UIImage *)image Key:(NSString *)key;
 
 @end
+
 
 //********************* 动态图缓存相关 *********************
 @interface KJBannerViewCacheManager (KJBannerGIF)
 /// 动态图本地获取
-+ (NSData*)kj_getGIFImageWithKey:(NSString*)key;
++ (NSData *)kj_getGIFImageWithKey:(NSString *)key;
 /// 将动态图写入本地
-+ (void)kj_storeGIFData:(NSData*)data Key:(NSString*)key;
++ (void)kj_storeGIFData:(NSData *)data Key:(NSString *)key;
 
 @end
 

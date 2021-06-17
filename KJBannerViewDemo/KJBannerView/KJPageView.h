@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "KJBannerViewType.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface KJPageView : UIView

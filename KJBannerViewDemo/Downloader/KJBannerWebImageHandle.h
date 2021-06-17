@@ -13,7 +13,9 @@
 #import "KJBannerViewDownloader.h"
 #import "KJBannerViewLoadManager.h"
 #import "KJBannerViewCacheManager.h"
+
 NS_ASSUME_NONNULL_BEGIN
+
 /// 图片下载完成回调
 typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType,
                                               UIImage * _Nullable image,
@@ -22,20 +24,20 @@ typedef void (^_Nullable KJWebImageCompleted)(KJBannerImageType imageType,
 @protocol KJBannerWebImageHandle <NSObject>
 @optional;
 #pragma mark - common
-/// 占位图
-@property(nonatomic,strong)UIImage *bannerPlaceholder;
 /// 图片下载完成回调
 @property(nonatomic,copy,readwrite)KJWebImageCompleted bannerCompleted;
 /// 下载进度回调
 @property(nonatomic,copy,readwrite)KJLoadProgressBlock bannerProgress;
-/// 是否缓存数据至本地，默认开启
-@property(nonatomic,assign)bool cacheDatas;
-/// 是否等比裁剪图片，默认关闭
-@property(nonatomic,assign)bool cropScale;
-/// 是否使用预渲染图像，默认开启（动态图暂不支持预渲染处理）
-@property(nonatomic,assign)bool preRendering;
 /// 获取原始图回调，裁剪开启才有效果
-@property(nonatomic,copy,readwrite)void(^kCropScaleImage)(UIImage * originalImgae, UIImage * scaleImage);
+@property(nonatomic,copy,readwrite)void(^kBannerCropScaleImage)(UIImage * originalImgae, UIImage * scaleImage);
+/// 占位图
+@property(nonatomic,strong)UIImage *bannerPlaceholder;
+/// 是否缓存数据至本地，默认开启
+@property(nonatomic,assign)bool bannerCacheDatas;
+/// 是否等比裁剪图片，默认关闭
+@property(nonatomic,assign)bool bannerCropScale;
+/// 是否使用预渲染图像，默认开启（动态图暂不支持预渲染处理）
+@property(nonatomic,assign)bool bannerPreRendering;
 
 #pragma mark - button
 /// 按钮状态

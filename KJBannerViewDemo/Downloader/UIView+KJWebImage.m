@@ -7,13 +7,17 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "UIView+KJWebImage.h"
+
 @interface UIView()<KJBannerWebImageHandle>
+
 @end
+
 @implementation UIView (KJWebImage)
-- (void)kj_setImageWithURL:(NSURL*)url handle:(void(^)(id<KJBannerWebImageHandle>handle))handle{
+
+- (void)kj_setImageWithURL:(NSURL *)url handle:(void(^)(id<KJBannerWebImageHandle>handle))handle{
     if (url == nil) return;
-    self.cacheDatas = true;
-    self.preRendering = true;
+    self.bannerCacheDatas = true;
+    self.bannerPreRendering = true;
     if (handle) handle(self);
     id<KJBannerWebImageHandle> han = (id<KJBannerWebImageHandle>)self;
     if ([self isKindOfClass:[UIImageView class]]) {
@@ -26,7 +30,7 @@
 }
 
 #pragma mark - UIImageView
-- (void)kj_setImageViewImageWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
+- (void)kj_setImageViewImageWithURL:(NSURL *)url handle:(id<KJBannerWebImageHandle>)han{
     UIImageView *imageView = (UIImageView*)self;
     CGSize size = imageView.frame.size;
     if (han.bannerPlaceholder) imageView.image = han.bannerPlaceholder;
@@ -51,7 +55,7 @@
 - (void)setBannerButtonState:(UIControlState)bannerButtonState{
     objc_setAssociatedObject(self, @selector(bannerButtonState), @(bannerButtonState), OBJC_ASSOCIATION_ASSIGN);
 }
-- (void)kj_setButtonImageWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
+- (void)kj_setButtonImageWithURL:(NSURL *)url handle:(id<KJBannerWebImageHandle>)han{
     UIButton *button = (UIButton*)self;
     CGSize size = button.imageView.frame.size;
     if (han.bannerPlaceholder) [button setImage:han.bannerPlaceholder forState:han.bannerButtonState];
@@ -78,7 +82,7 @@
 - (void)setBannerViewContentsGravity:(CALayerContentsGravity)bannerViewContentsGravity{
     objc_setAssociatedObject(self, @selector(bannerViewContentsGravity), bannerViewContentsGravity, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (void)kj_setViewImageContentsWithURL:(NSURL*)url handle:(id<KJBannerWebImageHandle>)han{
+- (void)kj_setViewImageContentsWithURL:(NSURL *)url handle:(id<KJBannerWebImageHandle>)han{
     __banner_weakself;
     CGSize size = weakself.frame.size;
     kGCD_banner_async(^{
@@ -99,7 +103,7 @@
     });
 }
 /// 设置Layer上面的内容，默认充满的填充方式
-- (CALayer*)kj_setLayerImageContents:(UIImage*)image{
+- (CALayer*)kj_setLayerImageContents:(UIImage *)image{
     CALayer * imageLayer = [CALayer layer];
     imageLayer.bounds = self.bounds;
     imageLayer.position = CGPointMake(self.bounds.size.width*.5, self.bounds.size.height*.5);
@@ -117,10 +121,10 @@ NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebI
     UIImage *animatedImage;
     if (imageCount == 1) {
         animatedImage = [[UIImage alloc] initWithData:data];
-        if (han.cropScale) {
+        if (han.bannerCropScale) {
             UIImage * scaleImage = kBannerCropImage(animatedImage, size);
             animatedImage = scaleImage;
-            if (han.kCropScaleImage) han.kCropScaleImage(animatedImage, scaleImage);
+            if (han.kBannerCropScaleImage) han.kBannerCropScaleImage(animatedImage, scaleImage);
         }
     }else{
         NSMutableArray *scaleImages = [NSMutableArray arrayWithCapacity:imageCount];
@@ -129,10 +133,10 @@ NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebI
         for (int i = 0; i<imageCount; i++) {
             CGImageRef cgImage = CGImageSourceCreateImageAtIndex(imageSource, i, nil);
             UIImage *originalImage = [UIImage imageWithCGImage:cgImage];
-            if (han.cropScale) {
+            if (han.bannerCropScale) {
                 UIImage * scaleImage = kBannerCropImage(originalImage, size);
                 originalImage = scaleImage;
-                if (han.kCropScaleImage) [originalImages addObject:originalImage];
+                if (han.kBannerCropScaleImage) [originalImages addObject:originalImage];
             }
             [scaleImages addObject:originalImage];
             CGImageRelease(cgImage);
@@ -146,9 +150,9 @@ NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebI
             time += duration.doubleValue;
         }
         animatedImage = [UIImage animatedImageWithImages:scaleImages duration:time];
-        if (han.cropScale && han.kCropScaleImage) {
+        if (han.bannerCropScale && han.kBannerCropScaleImage) {
             UIImage *originalImage = [UIImage animatedImageWithImages:originalImages duration:time];
-            han.kCropScaleImage(originalImage, animatedImage);
+            han.kBannerCropScaleImage(originalImage, animatedImage);
         }
     }
     CFRelease(imageSource);
@@ -159,7 +163,7 @@ NS_INLINE void kBannerWebImageSetImage(void(^imageblock)(UIImage *image) ,NSData
     kGCD_banner_async(^{
         UIImage *image = kBannerPlayImage(data, size, han);
         KJBannerImageType type = kBannerContentType(data);
-        if (han.preRendering && type != KJBannerImageTypeGif) {
+        if (han.bannerPreRendering && type != KJBannerImageTypeGif) {
             UIGraphicsBeginImageContextWithOptions(image.size, YES, 0);
             [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
             image = UIGraphicsGetImageFromCurrentImageContext();
@@ -180,7 +184,7 @@ NS_INLINE void kBannerWebImageDownloader(NSURL * url, CGSize size, id<KJBannerWe
     void (^kDownloaderAnalysis)(NSData *__data) = ^(NSData *__data){
         if (__data == nil) return;
         kBannerWebImageSetImage(imageblock, __data, size, han);
-        if (han.cacheDatas) {
+        if (han.bannerCacheDatas) {
             [KJBannerViewCacheManager kj_storeGIFData:__data Key:url.absoluteString];
         }
     };
@@ -278,29 +282,29 @@ NS_INLINE UIImage * _Nullable kBannerCropImage(UIImage * _Nonnull image, CGSize 
 - (void)setBannerProgress:(KJLoadProgressBlock)bannerProgress{
     objc_setAssociatedObject(self, @selector(bannerProgress), bannerProgress, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (bool)cacheDatas{
-    return [objc_getAssociatedObject(self, _cmd) intValue];
-}
-- (void)setCacheDatas:(bool)cacheDatas{
-    objc_setAssociatedObject(self, @selector(cacheDatas), @(cacheDatas), OBJC_ASSOCIATION_ASSIGN);
-}
-- (bool)cropScale{
-    return [objc_getAssociatedObject(self, _cmd) intValue];
-}
-- (void)setCropScale:(bool)cropScale{
-    objc_setAssociatedObject(self, @selector(cropScale), @(cropScale), OBJC_ASSOCIATION_ASSIGN);
-}
-- (bool)preRendering{
-    return [objc_getAssociatedObject(self, _cmd) intValue];
-}
-- (void)setPreRendering:(bool)preRendering{
-    objc_setAssociatedObject(self, @selector(preRendering), @(preRendering), OBJC_ASSOCIATION_ASSIGN);
-}
-- (void (^)(UIImage *, UIImage *))kCropScaleImage{
+- (void (^)(UIImage *, UIImage *))kBannerCropScaleImage{
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)setKCropScaleImage:(void (^)(UIImage *, UIImage *))kCropScaleImage{
-    objc_setAssociatedObject(self, @selector(kCropScaleImage), kCropScaleImage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)setKBannerCropScaleImage:(void (^)(UIImage *, UIImage *))kBannerCropScaleImage{
+    objc_setAssociatedObject(self, @selector(kBannerCropScaleImage), kBannerCropScaleImage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (bool)bannerCacheDatas{
+    return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+- (void)setBannerCacheDatas:(bool)bannerCacheDatas{
+    objc_setAssociatedObject(self, @selector(bannerCacheDatas), @(bannerCacheDatas), OBJC_ASSOCIATION_ASSIGN);
+}
+- (bool)bannerCropScale{
+    return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+- (void)setBannerCropScale:(bool)bannerCropScale{
+    objc_setAssociatedObject(self, @selector(bannerCropScale), @(bannerCropScale), OBJC_ASSOCIATION_ASSIGN);
+}
+- (bool)bannerPreRendering{
+    return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+- (void)setBannerPreRendering:(bool)bannerPreRendering{
+    objc_setAssociatedObject(self, @selector(bannerPreRendering), @(bannerPreRendering), OBJC_ASSOCIATION_ASSIGN);
 }
 
 @end

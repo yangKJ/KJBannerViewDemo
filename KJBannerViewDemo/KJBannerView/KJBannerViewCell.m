@@ -76,8 +76,8 @@
     __banner_weakself;
     [self.bannerImageView kj_setImageWithURL:[NSURL URLWithString:self.bannerDatas.bannerURLString] handle:^(id<KJBannerWebImageHandle>handle) {
         handle.bannerPlaceholder = weakself.bannerPlaceholder;
-        handle.cropScale = weakself.bannerScale;
-        handle.preRendering = weakself.bannerPreRendering;
+        handle.bannerCropScale = weakself.bannerScale;
+        handle.bannerPreRendering = weakself.bannerPreRendering;
         handle.bannerCompleted = ^(KJBannerImageType imageType, UIImage * image, NSData * data, NSError * error) {
             weakself.bannerDatas.bannerImage = image;
         };

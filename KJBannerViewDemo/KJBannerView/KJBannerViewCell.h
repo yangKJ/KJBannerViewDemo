@@ -8,10 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "KJBannerViewType.h"
+
 @interface KJBannerDatas : NSObject
+/// 暂存轮播图
 @property (nonatomic,strong) UIImage  *bannerImage;
 @property (nonatomic,strong) NSString *bannerURLString;
+
 @end
+
 @interface KJBannerViewCell : UICollectionViewCell
 /// 数据模型，用于自定义 itemClass 样式传递数据
 @property (nonatomic,strong) NSObject *itemModel;

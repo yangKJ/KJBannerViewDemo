@@ -9,7 +9,9 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
 NS_ASSUME_NONNULL_BEGIN
+
 @class KJBannerDownloadProgress;
 /// 网络请求回调
 typedef void (^KJLoadDataBlock)(NSData *_Nullable data, NSError *_Nullable error);
@@ -21,18 +23,23 @@ typedef void (^_Nullable KJLoadProgressBlock)(KJBannerDownloadProgress * downloa
 /// 设置最大并发队列数，默认为2条
 @property(nonatomic,assign)NSUInteger maxConcurrentOperationCount;
 /// 下载数据
-- (void)kj_startDownloadImageWithURL:(NSURL*)URL
+- (void)kj_startDownloadImageWithURL:(NSURL *)URL
                             Progress:(KJLoadProgressBlock)progress
                             Complete:(KJLoadDataBlock)complete;
 /// 取消下载
 - (void)kj_cancelRequest;
 
 @end
+
+//********************* 下载进度条 *********************
 @interface KJBannerDownloadProgress : NSObject
+
 @property(nonatomic,assign)int64_t bytesWritten;// 当前下载包大小
 @property(nonatomic,assign)int64_t downloadBytes;// 已下载大小
 @property(nonatomic,assign)int64_t totalBytes;// 总大小
 @property(nonatomic,assign)float progress;// 下载进度
 @property(nonatomic,assign)float speed;// 当前下载速度 kb/s
+
 @end
+
 NS_ASSUME_NONNULL_END
