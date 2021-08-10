@@ -54,7 +54,7 @@ NS_INLINE void kGCD_banner_async(dispatch_block_t _Nonnull block) {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
         block();
-    }else{
+    } else {
         dispatch_async(queue, block);
     }
 }
@@ -63,23 +63,27 @@ NS_INLINE void kGCD_banner_main(dispatch_block_t _Nonnull block) {
     dispatch_queue_t queue = dispatch_get_main_queue();
     if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
         block();
-    }else{
+    } else {
         if ([[NSThread currentThread] isMainThread]) {
             dispatch_async(queue, block);
-        }else{
+        } else {
             dispatch_sync(queue, block);
         }
     }
 }
-/// 异步绘制圆角，支持特定方位圆角处理，原理就是绘制一个镂空图片盖在上面，所以这种只适用于纯色背景
+/// 异步绘制圆角，原理就是绘制一个镂空图片盖在上面，所以这种只适用于纯色背景
+/// @param radius 圆角半径
+/// @param xxblock 图片回调
+/// @param corners 圆角位置，支持特定方位圆角处理
+/// @param view 视图
 NS_INLINE void kBannerAsyncCornerRadius(CGFloat radius, void(^xxblock)(UIImage *image), UIRectCorner corners, UIView *view){
     if (xxblock) {
         UIColor *bgColor;
         if (view.backgroundColor) {
             bgColor = view.backgroundColor;
-        }else if (view.superview.backgroundColor) {
+        } else if (view.superview.backgroundColor) {
             bgColor = view.superview.backgroundColor;
-        }else{
+        } else {
             bgColor = UIColor.whiteColor;
         }
         CGRect bounds = view.bounds;
@@ -88,7 +92,9 @@ NS_INLINE void kBannerAsyncCornerRadius(CGFloat radius, void(^xxblock)(UIImage *
             UIGraphicsBeginImageContextWithOptions(bounds.size, NO, scale);
             CGContextRef context = UIGraphicsGetCurrentContext();
             UIBezierPath *path = [UIBezierPath bezierPathWithRect:bounds];
-            UIBezierPath *cornerPath = [[UIBezierPath bezierPathWithRoundedRect:bounds byRoundingCorners:corners cornerRadii:CGSizeMake(radius, radius)] bezierPathByReversingPath];
+            UIBezierPath *cornerPath = [[UIBezierPath bezierPathWithRoundedRect:bounds
+                                                              byRoundingCorners:corners
+                                                                    cornerRadii:CGSizeMake(radius, radius)] bezierPathByReversingPath];
             [path appendPath:cornerPath];
             CGContextAddPath(context, path.CGPath);
             [bgColor set];

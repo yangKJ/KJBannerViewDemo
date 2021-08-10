@@ -22,16 +22,17 @@
     id<KJBannerWebImageHandle> han = (id<KJBannerWebImageHandle>)self;
     if ([self isKindOfClass:[UIImageView class]]) {
         [self kj_setImageViewImageWithURL:url handle:han];
-    }else if ([self isKindOfClass:[UIButton class]]) {
+    } else if ([self isKindOfClass:[UIButton class]]) {
         [self kj_setButtonImageWithURL:url handle:han];
-    }else if ([self isKindOfClass:[UIView class]]) {
+    } else if ([self isKindOfClass:[UIView class]]) {
         [self kj_setViewImageContentsWithURL:url handle:han];
     }
 }
 
 #pragma mark - UIImageView
+
 - (void)kj_setImageViewImageWithURL:(NSURL *)url handle:(id<KJBannerWebImageHandle>)han{
-    UIImageView *imageView = (UIImageView*)self;
+    UIImageView *imageView = (UIImageView *)self;
     CGSize size = imageView.frame.size;
     if (han.bannerPlaceholder) imageView.image = han.bannerPlaceholder;
     kGCD_banner_async(^{
@@ -40,7 +41,7 @@
             kBannerWebImageSetImage(^(UIImage *image) {
                 imageView.image = image;
             }, data, size, han);
-        }else{
+        } else {
             kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
                 kGCD_banner_main(^{ imageView.image = image;});
             });
@@ -49,6 +50,7 @@
 }
 
 #pragma mark - UIButton
+
 - (UIControlState)bannerButtonState{
     return (UIControlState)[objc_getAssociatedObject(self, _cmd) intValue];
 }
@@ -65,7 +67,7 @@
             kBannerWebImageSetImage(^(UIImage *image) {
                 [button setImage:image forState:han.bannerButtonState?:UIControlStateNormal];
             }, data, size, han);
-        }else{
+        } else {
             kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
                 kGCD_banner_main(^{
                     [button setImage:image forState:han.bannerButtonState?:UIControlStateNormal];
@@ -76,6 +78,7 @@
 }
 
 #pragma mark - UIView
+
 - (CALayerContentsGravity)bannerViewContentsGravity{
     return objc_getAssociatedObject(self, _cmd);
 }
@@ -92,7 +95,7 @@
                 CALayer *layer = [weakself kj_setLayerImageContents:image?:han.bannerPlaceholder];
                 layer.contentsGravity = han.bannerViewContentsGravity?:kCAGravityResize;
             }, data, size, han);
-        }else{
+        } else {
             kBannerWebImageDownloader(url, size, han, ^(UIImage * _Nonnull image) {
                 kGCD_banner_main(^{
                     CALayer *layer = [weakself kj_setLayerImageContents:image?:han.bannerPlaceholder];
@@ -113,7 +116,46 @@
 }
 
 #pragma mark - function
+
+/// 预渲染图片
+/// @param data 数据源
+/// @param size 尺寸
+/// @param han 参数
+NS_INLINE void kBannerPreRendering(void(^imageblock)(UIImage *image), NSData * data, CGSize size, id<KJBannerWebImageHandle> _Nullable han){
+    kGCD_banner_async(^{
+        CGImageRef cgImage = [UIImage imageWithData:data].CGImage;
+        CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage) & kCGBitmapAlphaInfoMask;
+        
+        BOOL hasAlpha = NO;
+        if (alphaInfo == kCGImageAlphaPremultipliedLast ||
+            alphaInfo == kCGImageAlphaPremultipliedFirst ||
+            alphaInfo == kCGImageAlphaLast ||
+            alphaInfo == kCGImageAlphaFirst) {
+            hasAlpha = YES;
+        }
+        
+        CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
+        bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+        
+        size_t width  = han.bannerCropScale ? size.width : CGImageGetWidth(cgImage);
+        size_t height = han.bannerCropScale ? size.height : CGImageGetHeight(cgImage);
+        
+        CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, 0, CGColorSpaceCreateDeviceRGB(), bitmapInfo);
+        CGContextDrawImage(context, CGRectMake(0, 0, width, height), cgImage);
+        cgImage = CGBitmapContextCreateImage(context);
+        
+        UIImage * image = [UIImage imageWithCGImage:cgImage];
+        CGContextRelease(context);
+        CGImageRelease(cgImage);
+        
+        imageblock(image);
+    });
+}
+
 /// 播放图片
+/// @param data 数据源
+/// @param size 尺寸
+/// @param han 参数
 NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebImageHandle> _Nullable han){
     if (data == nil || data.length == 0) return nil;
     CGImageSourceRef imageSource = CGImageSourceCreateWithData(CFBridgingRetain(data), nil);
@@ -126,7 +168,7 @@ NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebI
             animatedImage = scaleImage;
             if (han.kBannerCropScaleImage) han.kBannerCropScaleImage(animatedImage, scaleImage);
         }
-    }else{
+    } else {
         NSMutableArray *scaleImages = [NSMutableArray arrayWithCapacity:imageCount];
         NSMutableArray *originalImages = [NSMutableArray arrayWithCapacity:imageCount];
         NSTimeInterval time = 0;
@@ -159,7 +201,7 @@ NS_INLINE UIImage * kBannerPlayImage(NSData * data, CGSize size, id<KJBannerWebI
     return animatedImage;
 }
 /// 获取图片
-NS_INLINE void kBannerWebImageSetImage(void(^imageblock)(UIImage *image) ,NSData * data, CGSize size, id<KJBannerWebImageHandle> han){
+NS_INLINE void kBannerWebImageSetImage(void(^imageblock)(UIImage *image), NSData * data, CGSize size, id<KJBannerWebImageHandle> han){
     kGCD_banner_async(^{
         UIImage *image = kBannerPlayImage(data, size, han);
         KJBannerImageType type = kBannerContentType(data);
@@ -190,20 +232,20 @@ NS_INLINE void kBannerWebImageDownloader(NSURL * url, CGSize size, id<KJBannerWe
     };
     KJBannerViewDownloader *downloader = [KJBannerViewDownloader new];
     if (han.bannerProgress) {
-        [downloader kj_startDownloadImageWithURL:url Progress:^(KJBannerDownloadProgress * downloadProgress) {
+        [downloader kj_startDownloadImageWithURL:url progress:^(KJBannerDownloadProgress * downloadProgress) {
             han.bannerProgress(downloadProgress);
-        } Complete:^(NSData * _Nullable data, NSError * _Nullable error) {
+        } complete:^(NSData * _Nullable data, NSError * _Nullable error) {
             if (error) {
                 if (han.bannerCompleted) han.bannerCompleted(KJBannerImageTypeUnknown, nil, nil, error);
-            }else{
+            } else {
                 kDownloaderAnalysis(data);
             }
         }];
-    }else{
-        [downloader kj_startDownloadImageWithURL:url Progress:nil Complete:^(NSData * data, NSError * error) {
+    } else {
+        [downloader kj_startDownloadImageWithURL:url progress:nil complete:^(NSData * data, NSError * error) {
             if (error) {
                 if (han.bannerCompleted) han.bannerCompleted(KJBannerImageTypeUnknown, nil, nil, error);
-            }else{
+            } else {
                 kDownloaderAnalysis(data);
             }
         }];
@@ -225,7 +267,8 @@ NS_INLINE KJBannerImageType kBannerContentType(NSData * _Nonnull data){
             return KJBannerImageTypeTiff;
         case 0x52:
             if ([data length] < 12) return KJBannerImageTypeUnknown;
-            NSString *testString = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(0, 12)] encoding:NSASCIIStringEncoding];
+            NSString *testString = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(0, 12)]
+                                                         encoding:NSASCIIStringEncoding];
             if ([testString hasPrefix:@"RIFF"] && [testString hasSuffix:@"WEBP"]) return KJBannerImageTypeWebp;
             return KJBannerImageTypeUnknown;
     }
@@ -246,11 +289,11 @@ NS_INLINE UIImage * _Nullable kBannerCropImage(UIImage * _Nonnull image, CGSize 
             imgRatio = maxHeight / imgHeight;
             imgWidth = imgRatio * imgWidth;
             imgHeight = maxHeight;
-        }else if (imgRatio > maxRatio) {
+        } else if (imgRatio > maxRatio) {
             imgRatio = maxWidth / imgWidth;
             imgWidth = maxWidth;
             imgHeight = imgRatio * imgHeight;
-        }else{
+        } else {
             imgWidth = maxWidth;
             imgHeight = maxHeight;
         }
@@ -264,6 +307,7 @@ NS_INLINE UIImage * _Nullable kBannerCropImage(UIImage * _Nonnull image, CGSize 
 }
 
 #pragma maek - Associated
+
 - (UIImage *)bannerPlaceholder{
     return objc_getAssociatedObject(self, _cmd);
 }

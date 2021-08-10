@@ -10,26 +10,32 @@
 #import <UIKit/UIKit.h>
 #import "KJBannerViewType.h"
 #import "KJBannerViewProtocol.h"
-#import "KJPageView.h"
-#import "KJBannerViewFlowLayout.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
+@class KJBannerViewFlowLayout;
+@class KJPageView;
 IB_DESIGNABLE
 @interface KJBannerView : UIView
 /// 代理方法
 @property (nonatomic,weak) id<KJBannerViewDelegate> delegate;
 @property (nonatomic,weak) id<KJBannerViewDataSource> dataSource;
+
 /// 暂停计时器滚动处理，备注：在viewDidDisappear当中实现
 - (void)kj_pauseTimer;
+
 /// 继续计时器滚动，备注：在viewDidAppear当中实现
 - (void)kj_repauseTimer;
-/// 滚动到指定位置，备注：需要在设置数据源之后调用
-- (void)kj_makeScrollToIndex:(NSInteger)index;
+
 /// 使用Masonry自动布局，请在设置布局之后调用该方法
 - (void)kj_useMasonry;
+
 /// 设置完数据之后，请刷新
 - (void)kj_reloadBannerViewDatas;
+
+/// 滚动到指定位置，备注：需要在设置数据源之后调用
+/// @param index 指定位置
+- (void)kj_makeScrollToIndex:(NSInteger)index;
+
 
 //************************ API ************************
 /// 是否缩放，默认no
@@ -48,14 +54,14 @@ IB_DESIGNABLE
 @property (nonatomic,assign) IBInspectable CGFloat itemSpace;
 /// 滚动方向，默认从右到左
 @property (nonatomic,assign) KJBannerViewRollDirectionType rollType;
-/// 分页控制器
-@property (nonatomic,strong,readonly) KJPageView *pageControl;
 /// 当前位置
 @property (nonatomic,assign,readonly) NSInteger currentIndex;
+/// 分页控制器
+@property (nonatomic,strong,readonly) KJPageView *pageControl;
 /// 布局信息
 @property (nonatomic,strong,readonly) KJBannerViewFlowLayout *layout;
 
-//************************ 废弃属性方法 *****************************/
+//************************ 废弃属性方法 *****************************
 /// 支持自定义Cell，自定义Cell需继承自 KJBannerViewCell，和委托的自定义方式互斥
 /// 备注：性能上面这种自定义方式其实优于委托的自定义方式，只是这种方式要创建继承于KJBannerViewCell的Cell，略显麻烦
 @property (nonatomic,strong) Class itemClass DEPRECATED_MSG_ATTRIBUTE("Please use dataSource [kj_BannerView:ItemSize:Index:]");

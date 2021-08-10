@@ -40,7 +40,7 @@
             view.frame = CGRectMake(x, 0, _selectWidth, _normalheight);
             x += _selectWidth + _margin;
             view.backgroundColor = _selectColor;
-        }else{
+        } else {
             view.frame = CGRectMake(x, 0, _normalWidth, _normalheight);
             x += _normalWidth + _margin;
             view.backgroundColor = _normalColor;
@@ -51,7 +51,7 @@
     if (pages <= 0 || _pages == pages) return;
     _pages = pages;
     [self.backView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview) withObject:self];
-    CGFloat width = _selectWidth + (pages-1)*_normalWidth + (pages-1)*_margin;
+    CGFloat width = _selectWidth + (pages - 1) * _normalWidth + (pages - 1) * _margin;
     self.backView.frame = CGRectMake(0, 0, width, _normalheight);
     switch (self.displayType) {
         case KJPageControlDisplayTypeCenter:
@@ -75,7 +75,7 @@
             view.frame = CGRectMake(x, 0, _selectWidth, _normalheight);
             view.backgroundColor = _selectColor;
             x += _selectWidth + _margin;
-        }else{
+        } else {
             view.frame = CGRectMake(x, 0, _normalWidth, _normalheight);
             view.backgroundColor = _normalColor;
             x += _normalWidth + _margin;
@@ -118,29 +118,32 @@
     [self.backView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview) withObject:self];
     CGFloat margin = self.margin?:8;
     CGFloat dotwidth,dotheight = 0.0;
+    CGFloat width  = self.frame.size.width;
+    CGFloat height = self.frame.size.height;
     if (self.dotwidth && self.dotheight) {
         dotwidth  = self.dotwidth;
         dotheight = self.dotheight;
-    }else{
-        dotwidth = (self.frame.size.width-(pages-1)*margin) / pages;
-        dotwidth = dotwidth > self.frame.size.height/2. ? self.frame.size.height/2. : dotwidth;
+    } else {
+        dotwidth = (width - (pages - 1) * margin) / pages;
+        dotwidth = dotwidth > height * .5 ? height * .5 : dotwidth;
         if (_pageType == PageControlStyleCircle || _pageType == PageControlStyleSquare ) {
             dotheight = dotwidth;
-        }else if (_pageType == PageControlStyleRectangle) {
+        } else if (_pageType == PageControlStyleRectangle) {
             dotheight = dotwidth/4.;
             dotwidth *= 1.5;
         }
     }
-    self.backView.frame = CGRectMake(0, 0, (pages)*(dotwidth+margin), self.frame.size.height);
+    CGFloat backwidth = pages * (dotwidth + margin);
+    self.backView.frame = CGRectMake(0, 0, backwidth, height);
     switch (self.displayType) {
         case KJPageControlDisplayTypeCenter:
-            self.backView.center = CGPointMake(self.frame.size.width*.5, self.frame.size.height);
+            self.backView.center = CGPointMake(width * .5, height);
             break;
         case KJPageControlDisplayTypeLeft:
-            self.backView.center = CGPointMake(self.backView.frame.size.width/2.+self.space, self.frame.size.height);
+            self.backView.center = CGPointMake(backwidth * .5 + self.space, height);
             break;
         case KJPageControlDisplayTypeRight:
-            self.backView.center = CGPointMake(self.frame.size.width-self.backView.frame.size.width/2.-self.space+margin, self.frame.size.height);
+            self.backView.center = CGPointMake(width - backwidth * .5 - self.space + margin, height);
             break;
         default:
             break;
@@ -154,7 +157,7 @@
         switch (_pageType) {
             case PageControlStyleCircle:
                 view.frame = CGRectMake(x, 0, dotwidth, dotheight);
-                view.layer.cornerRadius = dotwidth / 2;
+                view.layer.cornerRadius = dotwidth * .5;
                 break;
             case PageControlStyleSquare:
                 view.frame = CGRectMake(x, 0, dotwidth, dotheight);
@@ -178,9 +181,9 @@
         NSInteger max = _totalPages - 1;
         if (currentIndex == 0 && _currentIndex == max) {
             isRight = true;
-        }else if (currentIndex == max && _currentIndex == 0) {
+        } else if (currentIndex == max && _currentIndex == 0) {
             isRight = false;
-        }else if (_currentIndex < currentIndex) {
+        } else if (_currentIndex < currentIndex) {
             isRight = true;
         }
         UIView *view = self.backView.subviews[currentIndex];
@@ -188,10 +191,10 @@
         if (isRight && currentIndex == 0) {
             UIView *lastView = self.backView.subviews.lastObject;
             lastView.backgroundColor = self.normalColor;
-        }else if (!isRight && currentIndex == max) {
+        } else if (!isRight && currentIndex == max) {
             UIView *lastView = self.backView.subviews.firstObject;
             lastView.backgroundColor = self.normalColor;
-        }else{
+        } else {
             UIView *lastView = self.backView.subviews[isRight?currentIndex-1:currentIndex+1];
             lastView.backgroundColor = self.normalColor;
         }
@@ -205,22 +208,23 @@
         self.loopPageView.currentPage = index;
         return;
     }
-    [self.backView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.backView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * obj, NSUInteger idx, BOOL * stop) {
         obj.backgroundColor = idx == index ? self.selectColor : self.normalColor;
     }];
 }
+
 #pragma mark - lazy
-- (KJDotPageView*)loopPageView{
+
+- (KJDotPageView *)loopPageView{
     if (!_loopPageView) {
-        CGFloat w = self.dotwidth?:5;
         _loopPageView = [[KJDotPageView alloc] initWithFrame:self.bounds];
         _loopPageView.normalColor = _normalColor;
         _loopPageView.selectColor = _selectColor;
         _loopPageView.space = self.space;
         _loopPageView.displayType = self.displayType;
-        _loopPageView.normalWidth = w;
+        _loopPageView.normalWidth = self.dotwidth?:5;
         _loopPageView.margin = self.margin?:5.;
-        _loopPageView.selectWidth = w*2;
+        _loopPageView.selectWidth = (self.dotwidth?:5) * 2;
         _loopPageView.normalheight = self.dotheight?:5;
         [self addSubview:_loopPageView];
     }

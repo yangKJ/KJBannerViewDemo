@@ -9,6 +9,8 @@
 #import "KJBannerView.h"
 #import "KJBannerViewCell.h"
 #import <objc/runtime.h>
+#import "KJPageView.h"
+#import "KJBannerViewFlowLayout.h"
 
 #define kPageHeight (20)
 
@@ -41,7 +43,7 @@
     _rollType = KJBannerViewRollDirectionTypeRightToLeft;
     _itemClass = [KJBannerViewCell class];
 }
-- (instancetype)initWithCoder:(NSCoder*)aDecoder{
+- (instancetype)initWithCoder:(NSCoder *)aDecoder{
     if (self = [super initWithCoder:aDecoder]) {
         [self kj_config];
         [self addSubview:self.collectionView];
@@ -59,18 +61,19 @@
     }
     return self;
 }
-- (void)willMoveToSuperview:(UIView*)newSuperview{
+- (void)willMoveToSuperview:(UIView *)newSuperview{
     [super willMoveToSuperview:newSuperview];
     [self invalidateTimer];
 }
 #pragma mark - 布尔值
+
 - (BOOL)isZoom{
     return !!(_divisor & 1);
 }
 - (void)setIsZoom:(BOOL)isZoom{
     if (isZoom) {
         _divisor |= 1;
-    }else{
+    } else {
         _divisor &= 0;
     }
     self.layout.isZoom = isZoom;
@@ -81,7 +84,7 @@
 - (void)setInfiniteLoop:(BOOL)infiniteLoop{
     if (infiniteLoop) {
         _divisor |=  (1<<1);
-    }else{
+    } else {
         _divisor &= ~(1<<1);
     }
 }
@@ -92,7 +95,7 @@
     if (autoScroll) {
         _divisor |=  (1<<2);
         [self setupTimer];
-    }else{
+    } else {
         _divisor &= ~(1<<2);
         [self invalidateTimer];
     }
@@ -103,25 +106,26 @@
 - (void)setShowPageControl:(BOOL)showPageControl{
     if (showPageControl) {
         _divisor |=  (1<<3);
-    }else{
+    } else {
         _divisor &= ~(1<<3);
     }
     _pageControl.hidden = !showPageControl;
 }
 
 #pragma mark - GCD定时器
+
 /// 开启计时器
 - (void)setupTimer{
     if (self.timer) {
         [self kj_bannerResumeTimer:self.timer];
-    }else{
+    } else {
         __weak __typeof(self) weakself = self;
         self.timer = [self kj_bannerCreateAsyncTimer:YES Task:^{
             __strong __typeof(self) strongself = weakself;
             kGCD_banner_main(^{
                 [strongself automaticScroll];
             });
-        } start:self.autoTime/2. interval:self.autoTime repeats:YES];
+        } start:self.autoTime * .5 interval:self.autoTime repeats:YES];
     }
 }
 /// 释放计时器
@@ -144,7 +148,12 @@
     }
 }
 
-/* 创建异步定时器 */
+/// 创建异步定时器
+/// @param async 是否异步
+/// @param task 事件回调
+/// @param start 开始时间
+/// @param interval 间隔时间
+/// @param repeats 是否重复
 - (dispatch_source_t)kj_bannerCreateAsyncTimer:(BOOL)async
                                           Task:(void(^)(void))task
                                          start:(NSTimeInterval)start
@@ -160,10 +169,10 @@
         if (weaktarget == nil) {
             dispatch_source_cancel(timer);
             timer = nil;
-        }else{
+        } else {
             if (repeats) {
                 task();
-            }else{
+            } else {
                 task();
                 [weaktarget kj_bannerStopTimer:timer];
             }
@@ -198,6 +207,7 @@
 }
 
 #pragma mark - public
+
 /// 使用Masonry自动布局，请在设置布局之后调用该方法
 - (void)kj_useMasonry{
     [self layoutIfNeeded];
@@ -224,6 +234,7 @@
 }
 
 #pragma mark - setter/getter
+
 - (void)setDelegate:(id<KJBannerViewDelegate>)delegate{
     _delegate = delegate;
     if ([delegate respondsToSelector:@selector(kj_BannerView:CurrentIndex:)]) {
@@ -262,7 +273,7 @@
     if (rollType == KJBannerViewRollDirectionTypeRightToLeft ||
         rollType == KJBannerViewRollDirectionTypeLeftToRight) {
         self.layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    }else{
+    } else {
         self.layout.scrollDirection = UICollectionViewScrollDirectionVertical;
     }
 }
@@ -279,12 +290,12 @@
         self.collectionView.hidden = YES;
         [self invalidateTimer];
         return;
-    }else if (count == 1) {
+    } else if (count == 1) {
         self.nums = 3;
         self.pageControl.hidden = YES;
         self.collectionView.scrollEnabled = NO;
         [self invalidateTimer];
-    }else{
+    } else {
         if (CGRectEqualToRect(self.pageControl.frame, CGRectZero)) {
             [self kj_useMasonry];
         }
@@ -307,7 +318,9 @@
     NSInteger index = self.infiniteLoop ? self.nums * 0.5 : 0;
     [self kj_scrollToIndex:index automaticScroll:NO];
 }
+
 #pragma mark - private
+
 /// 自动滚动
 - (void)automaticScroll{
     if(_imageDatas.count == 0) return;
@@ -333,7 +346,7 @@
     NSInteger index = 0;
     if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
         index = (self.collectionView.contentOffset.x + (_itemWidth + _itemSpace) * 0.5) / (_itemSpace + _itemWidth);
-    }else{
+    } else {
         index = (self.collectionView.contentOffset.y + self.height * 0.5) / self.height;
     }
     return MAX(0, index);
@@ -348,7 +361,7 @@
     self.currentIndex = idx;
     if (automatic) {
         self.pageControl.currentIndex = idx;
-    }else if (self.pageControl.hidden == NO){
+    } else if (self.pageControl.hidden == NO){
         [self.pageControl kj_notAutomaticScrollIndex:idx];
     }
     if ([self.delegate respondsToSelector:@selector(kj_BannerView:CurrentIndex:)]) {
@@ -374,7 +387,7 @@
     if (automatic) {
         [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
                                     atScrollPosition:position animated:YES];
-    }else{
+    } else {
         [UIView performWithoutAnimation:^{
             [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
                                         atScrollPosition:position animated:NO];
@@ -383,21 +396,22 @@
 }
 
 #pragma mark - UIScrollViewDelegate
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView{
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
 //    self.collectionView.userInteractionEnabled = NO;
     if (_imageDatas.count == 0) return;
     if ([self.delegate respondsToSelector:@selector(kj_BannerViewDidScroll:)]) {
         [self.delegate kj_BannerViewDidScroll:self];
     }
 }
-- (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView{
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     _lastX = scrollView.contentOffset.x;
     _lastY = scrollView.contentOffset.y;
     if (self.autoScroll) {
         [self invalidateTimer];
     }
 }
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView willDecelerate:(BOOL)decelerate{
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     if (self.autoScroll) {
         __banner_weakself;
         dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
@@ -406,14 +420,16 @@
         });
     }
 }
-- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView{
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     [self scrollViewDidEndScrollingAnimation:self.collectionView];
 }
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView{
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
     self.collectionView.userInteractionEnabled = YES;
 }
 /// 手离开屏幕的时候
-- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset{
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint *)targetContentOffset{
     self.collectionView.userInteractionEnabled = NO;
     NSInteger idx = 0,dragIndex = 0;
     if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
@@ -421,16 +437,16 @@
         NSInteger page = move / (self.itemWidth*.5);
         if (velocity.x > 0 || page > 0) {
             dragIndex = 1;
-        }else if (velocity.x < 0 || page < 0) {
+        } else if (velocity.x < 0 || page < 0) {
             dragIndex = -1;
         }
         idx = (_lastX + (self.itemWidth + self.itemSpace) * 0.5) / (self.itemSpace + self.itemWidth);
-    }else{
+    } else {
         CGFloat move = scrollView.contentOffset.y - self.lastY;
         NSInteger page = move / (self.height*.5);
         if (velocity.y > 0 || page > 0) {
             dragIndex = 1;
-        }else if (velocity.y < 0 || page < 0) {
+        } else if (velocity.y < 0 || page < 0) {
             dragIndex = -1;
         }
         idx = (_lastY + (self.height) * 0.5) / (self.height);
@@ -438,11 +454,11 @@
     [self kj_scrollToIndex:idx + dragIndex automaticScroll:NO];
 }
 /// 松开手指滑动开始减速的时候设置滑动动画
-- (void)scrollViewWillBeginDecelerating:(UIScrollView*)scrollView{
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
 //    NSInteger idx = 0;
 //    if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
 //        idx = (_lastX + (self.itemWidth + self.itemSpace) * 0.5) / (self.itemSpace + self.itemWidth);
-//    }else{
+//    } else {
 //        idx = (_lastY + (self.height) * 0.5) / (self.height);
 //    }
 //    [self kj_scrollToIndex:idx automaticScroll:NO];
@@ -452,7 +468,8 @@
 - (NSInteger)collectionView:(UICollectionView*)collectionView numberOfItemsInSection:(NSInteger)section{
     return self.nums;
 }
-- (__kindof UICollectionViewCell*)collectionView:(UICollectionView*)collectionView cellForItemAtIndexPath:(NSIndexPath*)indexPath{
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
+                           cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     NSInteger count = _imageDatas.count;
     if (count == 0) {
         return [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
@@ -482,8 +499,10 @@
     
     return bannerViewCell;
 }
+
 #pragma mark - UICollectionViewDelegate
-- (void)collectionView:(UICollectionView*)collectionView didSelectItemAtIndexPath:(NSIndexPath*)indexPath{
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     NSInteger idx = [self currentIndex] % _imageDatas.count;
     if ([self.delegate respondsToSelector:@selector(kj_BannerView:SelectIndex:)]) {
         [self.delegate kj_BannerView:self SelectIndex:idx];
@@ -492,8 +511,10 @@
         self.kSelectBlock(self,idx);
     }
 }
+
 #pragma mark - lazy
-- (CALayer*)topLayer{
+
+- (CALayer *)topLayer{
     if (!_topLayer){
         _topLayer = [[CALayer alloc]init];
         [_topLayer setBounds:self.bounds];
@@ -503,7 +524,7 @@
     }
     return _topLayer;
 }
-- (KJBannerViewFlowLayout*)layout{
+- (KJBannerViewFlowLayout *)layout{
     if(!_layout){
         _layout = [[KJBannerViewFlowLayout alloc]init];
         _layout.minimumLineSpacing = 0;
@@ -512,7 +533,7 @@
     }
     return _layout;
 }
-- (UICollectionView*)collectionView{
+- (UICollectionView *)collectionView{
     if(!_collectionView){
         _collectionView = [[UICollectionView alloc]initWithFrame:self.bounds collectionViewLayout:self.layout];
         _collectionView.delegate = self;
@@ -525,7 +546,7 @@
     }
     return _collectionView;
 }
-- (KJPageView*)pageControl{
+- (KJPageView *)pageControl{
     if(!_pageControl){
         _pageControl = [[KJPageView alloc]init];
         _pageControl.hidden = YES;
@@ -540,7 +561,7 @@
     NSNumber *number = objc_getAssociatedObject(self, _cmd);
     if (number == nil) {
         return NO;
-    }else{
+    } else {
         return [number boolValue];
     }
 }
@@ -551,7 +572,7 @@
     NSNumber *number = objc_getAssociatedObject(self, _cmd);
     if (number == nil) {
         return YES;
-    }else{
+    } else {
         return [number boolValue];
     }
 }
@@ -567,7 +588,7 @@
     NSNumber *number = objc_getAssociatedObject(self, _cmd);
     if (number == nil) {
         return UIViewContentModeScaleAspectFill;
-    }else{
+    } else {
         return number.integerValue;
     }
 }
@@ -601,6 +622,7 @@
 }
 
 @end
+
 @implementation KJBannerView (KJBannerBlock)
 - (void (^)(KJBannerView*,NSInteger))kSelectBlock{
     return objc_getAssociatedObject(self, _cmd);

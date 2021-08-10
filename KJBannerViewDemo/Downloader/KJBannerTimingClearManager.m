@@ -9,25 +9,30 @@
 #import "KJBannerTimingClearManager.h"
 #import "KJBannerViewType.h"
 #import "KJBannerViewCacheManager.h"
+
 NSString *kBannerTimingUserDefaultsKey = @"kBannerTimingUserDefaultsKey";
+
 @implementation KJBannerTimingClearManager
+
 static BOOL _openTiming = NO;
 + (BOOL)openTiming{
     return _openTiming;
 }
 /* 开启清理功能，清除时间以前的数据 */
-+ (void)kj_openTimingCrearCached:(BOOL)crear TimingTimeType:(KJBannerViewTimingTimeType)type{
++ (void)kj_openTimingCrearCached:(BOOL)crear timingTimeType:(KJBannerViewTimingTimeType)type{
     _openTiming = crear;
     if (crear == NO) return;
     kGCD_banner_async(^{
+        NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
         if (type == KJBannerViewTimingTimeTypeAll) {
             [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
-            [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kBannerTimingUserDefaultsKey];
-            [[NSUserDefaults standardUserDefaults] synchronize];
+            [userDefaults setObject:nil forKey:kBannerTimingUserDefaultsKey];
+            [userDefaults synchronize];
             return;
         }
-        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kBannerTimingUserDefaultsKey]];
-        if (dict == nil) return;
+        NSDictionary * before = [userDefaults dictionaryForKey:kBannerTimingUserDefaultsKey];
+        if (before == nil) return;
+        NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithDictionary:before];
         NSInteger time = (NSInteger)NSDate.date.timeIntervalSince1970;
         switch (type) {
             case KJBannerViewTimingTimeTypeOneDay:
@@ -48,32 +53,32 @@ static BOOL _openTiming = NO;
             default:
                 break;
         }
-        NSMutableArray *keys = [NSMutableArray arrayWithArray:dict.allKeys];
-        [self kj_quickSortArrary:keys leftIndex:0 rightIndex:keys.count-1];
+        NSArray * keys = dict.allKeys;
+        [self kj_sortDescriptorWithArray:&keys key:@"self"];
         NSInteger index;
         if ([keys.lastObject integerValue] <= time) {
             index = 0;
-        }else{
-            index = [self kj_binarySearchKeys:keys TimingTime:time];
+        } else {
+            index = [self kj_searchKeys:keys timingTime:time];
             if (index == 0 && [keys[0] integerValue] <= time) {
-                NSString *key = [NSString stringWithFormat:@"%@",keys[0]];
+                NSString * key = [NSString stringWithFormat:@"%@",keys[0]];
                 if ([self kj_removePath:[dict valueForKey:key]]) {
                     [dict removeObjectForKey:key];
                 }
-                [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kBannerTimingUserDefaultsKey];
-                [[NSUserDefaults standardUserDefaults] synchronize];
+                [userDefaults setObject:dict forKey:kBannerTimingUserDefaultsKey];
+                [userDefaults synchronize];
                 return;
             }
             index = keys.count - index;
         }
-        for (NSInteger i = index; i<keys.count; i++) {
-            NSString *key = [NSString stringWithFormat:@"%@",keys[i]];
+        for (NSInteger i = index; i < keys.count; i++) {
+            NSString * key = [NSString stringWithFormat:@"%@",keys[i]];
             if ([self kj_removePath:[dict valueForKey:key]]) {
                 [dict removeObjectForKey:key];
             }
         }
-        [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kBannerTimingUserDefaultsKey];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [userDefaults setObject:dict forKey:kBannerTimingUserDefaultsKey];
+        [userDefaults synchronize];
     });
 }
 /* 自动清理大于多少的数据源 */
@@ -82,45 +87,23 @@ static BOOL _openTiming = NO;
 }
 
 #pragma mark - private
-/// 快速排序
-+ (void)kj_quickSortArrary:(NSMutableArray *)array leftIndex:(NSInteger)leftIndex rightIndex:(NSInteger)rightIndex{
-    if (leftIndex > rightIndex) return;
-    NSInteger i = leftIndex;
-    NSInteger j = rightIndex;
-    NSInteger key = [array[i] integerValue];
-    while (i < j) {
-        while (i < j && key <= [array[j] integerValue]) {
-            j--;
-        }
-        array[i] = array[j];
-        while (i < j && key >= [array[i] integerValue]) {
-            i++;
-        }
-        array[j] = array[i];
+/// 升序排列
++ (void)kj_sortDescriptorWithArray:(NSArray **)array key:(NSString *)key{
+    @autoreleasepool {
+        NSSortDescriptor * des = [NSSortDescriptor sortDescriptorWithKey:key ascending:YES];
+        NSMutableArray * temp = [NSMutableArray arrayWithArray:*array];
+        [temp sortUsingDescriptors:@[des]];
+        * array = [temp mutableCopy];
     }
-    array[i] = @(key);
-    //前面排序
-    [self kj_quickSortArrary:array leftIndex:leftIndex rightIndex:i - 1];
-    //后面排序
-    [self kj_quickSortArrary:array leftIndex:i + 1 rightIndex:rightIndex];
 }
-/// 二分查找，找到当前index
-+ (NSInteger)kj_binarySearchKeys:(NSArray *)keys TimingTime:(NSInteger)time{
-    NSInteger mid = 0;
-    NSInteger frist = 0;
-    NSInteger last = keys.count - 1;
-    while (frist<=last) {
-        mid = (frist+last)>>1;
-        if (time > [keys[mid] integerValue]) {
-            frist = mid+1;
-        }else if (time < [keys[mid] integerValue]) {
-            last = mid-1;
-        }else{
-            break;
-        }
-    }
-    return mid;
+
+/// 谓词匹配查找index
++ (NSInteger)kj_searchKeys:(NSArray *)keys timingTime:(NSInteger)time{
+    NSString * string = [NSString stringWithFormat:@"SELF LIKE '%ld'", time];
+    NSPredicate * predicate = [NSPredicate predicateWithFormat:string];
+    return [[keys filteredArrayUsingPredicate:predicate].firstObject integerValue];
 }
+
 /// 删除路径文件
 + (BOOL)kj_removePath:(NSString *)path{
     NSString *directoryPath = [KJBannerLoadImages stringByAppendingPathComponent:path];

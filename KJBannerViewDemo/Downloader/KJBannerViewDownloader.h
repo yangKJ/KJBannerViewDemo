@@ -14,18 +14,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class KJBannerDownloadProgress;
 /// 网络请求回调
-typedef void (^KJLoadDataBlock)(NSData *_Nullable data, NSError *_Nullable error);
+typedef void (^_Nullable KJLoadDataBlock)(NSData * _Nullable data, NSError * _Nullable error);
 /// 下载进度回调
 typedef void (^_Nullable KJLoadProgressBlock)(KJBannerDownloadProgress * downloadProgress);
 @interface KJBannerViewDownloader : NSObject
+
 /// 超时时长，默认10秒
 @property(nonatomic,assign)NSTimeInterval timeoutInterval;
 /// 设置最大并发队列数，默认为2条
 @property(nonatomic,assign)NSUInteger maxConcurrentOperationCount;
+
 /// 下载数据
+/// @param URL 下载链接
+/// @param progress 下载进度回调
+/// @param complete 下载完成回调
 - (void)kj_startDownloadImageWithURL:(NSURL *)URL
-                            Progress:(KJLoadProgressBlock)progress
-                            Complete:(KJLoadDataBlock)complete;
+                            progress:(KJLoadProgressBlock)progress
+                            complete:(KJLoadDataBlock)complete;
 /// 取消下载
 - (void)kj_cancelRequest;
 

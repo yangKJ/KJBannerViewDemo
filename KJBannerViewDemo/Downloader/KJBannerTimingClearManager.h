@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
 //清理时间周期
 typedef NS_ENUM(NSInteger, KJBannerViewTimingTimeType) {
     KJBannerViewTimingTimeTypeOneDay,  //1天
@@ -19,15 +20,20 @@ typedef NS_ENUM(NSInteger, KJBannerViewTimingTimeType) {
     KJBannerViewTimingTimeTypeOneYear, //1年
     KJBannerViewTimingTimeTypeAll,     //清理全部
 };
-extern NSString *kBannerTimingUserDefaultsKey;
+extern NSString * kBannerTimingUserDefaultsKey;
 @interface KJBannerTimingClearManager : NSObject
-/* 该方法需要在程序最开始位置执行，可以是Appdelegate或首页控制器里面 */
-/* 只有开启过该方法才会存储时间 */
-/* 开启清理功能，清除时间以前的数据 */
-+ (void)kj_openTimingCrearCached:(BOOL)crear TimingTimeType:(KJBannerViewTimingTimeType)type;
 
-/* 自动清理大于多少的数据源，单位kb */
+/// 该方法需要在程序最开始位置执行，可以是Appdelegate或首页控制器里面
+/// @param crear 开启清理功能，只有开启过该方法才会存储时间
+/// @param type 清除指定时间以前的数据
++ (void)kj_openTimingCrearCached:(BOOL)crear timingTimeType:(KJBannerViewTimingTimeType)type;
+
+/// 自动清理大于多少的数据源
+/// @param maxBytes 最大存储数据，单位kb
 + (void)kj_autoClearCachedMaxBytes:(NSInteger)maxBytes;
+
+
+
 
 /* ****************** 内部使用 *********/
 @property(nonatomic,assign,class,readonly)BOOL openTiming;

@@ -21,6 +21,7 @@
 #define tu2 @"http://photos.tuchong.com/285606/f/4374153.jpg"
 #define tu3 @"https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fgss0.baidu.com%2F-4o3dSag_xI4khGko9WTAnF6hhy%2Fzhidao%2Fpic%2Fitem%2Ff636afc379310a558f3f592dbb4543a9832610cb.jpg&refer=http%3A%2F%2Fgss0.baidu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1614246801&t=096f32d80f2f04110b4bddde27f2165e"
 #define tu4 @"https://tfile.melinked.com/2021/01/5c071de1-b7e9-4bf4-a1f7-a2f35eff9ed6.jpg"
+#define tu5 @"https://starteos-app.oss-cn-shenzhen.aliyuncs.com/starteos-cas/customer-avatar/10015929/dQX7I5ZY0Zh9FDymztbePdbINmhVj7qM"
 
 @interface ViewController ()<KJBannerViewDelegate,KJBannerViewDataSource>
 @property (weak, nonatomic) IBOutlet KJBannerView *banner;
@@ -56,7 +57,7 @@
     [self setMasonry];
    
     //清除三天前缓存的数据
-    [KJBannerTimingClearManager kj_openTimingCrearCached:YES TimingTimeType:(KJBannerViewTimingTimeTypeThreeDay)];
+    [KJBannerTimingClearManager kj_openTimingCrearCached:YES timingTimeType:(KJBannerViewTimingTimeTypeThreeDay)];
     
     BOOL isPhoneX = ({
         BOOL isPhoneX = NO;
@@ -192,7 +193,7 @@
 - (void)qiehuanAction:(UISwitch*)sender{
     if (sender.on) {
         [self _setDatas];
-    }else{
+    } else {
         self.temp = @[];
         [self.banner2 kj_reloadBannerViewDatas];
     }
@@ -236,7 +237,7 @@
     BaseImageView *imageView = [[BaseImageView alloc]initWithFrame:CGRectMake(0, 0, size.width, size.height)];
     if (model.customImage) {
         imageView.image = model.customImage;
-    }else{
+    } else {
         [imageView kj_setImageWithURL:[NSURL URLWithString:model.customImageUrl] handle:^(id<KJBannerWebImageHandle> _Nonnull handle) {
             handle.bannerPlaceholder = [UIImage imageNamed:@"tu3"];
             handle.bannerCropScale = YES;
@@ -259,7 +260,7 @@
         label.font = [UIFont boldSystemFontOfSize:35];
         label.textColor = UIColor.greenColor;
         label.textAlignment = NSTextAlignmentCenter;
-    }else{
+    } else {
         CGRect rect = {0, size.height - 50, size.width, 20};
         UILabel *label = [[UILabel alloc]initWithFrame:rect];
         [imageView addSubview:label];

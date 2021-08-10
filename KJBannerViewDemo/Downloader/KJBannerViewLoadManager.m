@@ -32,7 +32,7 @@ static KJBannerViewLoadManager *manager = nil;
                 [self kj_cacheFailureForKey:url];
                 [self kj_loadImageWithURL:url complete:complete progress:progress];
                 return;
-            }else{
+            } else {
                 image = [UIImage imageWithData:data];
                 if (image) {
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -49,13 +49,13 @@ static KJBannerViewLoadManager *manager = nil;
         };
         KJBannerViewDownloader *downloader = [[KJBannerViewDownloader alloc] init];
         if (progress) {
-            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:^(KJBannerDownloadProgress * downloadProgress) {
+            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] progress:^(KJBannerDownloadProgress * downloadProgress) {
                 progress(downloadProgress);
-            } Complete:^(NSData * _Nullable data, NSError * _Nullable error) {
+            } complete:^(NSData * _Nullable data, NSError * _Nullable error) {
                 kAnalysis(data, error);
             }];
-        }else{
-            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] Progress:nil Complete:^(NSData *data, NSError *error) {
+        } else {
+            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] progress:nil complete:^(NSData *data, NSError *error) {
                 kAnalysis(data, error);
             }];
         }
@@ -66,17 +66,17 @@ static KJBannerViewLoadManager *manager = nil;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (complete) complete(image);
                 });
-            }else{
+            } else {
                 kGetNetworkingImage();
             }
         }];
-    }else{
+    } else {
         UIImage *image = [KJBannerViewCacheManager kj_getImageWithKey:url];
         if (image) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (complete) complete(image);
             });
-        }else{
+        } else {
             kGetNetworkingImage();
         }
     }
@@ -100,11 +100,11 @@ static KJBannerViewLoadManager *manager = nil;
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         dispatch_group_async(dispatch_group_create(), queue, ^{
-            [[KJBannerViewDownloader new] kj_startDownloadImageWithURL:URL Progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
+            [[KJBannerViewDownloader new] kj_startDownloadImageWithURL:URL progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
                 if (progress) {
                     progress(downloadProgress);
                 }
-            } Complete:^(NSData *data, NSError *error) {
+            } complete:^(NSData *data, NSError *error) {
                 if (error) {
                     [KJBannerViewLoadManager kj_cacheFailureForKey:URL.absoluteString];
                 }
@@ -118,7 +118,7 @@ static KJBannerViewLoadManager *manager = nil;
     if (resultData) {
         [KJBannerViewLoadManager kj_resetFailureDictForKey:URL.absoluteString];
         return resultData;
-    }else{
+    } else {
         return [self kj_recursionDataWithURL:URL progress:progress];
     }
 }
@@ -131,7 +131,7 @@ static KJBannerViewLoadManager *manager = nil;
 /// 失败次数
 + (NSUInteger)kj_failureNumsForKey:(NSString *)key{
     key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
-    NSNumber *number = [self.dict objectForKey:key];
+    NSNumber * number = [self.dict objectForKey:key];
     return (number && [number respondsToSelector:@selector(integerValue)]) ? number.integerValue : 0;
 }
 /// 缓存失败
@@ -147,14 +147,15 @@ static KJBannerViewLoadManager *manager = nil;
 }
 
 #pragma mark - lazy
+
 static NSMutableDictionary *_dict = nil;
-+ (NSMutableDictionary*)dict{
++ (NSMutableDictionary *)dict{
     if (_dict == nil) {
         _dict = [NSMutableDictionary dictionary];
     }
     return _dict;
 }
-+ (void)setDict:(NSMutableDictionary*)dict{
++ (void)setDict:(NSMutableDictionary *)dict{
     _dict = dict;
 }
 static NSInteger _kMaxLoadNum = 2;
