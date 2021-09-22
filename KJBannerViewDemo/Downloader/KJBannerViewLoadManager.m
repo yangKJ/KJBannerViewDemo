@@ -7,6 +7,8 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewLoadManager.h"
+#import "KJBannerViewCacheManager.h"
+#import "KJBannerViewFunc.h"
 
 @interface KJBannerViewLoadManager ()
 
@@ -48,14 +50,15 @@ static KJBannerViewLoadManager *manager = nil;
             });
         };
         KJBannerViewDownloader *downloader = [[KJBannerViewDownloader alloc] init];
+        NSURL * __autoreleasing URL = [NSURL URLWithString:url];
         if (progress) {
-            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] progress:^(KJBannerDownloadProgress * downloadProgress) {
-                progress(downloadProgress);
+            [downloader kj_startDownloadImageWithURL:URL progress:^(KJBannerDownloadProgress * __progress) {
+                progress(__progress);
             } complete:^(NSData * _Nullable data, NSError * _Nullable error) {
                 kAnalysis(data, error);
             }];
         } else {
-            [downloader kj_startDownloadImageWithURL:[NSURL URLWithString:url] progress:nil complete:^(NSData *data, NSError *error) {
+            [downloader kj_startDownloadImageWithURL:URL progress:nil complete:^(NSData *data, NSError *error) {
                 kAnalysis(data, error);
             }];
         }
@@ -96,14 +99,13 @@ static KJBannerViewLoadManager *manager = nil;
     }
     NSData *resultData = ({
         if (URL == nil) return nil;
-        __block NSData *__data = nil;
+        __block NSData * __data = nil;
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         dispatch_group_async(dispatch_group_create(), queue, ^{
-            [[KJBannerViewDownloader new] kj_startDownloadImageWithURL:URL progress:^(KJBannerDownloadProgress * _Nonnull downloadProgress) {
-                if (progress) {
-                    progress(downloadProgress);
-                }
+            KJBannerViewDownloader * downloader = [[KJBannerViewDownloader alloc] init];
+            [downloader kj_startDownloadImageWithURL:URL progress:^(KJBannerDownloadProgress * __progress) {
+                progress ? progress(__progress) : nil;
             } complete:^(NSData *data, NSError *error) {
                 if (error) {
                     [KJBannerViewLoadManager kj_cacheFailureForKey:URL.absoluteString];
@@ -122,21 +124,21 @@ static KJBannerViewLoadManager *manager = nil;
         return [self kj_recursionDataWithURL:URL progress:progress];
     }
 }
+
 #pragma mark - private
+
 /// 重置失败次数
 + (void)kj_resetFailureDictForKey:(NSString *)key{
-    key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
-    [self.dict setObject:@(0) forKey:key];
+    [self.dict setObject:@(0) forKey:kBannerMD5String(key)];
 }
 /// 失败次数
 + (NSUInteger)kj_failureNumsForKey:(NSString *)key{
-    key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
-    NSNumber * number = [self.dict objectForKey:key];
+    NSNumber * number = [self.dict objectForKey:kBannerMD5String(key)];
     return (number && [number respondsToSelector:@selector(integerValue)]) ? number.integerValue : 0;
 }
 /// 缓存失败
 + (void)kj_cacheFailureForKey:(NSString *)key{
-    key = [KJBannerViewCacheManager kj_bannerMD5WithString:key];
+    key = kBannerMD5String(key);
     NSNumber *number = [self.dict objectForKey:key];
     NSUInteger index = 0;
     if (number && [number respondsToSelector:@selector(integerValue)]) {

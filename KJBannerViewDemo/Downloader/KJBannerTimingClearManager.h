@@ -32,12 +32,6 @@ extern NSString * kBannerTimingUserDefaultsKey;
 /// @param maxBytes 最大存储数据，单位kb
 + (void)kj_autoClearCachedMaxBytes:(NSInteger)maxBytes;
 
-
-
-
-/* ****************** 内部使用 *********/
-@property(nonatomic,assign,class,readonly)BOOL openTiming;
-
 @end
 
 NS_ASSUME_NONNULL_END

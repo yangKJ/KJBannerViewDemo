@@ -7,38 +7,21 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import <UIKit/UIKit.h>
-#import "KJBannerViewType.h"
-
-@interface KJBannerDatas : NSObject
-/// 暂存轮播图
-@property (nonatomic,strong) UIImage  *bannerImage;
-@property (nonatomic,strong) NSString *bannerURLString;
-
-@end
 
 @interface KJBannerViewCell : UICollectionViewCell
-/// 数据模型，用于自定义 itemClass 样式传递数据
-@property (nonatomic,strong) NSObject *itemModel;
-/// 使用 KJBannerViewDataSource 方式时候使用
-@property (nonatomic,strong) UIView *itemView;
 
-/// 定制特定方位圆角
-@property (nonatomic,assign) UIRectCorner bannerCornerRadius;
-/// 图片显示方式
-@property (nonatomic,assign) UIViewContentMode bannerContentMode;
-/// 圆角
-@property (nonatomic,assign) CGFloat bannerRadius;
-/// 自带数据模型
-@property (nonatomic,strong) KJBannerDatas *bannerDatas;
-/// 占位图
-@property (nonatomic,strong) UIImage *bannerPlaceholder;
-/// 是否裁剪
-@property (nonatomic,assign) BOOL bannerScale;
-/// 如果背景不是纯色，请设置为yes
-@property (nonatomic,assign) BOOL bannerNoPureBack;
-/// 是否预渲染图片处理，默认yes
-@property (nonatomic,assign) BOOL bannerPreRendering;
 /// 图片显示控件
-@property (nonatomic,strong,readonly) UIImageView *bannerImageView;
+@property (nonatomic, strong, readonly) UIImageView *bannerImageView;
+
+/// 图片链接地址，支持动态GIF和网图、本地图等等
+@property (nonatomic, strong) NSString * imageURLString;
+
+/// 下一个图片链接地址，用于预加载
+@property (nonatomic, strong) NSString * nextImageURLString;
+
+/// 🎷 是否使用本库提供的图片加载，支持动态GIF网图混合使用
+/// 经过预渲染和暂存在缓存区处理，性能方面更优
+/// 前提条件，必须引入网络加载模块 pod 'KJBannerView/Downloader'
+@property (nonatomic, assign) BOOL useMineLoadImage;
 
 @end

@@ -7,7 +7,6 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 //  网图显示扩展
 
-#import <UIKit/UIKit.h>
 #import "KJBannerWebImageHandle.h"
 
 NS_ASSUME_NONNULL_BEGIN

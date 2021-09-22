@@ -11,6 +11,7 @@
 
 #import "KJBannerView.h" // 轮播Banner
 #import "KJPageView.h" // 分页控件
+#import "KJBannerViewTimer.h" // GCD计时器
 
 // 显示网络图片（目前支持设置UIImageView，UIButton，UIView三种）
 #if __has_include(<KJBannerView/UIView+KJWebImage.h>)

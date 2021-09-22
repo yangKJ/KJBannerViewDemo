@@ -7,8 +7,8 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewCacheManager.h"
-#import <CommonCrypto/CommonDigest.h>
 #import "KJBannerTimingClearManager.h"
+#import "KJBannerViewFunc.h"
 #import <objc/message.h>
 
 @interface KJBannerViewCacheManager()
@@ -18,21 +18,14 @@
 @end
 
 @implementation KJBannerViewCacheManager
-/// MD5加密
-+ (NSString *)kj_bannerMD5WithString:(NSString *)string{
-    const char *original_str = [string UTF8String];
-    unsigned char digist[CC_MD5_DIGEST_LENGTH];
-    CC_MD5(original_str, (uint)strlen(original_str), digist);
-    NSMutableString *outPutStr = [NSMutableString stringWithCapacity:10];
-    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
-        [outPutStr appendFormat:@"%02X", digist[i]];
-    }
-    return [outPutStr lowercaseString];
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 /// 先从缓存读取，若没有则读取本地文件
-+ (UIImage *)kj_getImageWithKey:(NSString *)key{
++ (nullable UIImage *)kj_getImageWithKey:(NSString *)key{
     if (key == nil || key.length == 0) return nil;
-    NSString *subpath = [self kj_bannerMD5WithString:key];
+    NSString *subpath = kBannerMD5String(key);
     UIImage *image = [self.cache objectForKey:subpath];
     if (image == nil) {
         NSString *path = [KJBannerLoadImages stringByAppendingPathComponent:subpath];
@@ -49,7 +42,7 @@
         return;
     }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *subpath = [self kj_bannerMD5WithString:key];
+        NSString *subpath = kBannerMD5String(key);
         UIImage *image = [self.cache objectForKey:subpath];
         if (image == nil) {
             NSString *path = [KJBannerLoadImages stringByAppendingPathComponent:subpath];
@@ -69,7 +62,7 @@
 + (void)kj_storeImage:(UIImage *)image Key:(NSString *)key{
     if (image == nil || key == nil || key.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *subpath = [self kj_bannerMD5WithString:key];
+        NSString *subpath = kBannerMD5String(key);
         [self kj_saveExtensionPath:subpath];
         if (self.allowCache) {
             [self kj_config];
@@ -89,7 +82,9 @@
         }
     });
 }
+
 #pragma mark - private
+
 static KJBannerViewCacheManager *manager = nil;
 + (KJBannerViewCacheManager*)kj_config{
     @synchronized (self) {
@@ -100,18 +95,16 @@ static KJBannerViewCacheManager *manager = nil;
     }
     return manager;
 }
-- (void)dealloc{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-}
 - (void)kj_clearCaches{
     [KJBannerViewCacheManager.cache removeAllObjects];
 }
-static inline NSUInteger kImageCacheSize(UIImage *image){
+static inline NSUInteger kImageCacheSize(UIImage * image){
   return image.size.height * image.size.width * image.scale * image.scale;
 }
 //存储扩展
 + (void)kj_saveExtensionPath:(NSString *)subpath{
-    if (KJBannerTimingClearManager.openTiming) {
+    bool openTiming = [[KJBannerTimingClearManager valueForKey:@"openTiming"] boolValue];
+    if (openTiming) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:kBannerTimingUserDefaultsKey]];
         [dict setObject:subpath forKey:[NSString stringWithFormat:@"%f",NSDate.date.timeIntervalSince1970]];
         [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kBannerTimingUserDefaultsKey];
@@ -120,14 +113,15 @@ static inline NSUInteger kImageCacheSize(UIImage *image){
 }
 
 #pragma mark - lazy
+
 static NSCache *_cache = nil;
-+ (NSCache*)cache{
++ (NSCache *)cache{
     if (_cache == nil) {
         _cache = [[NSCache alloc] init];
     }
     return _cache;
 }
-+ (void)setCache:(NSCache*)cache{
++ (void)setCache:(NSCache *)cache{
     _cache = cache;
 }
 static BOOL _allowCache = YES;
@@ -148,17 +142,17 @@ static NSUInteger _maxCache = 50;
 
 @end
 
-
 @implementation KJBannerViewCacheManager (KJBannerGIF)
-+ (NSData *)kj_getGIFImageWithKey:(NSString *)key{
++ (nullable NSData *)kj_getGIFImageWithKey:(NSString *)key{
     if (key == nil || key.length == 0) return nil;
-    return [NSData dataWithContentsOfFile:[KJBannerLoadImages stringByAppendingPathComponent:[self kj_bannerMD5WithString:key]]];
+    NSString *path = [KJBannerLoadImages stringByAppendingPathComponent:kBannerMD5String(key)];
+    return [NSData dataWithContentsOfFile:path];
 }
 /// 将动态图写入存储到本地
 + (void)kj_storeGIFData:(NSData *)data Key:(NSString *)key{
     if (data == nil || key == nil || data.length == 0) return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *subpath = [self kj_bannerMD5WithString:key];
+        NSString *subpath = kBannerMD5String(key);
         SEL sel = NSSelectorFromString(@"kj_saveExtensionPath:");
         if ([self respondsToSelector:sel]) {
             ((void(*)(id, SEL, NSString*))(void*)objc_msgSend)((id)self, sel, subpath);
@@ -166,8 +160,9 @@ static NSUInteger _maxCache = 50;
         NSString *directoryPath = KJBannerLoadImages;
         if (![[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
             NSError *error = nil;
-            BOOL isOK = [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:&error];
-            if (isOK && error == nil){}else return;
+            BOOL isOK = [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath
+                                                  withIntermediateDirectories:YES attributes:nil error:&error];
+            if (isOK && error == nil) { } else return;
         }
         @autoreleasepool {
             NSString *path = [directoryPath stringByAppendingPathComponent:subpath];
@@ -177,7 +172,9 @@ static NSUInteger _maxCache = 50;
 }
 
 @end
+
 @implementation KJBannerViewCacheManager (KJBannerCache)
+
 /// 清理掉缓存和本地文件
 + (BOOL)kj_clearLocalityImageAndCache{
     [self.cache removeAllObjects];
@@ -191,20 +188,19 @@ static NSUInteger _maxCache = 50;
 + (int64_t)kj_getLocalityImageCacheSize{
     BOOL isDir = NO;
     int64_t total = 0;
-    NSString *directoryPath = KJBannerLoadImages;
+    NSString * directoryPath = KJBannerLoadImages;
     if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:&isDir]) {
-        if (isDir) {
-            NSError *error = nil;
-            NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryPath error:&error];
-            if (error == nil) {
-                for (NSString *subpath in array) {
-                    NSString *path = [directoryPath stringByAppendingPathComponent:subpath];
-                    NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
-                    if (error == nil) total += [dict[NSFileSize] unsignedIntegerValue];
-                }
-            }
+        if (isDir == NO) return total;
+        NSError *error = nil;
+        NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryPath error:&error];
+        if (error) return total;
+        for (NSString * subpath in array) {
+            NSString *path = [directoryPath stringByAppendingPathComponent:subpath];
+            NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:&error];
+            if (error == nil) total += [dict[NSFileSize] unsignedIntegerValue];
         }
     }
     return total;
 }
+
 @end

@@ -9,7 +9,6 @@
 
 #import <Foundation/Foundation.h>
 #import "KJBannerViewDownloader.h"
-#import "KJBannerViewCacheManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

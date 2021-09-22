@@ -11,37 +11,39 @@
 #import <objc/runtime.h>
 #import "KJPageView.h"
 #import "KJBannerViewFlowLayout.h"
+#import "KJBannerViewTimer.h"
+#import "KJBannerViewFunc.h"
 
 #define kPageHeight (20)
 
 @interface KJBannerView() <UICollectionViewDataSource, UICollectionViewDelegate>
 
-@property (nonatomic,strong) NSArray<KJBannerDatas*>*temps;
 @property (nonatomic,strong) UICollectionView *collectionView;
 @property (nonatomic,strong) KJBannerViewFlowLayout *layout;
 @property (nonatomic,strong) KJPageView *pageControl;
-@property (nonatomic,assign) NSInteger currentIndex;
 @property (nonatomic,strong) CALayer *topLayer;
-@property (nonatomic,assign) NSInteger nums;
 @property (nonatomic,assign) CGFloat height;
 @property (nonatomic,assign) CGFloat lastX,lastY;
-@property (nonatomic,assign) dispatch_source_t timer;
-@property (nonatomic,assign) BOOL isHangUp;//计时器是否挂起
+@property (nonatomic,strong) KJBannerViewTimer *timer;
+@property (nonatomic,assign) NSInteger shamItemCount;// 虚假Cell个数，无穷大看着像无限轮播
+@property (nonatomic,assign) NSInteger numberOfItems;// 真实Cell个数
+@property (nonatomic,strong) NSMutableDictionary *cacheImageDict;// 缓存区已经显示过的图片资源
 
 @end
 
-@implementation KJBannerView{
-    char _divisor;
-}
+@implementation KJBannerView
+
 /// 设置默认参数
 - (void)kj_config{
-    _divisor = 0b00001110;//已用6位
     _itemWidth = self.bounds.size.width;
     _height = self.bounds.size.height;
     _itemSpace = 0;
     _autoTime = 2;
+    _infiniteLoop = YES;
+    _autoScroll = YES;
+    _showPageControl = YES;
     _rollType = KJBannerViewRollDirectionTypeRightToLeft;
-    _itemClass = [KJBannerViewCell class];
+    _cacheImageDict = [NSMutableDictionary dictionary];
 }
 - (instancetype)initWithCoder:(NSCoder *)aDecoder{
     if (self = [super initWithCoder:aDecoder]) {
@@ -63,150 +65,63 @@
 }
 - (void)willMoveToSuperview:(UIView *)newSuperview{
     [super willMoveToSuperview:newSuperview];
-    [self invalidateTimer];
+    [self.timer kj_pauseTimer];
 }
-#pragma mark - 布尔值
-
-- (BOOL)isZoom{
-    return !!(_divisor & 1);
-}
-- (void)setIsZoom:(BOOL)isZoom{
-    if (isZoom) {
-        _divisor |= 1;
-    } else {
-        _divisor &= 0;
-    }
-    self.layout.isZoom = isZoom;
-}
-- (BOOL)infiniteLoop{
-    return !!(_divisor & 2);
-}
-- (void)setInfiniteLoop:(BOOL)infiniteLoop{
-    if (infiniteLoop) {
-        _divisor |=  (1<<1);
-    } else {
-        _divisor &= ~(1<<1);
-    }
-}
-- (BOOL)autoScroll{
-    return !!(_divisor & 4);
-}
-- (void)setAutoScroll:(BOOL)autoScroll{
-    if (autoScroll) {
-        _divisor |=  (1<<2);
-        [self setupTimer];
-    } else {
-        _divisor &= ~(1<<2);
-        [self invalidateTimer];
-    }
-}
-- (BOOL)showPageControl{
-    return !!(_divisor & 8);
-}
-- (void)setShowPageControl:(BOOL)showPageControl{
-    if (showPageControl) {
-        _divisor |=  (1<<3);
-    } else {
-        _divisor &= ~(1<<3);
-    }
-    _pageControl.hidden = !showPageControl;
+- (void)dealloc{
+    [self.timer kj_invalidateTimer];
 }
 
-#pragma mark - GCD定时器
+#pragma mark - public method
 
-/// 开启计时器
-- (void)setupTimer{
-    if (self.timer) {
-        [self kj_bannerResumeTimer:self.timer];
-    } else {
-        __weak __typeof(self) weakself = self;
-        self.timer = [self kj_bannerCreateAsyncTimer:YES Task:^{
-            __strong __typeof(self) strongself = weakself;
-            kGCD_banner_main(^{
-                [strongself automaticScroll];
-            });
-        } start:self.autoTime * .5 interval:self.autoTime repeats:YES];
+/// 注册一个类，用于创建 `UICollectionViewCell`
+/// @param clazz 类
+/// @param identifier 标识符
+- (void)registerClass:(Class)clazz forCellWithReuseIdentifier:(NSString *)identifier{
+    [self.collectionView registerClass:clazz forCellWithReuseIdentifier:identifier];
+}
+
+/// 注册一个类，用于创建 `UICollectionViewCell`
+/// @param nib UINib
+/// @param identifier 标识符
+- (void)registerNib:(UINib *)nib forCellWithReuseIdentifier:(NSString *)identifier{
+    [self.collectionView registerNib:nib forCellWithReuseIdentifier:identifier];
+}
+
+/// 创建 `UICollectionViewCell`
+/// @param identifier 标识符
+/// @param index 下标
+- (__kindof KJBannerViewCell *)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier
+                                                             forIndex:(NSInteger)index{
+    NSIndexPath * indexPath = [NSIndexPath indexPathForItem:index inSection:0];
+    id cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+    if (![cell isKindOfClass:[KJBannerViewCell class]]) {
+        NSAssert(YES, @"Cell class must be subclass of KJBannerViewCell");
+    }
+    return (__kindof KJBannerViewCell *)cell;
+}
+/// 刷新
+- (void)reloadData{
+    if ([self.dataSource respondsToSelector:@selector(kj_numberOfItemsInBannerView:)]) {
+        [self.cacheImageDict removeAllObjects];
+        self.numberOfItems = [self.dataSource kj_numberOfItemsInBannerView:self];
     }
 }
-/// 释放计时器
-- (void)invalidateTimer{
-    if (self.timer) {
-        [self kj_bannerStopTimer:self.timer];
-        _timer = nil;
-    }
+
+/// 滚动到指定位置
+/// @param index 指定位置
+/// @param animated 是否执行动画
+- (void)scrollToItemAtIndex:(NSInteger)index animated:(BOOL)animated{
+    [self kj_scrollToIndex:index autoScroll:NO animated:animated];
 }
+
 /// 暂停计时器滚动处理
 - (void)kj_pauseTimer{
-    if (self.timer) {
-        [self kj_bannerPauseTimer:self.timer];
-    }
+    [self.timer kj_pauseTimer];
 }
 /// 继续计时器滚动
 - (void)kj_repauseTimer{
-    if (self.timer) {
-        [self kj_bannerResumeTimer:self.timer];
-    }
+    [self.timer kj_startTimer];
 }
-
-/// 创建异步定时器
-/// @param async 是否异步
-/// @param task 事件回调
-/// @param start 开始时间
-/// @param interval 间隔时间
-/// @param repeats 是否重复
-- (dispatch_source_t)kj_bannerCreateAsyncTimer:(BOOL)async
-                                          Task:(void(^)(void))task
-                                         start:(NSTimeInterval)start
-                                      interval:(NSTimeInterval)interval
-                                       repeats:(BOOL)repeats{
-    if (!task || start < 0 || (interval <= 0 && repeats)) return nil;
-    self.isHangUp = NO;
-    dispatch_queue_t queue = async ? dispatch_get_global_queue(0, 0) : dispatch_get_main_queue();
-    __block dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
-    dispatch_source_set_timer(timer, dispatch_time(DISPATCH_TIME_NOW, start * NSEC_PER_SEC), interval * NSEC_PER_SEC, 0);
-    __weak __typeof(self) weaktarget = self;
-    dispatch_source_set_event_handler(timer, ^{
-        if (weaktarget == nil) {
-            dispatch_source_cancel(timer);
-            timer = nil;
-        } else {
-            if (repeats) {
-                task();
-            } else {
-                task();
-                [weaktarget kj_bannerStopTimer:timer];
-            }
-        }
-    });
-    dispatch_resume(timer);
-    return timer;
-}
-/* 取消计时器 */
-- (void)kj_bannerStopTimer:(dispatch_source_t)timer{
-    self.isHangUp = NO;
-    if (timer) {
-        dispatch_source_cancel(timer);
-        timer = nil;
-    }
-}
-/* 暂停计时器 */
-- (void)kj_bannerPauseTimer:(dispatch_source_t)timer{
-    if (timer) {
-        self.isHangUp = YES;
-        dispatch_suspend(timer);
-    }
-}
-/* 继续计时器 */
-- (void)kj_bannerResumeTimer:(dispatch_source_t)timer{
-    if (timer && self.isHangUp) {
-        self.isHangUp = NO;
-        //挂起的时候注意，多次暂停的操作会导致线程锁的现象
-        //dispatch_suspend和dispatch_resume是一对
-        dispatch_resume(timer);
-    }
-}
-
-#pragma mark - public
 
 /// 使用Masonry自动布局，请在设置布局之后调用该方法
 - (void)kj_useMasonry{
@@ -221,44 +136,42 @@
 }
 /// 滚动到指定位置
 - (void)kj_makeScrollToIndex:(NSInteger)index{
-    [self kj_scrollToIndex:index automaticScroll:NO];
+    [self scrollToItemAtIndex:index animated:YES];
 }
 /// 如果为异步操作获取到数据源之后，请刷新
 - (void)kj_reloadBannerViewDatas{
-    if ([_dataSource respondsToSelector:@selector(kj_setDatasBannerView:)]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        self.imageDatas = [self.dataSource kj_setDatasBannerView:self];
-#pragma clang diagnostic pop
-    }
+    [self reloadData];
 }
 
 #pragma mark - setter/getter
 
-- (void)setDelegate:(id<KJBannerViewDelegate>)delegate{
-    _delegate = delegate;
-    if ([delegate respondsToSelector:@selector(kj_BannerView:CurrentIndex:)]) {
-        if ([delegate kj_BannerView:self CurrentIndex:0]) {
-            _pageControl.hidden = YES;
+- (void)setIsZoom:(BOOL)isZoom{
+    _isZoom = isZoom;
+    self.layout.isZoom = isZoom;
+}
+- (void)setAutoScroll:(BOOL)autoScroll{
+    _autoScroll = autoScroll;
+    if (autoScroll) {
+        if (self.timer.pausing) {
+            [self.timer kj_startTimer];
+        }
+    } else {
+        [self.timer kj_invalidateTimer];
+    }
+}
+- (void)setShowPageControl:(BOOL)showPageControl{
+    _showPageControl = showPageControl;
+    self.pageControl.hidden = !showPageControl;
+}
+- (void)setAutoTime:(CGFloat)autoTime{
+    if (_autoTime != autoTime) {
+        _autoTime = autoTime;
+        [self.timer kj_invalidateTimer];
+        _timer = nil;
+        if (self.timer && self.autoScroll) {
+            [self.timer kj_startTimer];
         }
     }
-}
-- (void)setDataSource:(id<KJBannerViewDataSource>)dataSource{
-    _dataSource = dataSource;
-    if ([dataSource respondsToSelector:@selector(kj_BannerView:ItemSize:Index:)]) {
-        _divisor |= (1<<5);
-    }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    self.imageDatas = [dataSource kj_setDatasBannerView:self];
-#pragma clang diagnostic pop
-}
-- (void)setItemClass:(Class)itemClass{
-    _itemClass = itemClass;
-    if (![NSStringFromClass(itemClass) isEqualToString:@"KJBannerViewCell"]) {
-        _divisor |= (1<<4);
-    }
-    [self.collectionView registerClass:itemClass forCellWithReuseIdentifier:NSStringFromClass(itemClass)];
 }
 - (void)setItemWidth:(CGFloat)itemWidth{
     _itemWidth = itemWidth;
@@ -277,146 +190,113 @@
         self.layout.scrollDirection = UICollectionViewScrollDirectionVertical;
     }
 }
-- (void)setImageDatas:(NSArray *)imageDatas{
-    if (imageDatas == nil) return;
-    _imageDatas = imageDatas;
-    self.topLayer.hidden = YES;
-    self.collectionView.hidden = NO;
-    NSInteger count = imageDatas.count;
-    if (count == 0) {
-        self.nums = 0;
+- (void)setNumberOfItems:(NSInteger)numberOfItems{
+    _numberOfItems = numberOfItems;
+    if (numberOfItems == 0) {
+        self.shamItemCount = 0;
         self.topLayer.hidden = NO;
         self.pageControl.hidden = YES;
         self.collectionView.hidden = YES;
-        [self invalidateTimer];
+        [self.timer kj_pauseTimer];
         return;
-    } else if (count == 1) {
-        self.nums = 3;
+    }
+    self.topLayer.hidden = YES;
+    self.collectionView.hidden = NO;
+    if (numberOfItems == 1) {
+        self.shamItemCount = 9;
         self.pageControl.hidden = YES;
         self.collectionView.scrollEnabled = NO;
-        [self invalidateTimer];
+        [self.timer kj_pauseTimer];
     } else {
         if (CGRectEqualToRect(self.pageControl.frame, CGRectZero)) {
             [self kj_useMasonry];
         }
-        self.nums = self.infiniteLoop ? count * 51 : count;
+        self.shamItemCount = self.infiniteLoop ? 100 * numberOfItems : numberOfItems;
         self.pageControl.hidden = !self.showPageControl;
-        self.pageControl.totalPages = count;
+        self.pageControl.totalPages = numberOfItems;
         self.collectionView.scrollEnabled = YES;
         [self setAutoScroll:self.autoScroll];
     }
-    if (!(_divisor & 16) && !(_divisor & 32)) {
-        NSMutableArray *temps = [NSMutableArray array];
-        for (int i = 0; i<count; i++) {
-            KJBannerDatas *info = [[KJBannerDatas alloc]init];
-            info.bannerURLString = imageDatas[i];
-            [temps addObject:info];
-        }
-        self.temps = temps.mutableCopy;
-    }
     [self.collectionView reloadData];
-    NSInteger index = self.infiniteLoop ? self.nums * 0.5 : 0;
-    [self kj_scrollToIndex:index automaticScroll:NO];
+    NSInteger index = self.infiniteLoop ? (int)(self.shamItemCount / 2) : 0;
+    [self kj_scrollToIndex:index autoScroll:self.autoScroll animated:YES];
+}
+/// 当前位置
+- (NSInteger)currentIndex{
+    NSInteger index = 0;
+    if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
+        float wT = (_itemWidth + _itemSpace);
+        index = (self.collectionView.contentOffset.x + wT * 0.5) / wT;
+    } else {
+        float wT = self.height;
+        index = (self.collectionView.contentOffset.y + wT * 0.5) / wT;
+    }
+    return MAX(0, index);
 }
 
-#pragma mark - private
+#pragma mark - private method
 
 /// 自动滚动
-- (void)automaticScroll{
-    if(_imageDatas.count == 0) return;
+- (void)kj_automaticScroll{
+    if(_numberOfItems == 0) return;
     NSInteger index = [self currentIndex];
     switch (_rollType) {
         case KJBannerViewRollDirectionTypeRightToLeft:
         case KJBannerViewRollDirectionTypeBottomToTop:
+            if (index == self.shamItemCount - 10) index = 10;
             index++;
             break;
         case KJBannerViewRollDirectionTypeLeftToRight:
         case KJBannerViewRollDirectionTypeTopToBottom:
-            if (index == 0) index = self.nums;
+            if (index == 10) index = self.shamItemCount - 10;
             index--;
             break;
-        default:
-            break;
+        default:break;
     }
-    [self kj_scrollToIndex:index automaticScroll:YES];
-}
-/// 当前位置
-- (NSInteger)currentIndex{
-    if (self.collectionView.frame.size.width == 0 || self.collectionView.frame.size.height == 0) return 0;
-    NSInteger index = 0;
-    if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
-        index = (self.collectionView.contentOffset.x + (_itemWidth + _itemSpace) * 0.5) / (_itemSpace + _itemWidth);
-    } else {
-        index = (self.collectionView.contentOffset.y + self.height * 0.5) / self.height;
-    }
-    return MAX(0, index);
+    [self kj_scrollToIndex:index autoScroll:YES animated:YES];
 }
 /// 滚动到指定位置
-- (void)kj_scrollToIndex:(NSInteger)index automaticScroll:(BOOL)automatic{
-    if (_imageDatas == nil) {
-        self.currentIndex = 0;
+- (void)kj_scrollToIndex:(NSInteger)index autoScroll:(BOOL)autoScroll animated:(BOOL)animated{
+    if (_numberOfItems == 0) {
         return;
     }
-    NSInteger idx = index % _imageDatas.count;
-    self.currentIndex = idx;
-    if (automatic) {
+    NSInteger idx = index % _numberOfItems;
+    if (autoScroll) {
         self.pageControl.currentIndex = idx;
     } else if (self.pageControl.hidden == NO){
         [self.pageControl kj_notAutomaticScrollIndex:idx];
     }
-    if ([self.delegate respondsToSelector:@selector(kj_BannerView:CurrentIndex:)]) {
-        [self.delegate kj_BannerView:self CurrentIndex:idx];
-    }
-    if (self.kScrollBlock) {
-        self.kScrollBlock(self,idx);
+    if ([self.delegate respondsToSelector:@selector(kj_bannerView:loopScrolledItemAtIndex:)]) {
+        [self.delegate kj_bannerView:self loopScrolledItemAtIndex:idx];
     }
     UICollectionViewScrollPosition position = UICollectionViewScrollPositionCenteredVertically;
     if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
         position = UICollectionViewScrollPositionCenteredHorizontally;
     }
-    if (index >= self.nums) {
-        if (self.infiniteLoop) {
-            index = self.nums * 0.5;
-            [UIView performWithoutAnimation:^{
-                [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
-                                            atScrollPosition:position animated:NO];
-            }];
-        }
-        return;
-    }
-    if (automatic) {
-        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
-                                    atScrollPosition:position animated:YES];
-    } else {
-        [UIView performWithoutAnimation:^{
-            [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
-                                        atScrollPosition:position animated:NO];
-        }];
-    }
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
+                                atScrollPosition:position animated:animated];
 }
 
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
 //    self.collectionView.userInteractionEnabled = NO;
-    if (_imageDatas.count == 0) return;
-    if ([self.delegate respondsToSelector:@selector(kj_BannerViewDidScroll:)]) {
-        [self.delegate kj_BannerViewDidScroll:self];
+    if (_numberOfItems == 0) return;
+    if ([self.delegate respondsToSelector:@selector(kj_bannerViewDidScroll:)]) {
+        [self.delegate kj_bannerViewDidScroll:self];
     }
 }
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
     _lastX = scrollView.contentOffset.x;
     _lastY = scrollView.contentOffset.y;
     if (self.autoScroll) {
-        [self invalidateTimer];
+        [self.timer kj_pauseTimer];
     }
 }
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     if (self.autoScroll) {
-        __banner_weakself;
-        dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.autoTime * NSEC_PER_SEC)), queue, ^{
-            [weakself setupTimer];
+        kGCD_banner_after_main(self.autoTime, ^{
+            [self.timer kj_startTimer];
         });
     }
 }
@@ -434,7 +314,7 @@
     NSInteger idx = 0,dragIndex = 0;
     if (_layout.scrollDirection == UICollectionViewScrollDirectionHorizontal) {
         CGFloat move = scrollView.contentOffset.x - self.lastX;
-        NSInteger page = move / (self.itemWidth*.5);
+        NSInteger page = (int)(move / (self.itemWidth * .5));
         if (velocity.x > 0 || page > 0) {
             dragIndex = 1;
         } else if (velocity.x < 0 || page < 0) {
@@ -451,7 +331,7 @@
         }
         idx = (_lastY + (self.height) * 0.5) / (self.height);
     }
-    [self kj_scrollToIndex:idx + dragIndex automaticScroll:NO];
+    [self kj_scrollToIndex:idx + dragIndex autoScroll:NO animated:YES];
 }
 /// 松开手指滑动开始减速的时候设置滑动动画
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
@@ -465,68 +345,73 @@
 }
 
 #pragma mark - UICollectionViewDataSource
-- (NSInteger)collectionView:(UICollectionView*)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.nums;
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    return self.shamItemCount;
 }
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
                            cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    NSInteger count = _imageDatas.count;
-    if (count == 0) {
-        return [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
+    NSInteger itemIndex = indexPath.item % _numberOfItems;
+    KJBannerViewCell *bannerViewCell = [self.dataSource kj_bannerView:self cellForItemAtIndex:itemIndex];
+    if ([bannerViewCell isMemberOfClass:[KJBannerViewCell class]]) {
+#if __has_include("UIView+KJWebImage.h")
+        if (bannerViewCell.useMineLoadImage && bannerViewCell.imageURLString) {
+            /// 自带Cell处理
+            bannerViewCell.backgroundColor = self.bannerRadiusColor?:self.backgroundColor;
+            [bannerViewCell setValue:@(self.bannerNoPureBack) forKey:@"bannerNoPureBack"];
+            [bannerViewCell setValue:@(self.bannerCornerRadius) forKey:@"bannerCornerRadius"];
+            [bannerViewCell setValue:@(self.bannerScale) forKey:@"bannerScale"];
+            [bannerViewCell setValue:@(self.bannerRadius) forKey:@"bannerRadius"];
+            [bannerViewCell setValue:@(self.bannerContentMode) forKey:@"bannerContentMode"];
+            [bannerViewCell setValue:@(self.bannerPreRendering) forKey:@"bannerPreRendering"];
+            [bannerViewCell setValue:self.placeholderImage forKey:@"placeholderImage"];
+            /// 预渲染处理
+            if (self.bannerPreRendering && bannerViewCell.nextImageURLString) {
+                
+            }
+            /// 绘制图片，并加入缓存区
+            NSString * key = kBannerMD5String(bannerViewCell.imageURLString);
+            void(^kSaveCacheImage)(UIImage *) = ^(UIImage * image){
+                [self.cacheImageDict setValue:image forKey:key];
+            };
+            UIImage * cacheImage = self.cacheImageDict[key];
+            SEL sel = NSSelectorFromString(@"drawBannerImage:withBlock:");
+            if ([bannerViewCell respondsToSelector:sel]) {
+                IMP imp = [bannerViewCell methodForSelector:sel];
+                void (* tempFunc)(id, SEL, UIImage *, void(^)(UIImage *)) = (void *)imp;
+                tempFunc(bannerViewCell, sel, cacheImage, kSaveCacheImage);
+            }
+        }
+#endif
     }
-    NSInteger itemIndex = indexPath.item % count;
-    if (!!(_divisor & 32)) {
-        KJBannerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
-        cell.itemView = [_dataSource kj_BannerView:self ItemSize:cell.bounds.size Index:itemIndex];
-        return cell;
-    }
-    if (!!(_divisor & 16)) {
-        KJBannerViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(_itemClass) forIndexPath:indexPath];
-        cell.itemModel = _imageDatas[itemIndex];
-        return cell;
-    }
-    /// 自带Cell处理
-    KJBannerViewCell *bannerViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KJBannerViewCell" forIndexPath:indexPath];
-    bannerViewCell.backgroundColor = self.backgroundColor;
-    bannerViewCell.bannerNoPureBack = self.bannerNoPureBack;
-    bannerViewCell.bannerCornerRadius = self.bannerCornerRadius;
-    bannerViewCell.bannerScale = self.bannerScale;
-    bannerViewCell.bannerRadius = self.bannerRadius;
-    bannerViewCell.bannerContentMode = self.bannerContentMode;
-    bannerViewCell.bannerPlaceholder = self.placeholderImage;
-    bannerViewCell.bannerPreRendering = self.bannerPreRendering;
-    bannerViewCell.bannerDatas = self.temps[itemIndex];
-    
     return bannerViewCell;
 }
 
 #pragma mark - UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    NSInteger idx = [self currentIndex] % _imageDatas.count;
-    if ([self.delegate respondsToSelector:@selector(kj_BannerView:SelectIndex:)]) {
-        [self.delegate kj_BannerView:self SelectIndex:idx];
-    }
-    if (self.kSelectBlock) {
-        self.kSelectBlock(self,idx);
+    [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    if ([self.delegate respondsToSelector:@selector(kj_bannerView:didSelectItemAtIndex:)]) {
+        NSInteger idx = [self currentIndex] % _numberOfItems;
+        [self.delegate kj_bannerView:self didSelectItemAtIndex:idx];
     }
 }
 
 #pragma mark - lazy
 
 - (CALayer *)topLayer{
-    if (!_topLayer){
-        _topLayer = [[CALayer alloc]init];
+    if (!_topLayer) {
+        _topLayer = [[CALayer alloc] init];
         [_topLayer setBounds:self.bounds];
         [_topLayer setPosition:CGPointMake(self.bounds.size.width*.5, self.bounds.size.height*.5)];
         [_topLayer setContents:(id)self.placeholderImage.CGImage];
-//        _topLayer.zPosition = 1;
+        _topLayer.zPosition = 1;
     }
     return _topLayer;
 }
 - (KJBannerViewFlowLayout *)layout{
-    if(!_layout){
-        _layout = [[KJBannerViewFlowLayout alloc]init];
+    if (!_layout) {
+        _layout = [[KJBannerViewFlowLayout alloc] init];
         _layout.minimumLineSpacing = 0;
         _layout.itemSize = CGSizeMake(_itemWidth, self.frame.size.height);
         _layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
@@ -534,24 +419,33 @@
     return _layout;
 }
 - (UICollectionView *)collectionView{
-    if(!_collectionView){
-        _collectionView = [[UICollectionView alloc]initWithFrame:self.bounds collectionViewLayout:self.layout];
+    if (!_collectionView) {
+        _collectionView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:self.layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
         _collectionView.scrollsToTop = NO;
         _collectionView.showsVerticalScrollIndicator = NO;
         _collectionView.showsHorizontalScrollIndicator = NO;
         _collectionView.backgroundColor = self.backgroundColor;
-        [_collectionView registerClass:_itemClass forCellWithReuseIdentifier:@"KJBannerViewCell"];
     }
     return _collectionView;
 }
 - (KJPageView *)pageControl{
-    if(!_pageControl){
-        _pageControl = [[KJPageView alloc]init];
+    if (!_pageControl) {
+        _pageControl = [[KJPageView alloc] init];
         _pageControl.hidden = YES;
     }
     return _pageControl;
+}
+
+- (KJBannerViewTimer *)timer{
+    if (!_timer) {
+        __banner_weakself;
+        _timer = [[KJBannerViewTimer alloc] initWithInterval:self.autoTime repeats:YES task:^{
+            [weakself kj_automaticScroll];
+        }];
+    }
+    return _timer;
 }
 
 @end
@@ -599,6 +493,9 @@
     }
     return number.integerValue;
 }
+- (UIColor *)bannerRadiusColor{
+    return objc_getAssociatedObject(self, _cmd);
+}
 - (void)setBannerPreRendering:(BOOL)bannerPreRendering{
     objc_setAssociatedObject(self, @selector(bannerPreRendering), @(bannerPreRendering), OBJC_ASSOCIATION_ASSIGN);
 }
@@ -615,26 +512,13 @@
     objc_setAssociatedObject(self, @selector(bannerRadius), @(bannerRadius), OBJC_ASSOCIATION_ASSIGN);
 }
 - (void)setPlaceholderImage:(UIImage *)placeholderImage{
-    objc_setAssociatedObject(self, @selector(bannerPlaceholder), placeholderImage, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(placeholderImage), placeholderImage, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 - (void)setBannerContentMode:(UIViewContentMode)bannerContentMode{
-    objc_setAssociatedObject(self, @selector(bannerContentMode), @(bannerContentMode), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(bannerContentMode), @(bannerContentMode), OBJC_ASSOCIATION_ASSIGN);
 }
-
-@end
-
-@implementation KJBannerView (KJBannerBlock)
-- (void (^)(KJBannerView*,NSInteger))kSelectBlock{
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setKSelectBlock:(void (^)(KJBannerView*,NSInteger))kSelectBlock{
-    objc_setAssociatedObject(self, @selector(kSelectBlock), kSelectBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-- (void (^)(KJBannerView*,NSInteger))kScrollBlock{
-    return objc_getAssociatedObject(self, _cmd);
-}
-- (void)setKScrollBlock:(void (^)(KJBannerView*,NSInteger))kScrollBlock{
-    objc_setAssociatedObject(self, @selector(kScrollBlock), kScrollBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
+- (void)setBannerRadiusColor:(UIColor *)bannerRadiusColor{
+    objc_setAssociatedObject(self, @selector(bannerRadiusColor), bannerRadiusColor, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 @end

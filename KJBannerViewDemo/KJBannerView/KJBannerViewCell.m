@@ -7,6 +7,8 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerViewCell.h"
+#import "KJBannerViewFunc.h"
+
 #if __has_include("UIView+KJWebImage.h")
 #import "UIView+KJWebImage.h"
 #endif
@@ -15,8 +17,27 @@
     char _divisor;
 }
 @property (nonatomic,strong) UIImageView *bannerImageView;
+@property (nonatomic,copy,readwrite) void(^withBlock)(UIImage *);
+
+/// 占位图
+@property (nonatomic,strong) UIImage *placeholderImage;
+/// 定制特定方位圆角
+@property (nonatomic,assign) UIRectCorner bannerCornerRadius;
+/// 图片显示方式
+@property (nonatomic,assign) UIViewContentMode bannerContentMode;
+/// 圆角
+@property (nonatomic,assign) CGFloat bannerRadius;
+/// 是否裁剪
+@property (nonatomic,assign) BOOL bannerScale;
+/// 如果背景不是纯色，请设置为yes
+@property (nonatomic,assign) BOOL bannerNoPureBack;
+/// 是否预渲染图片处理，默认yes
+@property (nonatomic,assign) BOOL bannerPreRendering;
+
 @end
+
 @implementation KJBannerViewCell
+
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
         self.layer.contentsScale = [UIScreen mainScreen].scale;
@@ -25,107 +46,77 @@
     }
     return self;
 }
-- (void)setItemView:(UIView*)itemView{
-    if (_itemView) [_itemView removeFromSuperview];
-    _itemView = itemView;
-    [self addSubview:itemView];
-}
-- (void)setBannerDatas:(KJBannerDatas*)info{
-    _bannerDatas = info;
-#if __has_include("UIView+KJWebImage.h")
-    if (info.bannerImage) {
-        self.bannerImageView.image = info.bannerImage;
-    }else{
-        if (kBannerLocality(info.bannerURLString)) {
-            NSData *data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:info.bannerURLString ofType:@"gif"]];
-            if (data == nil) {
-                data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:info.bannerURLString ofType:@"GIF"]];
-            }
-            if (data) {
-                __banner_weakself;
-                kBannerAsyncPlayImage(^(UIImage * _Nullable image) {
-                    weakself.bannerImageView.image = info.bannerImage = image?:weakself.bannerPlaceholder;
-                }, data);
-            }else{
-                if (self.bannerPreRendering) {
-                    __banner_weakself;
-                    kGCD_banner_async(^{
-                        UIImage *image = [UIImage imageNamed:info.bannerURLString]?:weakself.bannerPlaceholder;
-                        UIGraphicsBeginImageContextWithOptions(image.size, YES, 0);
-                        [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-                        image = UIGraphicsGetImageFromCurrentImageContext();
-                        UIGraphicsEndImageContext();
-                        info.bannerImage = image;
-                        kGCD_banner_main(^{
-                            weakself.bannerImageView.image = image;
-                        });
-                    });
-                }else{
-                    self.bannerImageView.image = info.bannerImage = [UIImage imageNamed:info.bannerURLString]?:self.bannerPlaceholder;
-                }
-            }
-        }else{
-            [self performSelector:@selector(kj_bannerImageView) withObject:nil afterDelay:0.0 inModes:@[NSDefaultRunLoopMode]];
-        }
-    }
-#endif
-}
-#if __has_include("UIView+KJWebImage.h")
-/// 下载图片，并渲染到cell上显示
+
+/// 下载图片，并渲染到Cell上显示
 - (void)kj_bannerImageView{
+#if __has_include("UIView+KJWebImage.h")
     __banner_weakself;
-    [self.bannerImageView kj_setImageWithURL:[NSURL URLWithString:self.bannerDatas.bannerURLString] handle:^(id<KJBannerWebImageHandle>handle) {
-        handle.bannerPlaceholder = weakself.bannerPlaceholder;
+    NSURL * url = [NSURL URLWithString:self.imageURLString];
+    [self.bannerImageView kj_setImageWithURL:url handle:^(id<KJBannerWebImageHandle>handle) {
+        handle.bannerPlaceholder = weakself.placeholderImage;
         handle.bannerCropScale = weakself.bannerScale;
         handle.bannerPreRendering = weakself.bannerPreRendering;
-        handle.bannerCompleted = ^(KJBannerImageType imageType, UIImage * image, NSData * data, NSError * error) {
-            weakself.bannerDatas.bannerImage = image;
+        handle.bannerCompleted = ^(KJBannerImageType type, UIImage *image, NSData *data, NSError *err) {
+            __banner_strongself;
+            if (image && type != KJBannerImageTypeUnknown) {
+                strongself.withBlock ? strongself.withBlock(image) : nil;
+            }
         };
     }];
+#endif
 }
-/// 判断是网络图片还是本地
-NS_INLINE bool kBannerLocality(NSString * _Nonnull urlString){
-    return ([urlString hasPrefix:@"http://"] || [urlString hasPrefix:@"https://"]) ? false : true;
-}
-/// 异步播放动态图
-NS_INLINE void kBannerAsyncPlayImage(void(^xxblock)(UIImage * _Nullable image), NSData * data){
-    if (xxblock) {
-        if (data == nil) xxblock(nil);
-        kGCD_banner_async(^{
-            CGImageSourceRef imageSource = CGImageSourceCreateWithData(CFBridgingRetain(data), nil);
-            size_t imageCount = CGImageSourceGetCount(imageSource);
-            UIImage *image;
-            if (imageCount <= 1) {
-                image = [UIImage imageWithData:data];
-            }else{
-                NSMutableArray *scaleImages = [NSMutableArray arrayWithCapacity:imageCount];
-                NSTimeInterval time = 0;
-                for (int i = 0; i<imageCount; i++) {
-                    CGImageRef cgImage = CGImageSourceCreateImageAtIndex(imageSource, i, nil);
-                    UIImage *originalImage = [UIImage imageWithCGImage:cgImage];
-                    [scaleImages addObject:originalImage];
-                    CGImageRelease(cgImage);
-                    CFDictionaryRef const properties = CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
-                    CFDictionaryRef const gifProperties = CFDictionaryGetValue(properties, kCGImagePropertyGIFDictionary);
-                    NSNumber *duration = (__bridge id)CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFUnclampedDelayTime);
-                    if (duration == NULL || [duration doubleValue] == 0) {
-                        duration = (__bridge id)CFDictionaryGetValue(gifProperties, kCGImagePropertyGIFDelayTime);
-                    }
-                    CFRelease(properties);
-                    time += duration.doubleValue;
+
+/// 绘制图片
+/// @param bannerImage 缓存区图片资源
+/// @param withBlock 绘制图片回调
+- (void)drawBannerImage:(UIImage *)bannerImage withBlock:(void(^)(UIImage *))withBlock{
+    if (bannerImage) {
+        self.bannerImageView.image = bannerImage;
+        return;
+    }
+    if (self.imageURLString == nil || [self.imageURLString isEqualToString:@""]) {
+        self.bannerImageView.image = self.placeholderImage;
+        return;
+    }
+    if (kBannerImageURLStringLocality(self.imageURLString)) {
+        NSData * data = kBannerLocalityGIFData(self.imageURLString);
+        if (data) {
+            kBannerAsyncPlayGIFImage(data, ^(UIImage * _Nonnull image) {
+                if (image) {
+                    self.bannerImageView.image = image;
+                    withBlock ? withBlock(image) : nil;
                 }
-                image = [UIImage animatedImageWithImages:scaleImages duration:time];
-            }
-            kGCD_banner_main(^{
-                xxblock(image);
             });
-            CFRelease(imageSource);
-        });
+        } else if (self.bannerPreRendering) {// 预渲染处理
+            kGCD_banner_async(^{
+                UIImage *image = [UIImage imageNamed:self.imageURLString];
+                if (image == nil) return;
+                UIGraphicsBeginImageContextWithOptions(image.size, YES, 0);
+                [image drawInRect:(CGRect){CGPointZero, image.size}];
+                image = UIGraphicsGetImageFromCurrentImageContext();
+                UIGraphicsEndImageContext();
+                kGCD_banner_main(^{
+                    self.bannerImageView.image = image;
+                    withBlock ? withBlock(image) : nil;
+                });
+            });
+        } else {
+            UIImage *image = [UIImage imageNamed:self.imageURLString];
+            if (image) {
+                self.bannerImageView.image = image;
+                withBlock ? withBlock(image) : nil;
+            }
+        }
+    } else {// 停止时刻加载网络图片
+        self.withBlock = withBlock;
+        self.bannerImageView.image = self.placeholderImage;
+        [self performSelector:@selector(kj_bannerImageView) withObject:nil
+                   afterDelay:0.0 inModes:@[NSDefaultRunLoopMode]];
     }
 }
-#endif
 
 #pragma mark - setter/getter
+
 - (BOOL)bannerScale{
     return !!(_divisor & 1);
 }
@@ -158,20 +149,23 @@ NS_INLINE void kBannerAsyncPlayImage(void(^xxblock)(UIImage * _Nullable image), 
 }
 
 #pragma mark - lazy
-- (UIImageView*)bannerImageView{
+
+- (UIImageView *)bannerImageView{
     if (_bannerImageView == nil) {
-        _bannerImageView = [[UIImageView alloc]initWithFrame:self.bounds];
+        _bannerImageView = [[UIImageView alloc] initWithFrame:self.bounds];
         _bannerImageView.contentMode = self.bannerContentMode;
-        _bannerImageView.image = self.bannerPlaceholder;
+        _bannerImageView.image = self.placeholderImage;
         [self addSubview:_bannerImageView];
         if (self.bannerRadius > 0) {
             CAShapeLayer *shapeLayer = [[CAShapeLayer alloc] init];
             shapeLayer.frame = self.bounds;
             [_bannerImageView.layer addSublayer:shapeLayer];
             if (self.bannerNoPureBack) {
-                shapeLayer.path = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:self.bannerRadius].CGPath;
+                UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:self.bounds
+                                                                cornerRadius:self.bannerRadius];
+                shapeLayer.path = path.CGPath;
                 _bannerImageView.layer.mask = shapeLayer;
-            }else{
+            } else {
                 _bannerImageView.clipsToBounds = YES;
                 kBannerAsyncCornerRadius(self.bannerRadius, ^(UIImage *image) {
                     shapeLayer.contents = (id)image.CGImage;
@@ -181,8 +175,5 @@ NS_INLINE void kBannerAsyncPlayImage(void(^xxblock)(UIImage * _Nullable image), 
     }
     return _bannerImageView;
 }
-
-@end
-@implementation KJBannerDatas
 
 @end

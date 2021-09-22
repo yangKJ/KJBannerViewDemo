@@ -7,6 +7,7 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "AppDelegate.h"
+#import "KJBannerTimingClearManager.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +18,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    //清除三天前缓存的数据
+    [KJBannerTimingClearManager kj_openTimingCrearCached:YES timingTimeType:(KJBannerViewTimingTimeTypeThreeDay)];
     
     return YES;
 }

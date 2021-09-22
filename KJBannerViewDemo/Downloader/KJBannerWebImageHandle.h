@@ -8,11 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <objc/runtime.h>
-#import "KJBannerViewType.h"
 #import "KJBannerViewDownloader.h"
-#import "KJBannerViewLoadManager.h"
-#import "KJBannerViewCacheManager.h"
+#import "KJBannerViewFunc.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,7 +7,6 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerTimingClearManager.h"
-#import "KJBannerViewType.h"
 #import "KJBannerViewCacheManager.h"
 
 NSString *kBannerTimingUserDefaultsKey = @"kBannerTimingUserDefaultsKey";
@@ -22,7 +21,7 @@ static BOOL _openTiming = NO;
 + (void)kj_openTimingCrearCached:(BOOL)crear timingTimeType:(KJBannerViewTimingTimeType)type{
     _openTiming = crear;
     if (crear == NO) return;
-    kGCD_banner_async(^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
         if (type == KJBannerViewTimingTimeTypeAll) {
             [KJBannerViewCacheManager kj_clearLocalityImageAndCache];
@@ -54,7 +53,7 @@ static BOOL _openTiming = NO;
                 break;
         }
         NSArray * keys = dict.allKeys;
-//        [self kj_sortDescriptorWithArray:&keys key:@"self"];
+        keys = [self kj_sortDescriptorWithArray:keys key:@"self"];
         NSInteger index;
         if ([keys.lastObject integerValue] <= time) {
             index = 0;
@@ -87,14 +86,13 @@ static BOOL _openTiming = NO;
 }
 
 #pragma mark - private
+
 /// 升序排列
-+ (void)kj_sortDescriptorWithArray:(NSArray **)array key:(NSString *)key{
-    @autoreleasepool {
-        NSSortDescriptor * des = [NSSortDescriptor sortDescriptorWithKey:key ascending:YES];
-        NSMutableArray * temp = [NSMutableArray arrayWithArray:*array];
-        [temp sortUsingDescriptors:@[des]];
-        * array = [temp mutableCopy];
-    }
++ (NSArray *)kj_sortDescriptorWithArray:(NSArray *)array key:(NSString *)key{
+    NSSortDescriptor * des = [NSSortDescriptor sortDescriptorWithKey:key ascending:YES];
+    NSMutableArray * temp = [NSMutableArray arrayWithArray:array];
+    [temp sortUsingDescriptors:@[des]];
+    return [temp mutableCopy];
 }
 
 /// 谓词匹配查找index

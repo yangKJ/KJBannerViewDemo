@@ -1,5 +1,5 @@
 //
-//  KJTestViewController.h
+//  DownloadViewController.h
 //  KJBannerViewDemo
 //
 //  Created by 杨科军 on 2020/1/15.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface KJTestViewController : UIViewController
+@interface DownloadViewController : UIViewController
 
 @end
 

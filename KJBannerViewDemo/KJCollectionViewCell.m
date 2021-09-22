@@ -20,8 +20,8 @@
     return self;
 }
 
-- (void)setItemModel:(NSObject*)model{
-    self.label.text = (NSString *)model;
+- (void)setTitle:(NSString *)title{
+    self.label.text = title;
 }
 - (UILabel*)label{
     if (!_label) {
