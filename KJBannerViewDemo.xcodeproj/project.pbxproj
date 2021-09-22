@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,9 +16,18 @@
 		683A7F3E21CEA4E5008DD08C /* KJBannerViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 683A7F3A21CEA4E5008DD08C /* KJBannerViewCell.m */; };
 		684059DD21EA08D00092F630 /* KJBannerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 684059DC21EA08D00092F630 /* KJBannerModel.m */; };
 		684059E121EB59DA0092F630 /* KJCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 684059DF21EB59DA0092F630 /* KJCollectionViewCell.m */; };
-		6847118B25AE8E5D00791904 /* IMG_0661.GIF in Resources */ = {isa = PBXBuildFile; fileRef = 6847118A25AE8E5D00791904 /* IMG_0661.GIF */; };
 		684A645925DECB370000AE72 /* BaseImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 684A645825DECB370000AE72 /* BaseImageView.m */; };
 		68625F7625C2950200337BA8 /* UIView+KJWebImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 68625F7525C2950200337BA8 /* UIView+KJWebImage.m */; };
+		6868EC2126FB5D54001F2400 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC0926FB5D54001F2400 /* NSLayoutConstraint+MASDebugAdditions.m */; };
+		6868EC2226FB5D54001F2400 /* ViewController+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC1226FB5D54001F2400 /* ViewController+MASAdditions.m */; };
+		6868EC2326FB5D54001F2400 /* MASCompositeConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC1626FB5D54001F2400 /* MASCompositeConstraint.m */; };
+		6868EC2426FB5D54001F2400 /* MASConstraintMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC1726FB5D54001F2400 /* MASConstraintMaker.m */; };
+		6868EC2526FB5D54001F2400 /* MASLayoutConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC1826FB5D54001F2400 /* MASLayoutConstraint.m */; };
+		6868EC2626FB5D54001F2400 /* NSArray+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC1926FB5D54001F2400 /* NSArray+MASAdditions.m */; };
+		6868EC2726FB5D54001F2400 /* View+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC1A26FB5D54001F2400 /* View+MASAdditions.m */; };
+		6868EC2826FB5D54001F2400 /* MASConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC1D26FB5D54001F2400 /* MASConstraint.m */; };
+		6868EC2926FB5D54001F2400 /* MASViewConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC1F26FB5D54001F2400 /* MASViewConstraint.m */; };
+		6868EC2A26FB5D54001F2400 /* MASViewAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 6868EC2026FB5D54001F2400 /* MASViewAttribute.m */; };
 		6872ECB823CEBB4100F63970 /* KJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6872ECB623CEBB4100F63970 /* KJTestViewController.m */; };
 		68B55D0425A81DA9009A2FB4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 68B55D0325A81DA9009A2FB4 /* README.md */; };
 		68B5F17F22B0AB2000D71808 /* KJBannerView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 68B5F17E22B0AB2000D71808 /* KJBannerView.bundle */; };
@@ -32,7 +41,6 @@
 		68E26B5B21CE924800F91182 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 68E26B5A21CE924800F91182 /* Assets.xcassets */; };
 		68E26B5E21CE924800F91182 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68E26B5C21CE924800F91182 /* LaunchScreen.storyboard */; };
 		68E26B6121CE924800F91182 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 68E26B6021CE924800F91182 /* main.m */; };
-		9E55E423E28D1B0062626563 /* Pods_KJBannerViewDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A119D9FF8F30834B7557B666 /* Pods_KJBannerViewDemo.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,12 +63,36 @@
 		684059DC21EA08D00092F630 /* KJBannerModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJBannerModel.m; sourceTree = "<group>"; };
 		684059DE21EB59DA0092F630 /* KJCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJCollectionViewCell.h; sourceTree = "<group>"; };
 		684059DF21EB59DA0092F630 /* KJCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJCollectionViewCell.m; sourceTree = "<group>"; };
-		6847118A25AE8E5D00791904 /* IMG_0661.GIF */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = IMG_0661.GIF; sourceTree = "<group>"; };
 		684A645725DECB370000AE72 /* BaseImageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseImageView.h; sourceTree = "<group>"; };
 		684A645825DECB370000AE72 /* BaseImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseImageView.m; sourceTree = "<group>"; };
 		685F5F5824326028001D97C4 /* KJBannerViewProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerViewProtocol.h; sourceTree = "<group>"; };
 		68625F7425C2950200337BA8 /* UIView+KJWebImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+KJWebImage.h"; sourceTree = "<group>"; };
 		68625F7525C2950200337BA8 /* UIView+KJWebImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIView+KJWebImage.m"; sourceTree = "<group>"; };
+		6868EC0826FB5D54001F2400 /* MASCompositeConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASCompositeConstraint.h; sourceTree = "<group>"; };
+		6868EC0926FB5D54001F2400 /* NSLayoutConstraint+MASDebugAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+MASDebugAdditions.m"; sourceTree = "<group>"; };
+		6868EC0A26FB5D54001F2400 /* MASConstraint+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MASConstraint+Private.h"; sourceTree = "<group>"; };
+		6868EC0B26FB5D54001F2400 /* MASLayoutConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASLayoutConstraint.h; sourceTree = "<group>"; };
+		6868EC0C26FB5D54001F2400 /* NSArray+MASShorthandAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+MASShorthandAdditions.h"; sourceTree = "<group>"; };
+		6868EC0D26FB5D54001F2400 /* MASConstraintMaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASConstraintMaker.h; sourceTree = "<group>"; };
+		6868EC0E26FB5D54001F2400 /* View+MASAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "View+MASAdditions.h"; sourceTree = "<group>"; };
+		6868EC0F26FB5D54001F2400 /* NSArray+MASAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+MASAdditions.h"; sourceTree = "<group>"; };
+		6868EC1026FB5D54001F2400 /* MASUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASUtilities.h; sourceTree = "<group>"; };
+		6868EC1126FB5D54001F2400 /* MASViewAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASViewAttribute.h; sourceTree = "<group>"; };
+		6868EC1226FB5D54001F2400 /* ViewController+MASAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ViewController+MASAdditions.m"; sourceTree = "<group>"; };
+		6868EC1326FB5D54001F2400 /* MASViewConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASViewConstraint.h; sourceTree = "<group>"; };
+		6868EC1426FB5D54001F2400 /* MASConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MASConstraint.h; sourceTree = "<group>"; };
+		6868EC1526FB5D54001F2400 /* NSLayoutConstraint+MASDebugAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+MASDebugAdditions.h"; sourceTree = "<group>"; };
+		6868EC1626FB5D54001F2400 /* MASCompositeConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASCompositeConstraint.m; sourceTree = "<group>"; };
+		6868EC1726FB5D54001F2400 /* MASConstraintMaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASConstraintMaker.m; sourceTree = "<group>"; };
+		6868EC1826FB5D54001F2400 /* MASLayoutConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASLayoutConstraint.m; sourceTree = "<group>"; };
+		6868EC1926FB5D54001F2400 /* NSArray+MASAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+MASAdditions.m"; sourceTree = "<group>"; };
+		6868EC1A26FB5D54001F2400 /* View+MASAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "View+MASAdditions.m"; sourceTree = "<group>"; };
+		6868EC1B26FB5D54001F2400 /* View+MASShorthandAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "View+MASShorthandAdditions.h"; sourceTree = "<group>"; };
+		6868EC1C26FB5D54001F2400 /* Masonry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Masonry.h; sourceTree = "<group>"; };
+		6868EC1D26FB5D54001F2400 /* MASConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASConstraint.m; sourceTree = "<group>"; };
+		6868EC1E26FB5D54001F2400 /* ViewController+MASAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ViewController+MASAdditions.h"; sourceTree = "<group>"; };
+		6868EC1F26FB5D54001F2400 /* MASViewConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASViewConstraint.m; sourceTree = "<group>"; };
+		6868EC2026FB5D54001F2400 /* MASViewAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MASViewAttribute.m; sourceTree = "<group>"; };
 		6872ECB523CEBB4100F63970 /* KJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJTestViewController.h; sourceTree = "<group>"; };
 		6872ECB623CEBB4100F63970 /* KJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KJTestViewController.m; sourceTree = "<group>"; };
 		6881AF4025BFC52800CFA55F /* KJBannerWebImageHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KJBannerWebImageHandle.h; sourceTree = "<group>"; };
@@ -82,9 +114,6 @@
 		68E26B5D21CE924800F91182 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		68E26B5F21CE924800F91182 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		68E26B6021CE924800F91182 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		A119D9FF8F30834B7557B666 /* Pods_KJBannerViewDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KJBannerViewDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A3D287044B54F7EEB4FF3D6B /* Pods-KJBannerViewDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KJBannerViewDemo.release.xcconfig"; path = "Target Support Files/Pods-KJBannerViewDemo/Pods-KJBannerViewDemo.release.xcconfig"; sourceTree = "<group>"; };
-		ACCAC1A1CEAB921E6DD69956 /* Pods-KJBannerViewDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KJBannerViewDemo.debug.xcconfig"; path = "Target Support Files/Pods-KJBannerViewDemo/Pods-KJBannerViewDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,7 +121,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9E55E423E28D1B0062626563 /* Pods_KJBannerViewDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,7 +130,6 @@
 		06EFFDA7C3924E99F02B4C94 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A119D9FF8F30834B7557B666 /* Pods_KJBannerViewDemo.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -143,12 +170,43 @@
 			path = KJBannerView;
 			sourceTree = "<group>";
 		};
+		6868EC0726FB5D54001F2400 /* Masonry */ = {
+			isa = PBXGroup;
+			children = (
+				6868EC0826FB5D54001F2400 /* MASCompositeConstraint.h */,
+				6868EC1626FB5D54001F2400 /* MASCompositeConstraint.m */,
+				6868EC1426FB5D54001F2400 /* MASConstraint.h */,
+				6868EC1D26FB5D54001F2400 /* MASConstraint.m */,
+				6868EC0A26FB5D54001F2400 /* MASConstraint+Private.h */,
+				6868EC0D26FB5D54001F2400 /* MASConstraintMaker.h */,
+				6868EC1726FB5D54001F2400 /* MASConstraintMaker.m */,
+				6868EC0B26FB5D54001F2400 /* MASLayoutConstraint.h */,
+				6868EC1826FB5D54001F2400 /* MASLayoutConstraint.m */,
+				6868EC1C26FB5D54001F2400 /* Masonry.h */,
+				6868EC1026FB5D54001F2400 /* MASUtilities.h */,
+				6868EC1126FB5D54001F2400 /* MASViewAttribute.h */,
+				6868EC2026FB5D54001F2400 /* MASViewAttribute.m */,
+				6868EC1326FB5D54001F2400 /* MASViewConstraint.h */,
+				6868EC1F26FB5D54001F2400 /* MASViewConstraint.m */,
+				6868EC0F26FB5D54001F2400 /* NSArray+MASAdditions.h */,
+				6868EC1926FB5D54001F2400 /* NSArray+MASAdditions.m */,
+				6868EC0C26FB5D54001F2400 /* NSArray+MASShorthandAdditions.h */,
+				6868EC1526FB5D54001F2400 /* NSLayoutConstraint+MASDebugAdditions.h */,
+				6868EC0926FB5D54001F2400 /* NSLayoutConstraint+MASDebugAdditions.m */,
+				6868EC0E26FB5D54001F2400 /* View+MASAdditions.h */,
+				6868EC1A26FB5D54001F2400 /* View+MASAdditions.m */,
+				6868EC1B26FB5D54001F2400 /* View+MASShorthandAdditions.h */,
+				6868EC1E26FB5D54001F2400 /* ViewController+MASAdditions.h */,
+				6868EC1226FB5D54001F2400 /* ViewController+MASAdditions.m */,
+			);
+			path = Masonry;
+			sourceTree = "<group>";
+		};
 		68E26B4521CE924700F91182 = {
 			isa = PBXGroup;
 			children = (
 				68E26B5021CE924700F91182 /* KJBannerViewDemo */,
 				68E26B4F21CE924700F91182 /* Products */,
-				69087766EF7DFE2EB3ECB6F8 /* Pods */,
 				06EFFDA7C3924E99F02B4C94 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -165,6 +223,7 @@
 			isa = PBXGroup;
 			children = (
 				6814AB6021CEA59B000AE6AB /* KJBannerHeader.h */,
+				6868EC0726FB5D54001F2400 /* Masonry */,
 				681A3CB4260E2233004AB78B /* Downloader */,
 				683A7F3221CEA4E5008DD08C /* KJBannerView */,
 				68E26B5121CE924700F91182 /* AppDelegate.h */,
@@ -182,7 +241,6 @@
 				68E26B5721CE924700F91182 /* Main.storyboard */,
 				68E26B5A21CE924800F91182 /* Assets.xcassets */,
 				68BD69F72580712000D4B3AF /* IMG_0139.GIF */,
-				6847118A25AE8E5D00791904 /* IMG_0661.GIF */,
 				68E26B5C21CE924800F91182 /* LaunchScreen.storyboard */,
 				68E26B5F21CE924800F91182 /* Info.plist */,
 				68E26B6021CE924800F91182 /* main.m */,
@@ -193,15 +251,6 @@
 			path = KJBannerViewDemo;
 			sourceTree = "<group>";
 		};
-		69087766EF7DFE2EB3ECB6F8 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				ACCAC1A1CEAB921E6DD69956 /* Pods-KJBannerViewDemo.debug.xcconfig */,
-				A3D287044B54F7EEB4FF3D6B /* Pods-KJBannerViewDemo.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -209,11 +258,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 68E26B6421CE924800F91182 /* Build configuration list for PBXNativeTarget "KJBannerViewDemo" */;
 			buildPhases = (
-				F77B8E5BF0904313AF1EDCBE /* [CP] Check Pods Manifest.lock */,
 				68E26B4A21CE924700F91182 /* Sources */,
 				68E26B4B21CE924700F91182 /* Frameworks */,
 				68E26B4C21CE924700F91182 /* Resources */,
-				90FCF1EE68875A1D506E00D5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -264,7 +311,6 @@
 				68E26B5E21CE924800F91182 /* LaunchScreen.storyboard in Resources */,
 				68CC363C229B7226005A78A5 /* KJBannerView.podspec in Resources */,
 				68E26B5B21CE924800F91182 /* Assets.xcassets in Resources */,
-				6847118B25AE8E5D00791904 /* IMG_0661.GIF in Resources */,
 				6816D19B2581BAE700E828DD /* CHANGELOG.md in Resources */,
 				68B5F17F22B0AB2000D71808 /* KJBannerView.bundle in Resources */,
 				68E26B5921CE924700F91182 /* Main.storyboard in Resources */,
@@ -275,69 +321,37 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		90FCF1EE68875A1D506E00D5 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-KJBannerViewDemo/Pods-KJBannerViewDemo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-KJBannerViewDemo/Pods-KJBannerViewDemo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-KJBannerViewDemo/Pods-KJBannerViewDemo-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F77B8E5BF0904313AF1EDCBE /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-KJBannerViewDemo-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		68E26B4A21CE924700F91182 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				6817DE48257E1B2F007B7055 /* KJBannerViewLoadManager.m in Sources */,
+				6868EC2426FB5D54001F2400 /* MASConstraintMaker.m in Sources */,
 				68E26B5621CE924700F91182 /* ViewController.m in Sources */,
 				68E26B6121CE924800F91182 /* main.m in Sources */,
 				684A645925DECB370000AE72 /* BaseImageView.m in Sources */,
 				683A7F3D21CEA4E5008DD08C /* KJBannerViewFlowLayout.m in Sources */,
+				6868EC2326FB5D54001F2400 /* MASCompositeConstraint.m in Sources */,
 				68625F7625C2950200337BA8 /* UIView+KJWebImage.m in Sources */,
+				6868EC2826FB5D54001F2400 /* MASConstraint.m in Sources */,
+				6868EC2726FB5D54001F2400 /* View+MASAdditions.m in Sources */,
 				68E26B5321CE924700F91182 /* AppDelegate.m in Sources */,
 				683A7F3B21CEA4E5008DD08C /* KJBannerView.m in Sources */,
+				6868EC2526FB5D54001F2400 /* MASLayoutConstraint.m in Sources */,
 				6817DE40257DCC46007B7055 /* KJBannerViewCacheManager.m in Sources */,
 				6817DE44257DCD8C007B7055 /* KJBannerViewDownloader.m in Sources */,
+				6868EC2926FB5D54001F2400 /* MASViewConstraint.m in Sources */,
 				684059DD21EA08D00092F630 /* KJBannerModel.m in Sources */,
 				68BF583825DF5A8E00ACA2DD /* KJBannerTimingClearManager.m in Sources */,
 				6872ECB823CEBB4100F63970 /* KJTestViewController.m in Sources */,
+				6868EC2626FB5D54001F2400 /* NSArray+MASAdditions.m in Sources */,
+				6868EC2126FB5D54001F2400 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */,
+				6868EC2226FB5D54001F2400 /* ViewController+MASAdditions.m in Sources */,
 				68CC363F229B7AC9005A78A5 /* KJPageView.m in Sources */,
 				683A7F3E21CEA4E5008DD08C /* KJBannerViewCell.m in Sources */,
 				684059E121EB59DA0092F630 /* KJCollectionViewCell.m in Sources */,
+				6868EC2A26FB5D54001F2400 /* MASViewAttribute.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -479,7 +493,6 @@
 		};
 		68E26B6521CE924800F91182 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ACCAC1A1CEAB921E6DD69956 /* Pods-KJBannerViewDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -498,7 +511,6 @@
 		};
 		68E26B6621CE924800F91182 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A3D287044B54F7EEB4FF3D6B /* Pods-KJBannerViewDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

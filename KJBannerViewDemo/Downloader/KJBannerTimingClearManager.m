@@ -54,7 +54,7 @@ static BOOL _openTiming = NO;
                 break;
         }
         NSArray * keys = dict.allKeys;
-        [self kj_sortDescriptorWithArray:&keys key:@"self"];
+//        [self kj_sortDescriptorWithArray:&keys key:@"self"];
         NSInteger index;
         if ([keys.lastObject integerValue] <= time) {
             index = 0;

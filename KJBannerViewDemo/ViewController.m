@@ -10,7 +10,7 @@
 #import "KJCollectionViewCell.h"
 #import "KJBannerModel.h"
 #import "KJTestViewController.h"
-#import <Masonry/Masonry.h>
+#import "Masonry.h"
 #import "BaseImageView.h"
 #import "UIView+KJWebImage.h"
 #import "KJBannerTimingClearManager.h"
