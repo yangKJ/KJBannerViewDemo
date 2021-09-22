@@ -13,6 +13,11 @@ KJBannerView 是一款轮播Banner，支持gif和url混播，自带图片下载�
 
 # 版本更新日志
 
+### [版本3.0.0](https://github.com/yangKJ/KJBannerViewDemo/tree/3.0.0)
+- 改版重构，采用协议类似`UITableView`的处理方式
+- 删除废弃代码和类等
+- 抽离异步计时器`KJBannerViewTimer`
+
 ### [版本2.1.7](https://github.com/yangKJ/KJBannerViewDemo/tree/2.1.7)
 - 规范代码，删除计数器
 - bannerScale 默认不裁剪
