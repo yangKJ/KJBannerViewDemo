@@ -29,7 +29,7 @@
 }
 - (void)kj_startDownloadImageWithURL:(NSURL *)URL progress:(KJLoadProgressBlock)progress complete:(KJLoadDataBlock)complete{
     if (URL == nil) {
-//        NSAssert(URL == nil, @"URL is nil.");
+        //NSAssert(URL == nil, @"URL is nil.");
         NSError *error = [NSError errorWithDomain:@"url failed"
                                              code:400
                                          userInfo:@{NSLocalizedDescriptionKey:@"URL is nil."}];
@@ -50,7 +50,7 @@
     NSMutableURLRequest *request = kGetRequest(URL, self.timeoutInterval ?: 10.0);
     NSURLSession *session = [NSURLSession sessionWithConfiguration:self.configuration delegate:self delegateQueue:self.queue];
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * data, NSURLResponse * response, NSError * error) {
-        if (complete) complete(data,error);
+        if (complete) complete(data, error);
     }];
     [dataTask resume];
     self.task = dataTask;
@@ -71,7 +71,7 @@ NS_INLINE NSMutableURLRequest * kGetRequest(NSURL * URL, NSTimeInterval timeoutI
     request.cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     [param setValue:@"image/webp,image/*;q=0.8" forKey:@"Accept"];
-//    [param setValue:@"" forKey:@"Accept-Encoding"];
+    //[param setValue:@"" forKey:@"Accept-Encoding"];
     [request setAllHTTPHeaderFields:param];
     return request;
 }

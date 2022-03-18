@@ -56,7 +56,7 @@
         BOOL isPhoneX = NO;
         if (@available(iOS 13.0, *)) {
             isPhoneX = [UIApplication sharedApplication].windows.firstObject.safeAreaInsets.bottom > 0.0;
-        }else if (@available(iOS 11.0, *)) {
+        } else if (@available(iOS 11.0, *)) {
             isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bottom > 0.0;
         }
         (isPhoneX);
@@ -187,34 +187,20 @@
         cell.bannerCornerRadius = UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight;
         cell.bannerNoPureBack = YES;
         cell.bannerRadius = 50;
-        cell.imageURLString = self.datas[index];
-        cell.useMineLoadImage = YES;
+        [cell setupImageURLString:self.datas[index] mineLoadImage:YES];
         return cell;
     } else if (banner == self.banner2) {
         KJBannerViewCell *cell = [banner dequeueReusableCellWithReuseIdentifier:@"banner2" forIndex:index];
-        KJBannerModel *model = self.viewModel.datas[index];
-        cell.imageURLString = model.customImageUrl;
-        cell.useMineLoadImage = YES;
         cell.bannerRadius = 20;
         cell.bannerNoPureBack = YES;
         cell.bannerRadiusColor = self.backView.backgroundColor;
+        KJBannerModel *model = self.viewModel.datas[index];
+        [cell setupImageURLString:model.customImageUrl mineLoadImage:YES];
         return cell;
     }
     KJCollectionViewCell *cell = [banner dequeueReusableCellWithReuseIdentifier:@"banner3" forIndex:index];
     cell.title = self.banner3Datas[index];
     return cell;
-}
-
-- (nullable NSString *)kj_bannerView:(KJBannerView *)banner nextPreRenderedImageItemAtIndex:(NSInteger)index{
-    if (banner == self.banner) {
-        return self.datas[index];
-    } else {
-        return nil;
-    }
-}
-
-- (void)kj_bannerView:(KJBannerView *)banner preRenderedImage:(UIImage *)image{
-    
 }
 
 #pragma mark - lazy

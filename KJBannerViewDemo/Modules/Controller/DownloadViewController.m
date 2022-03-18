@@ -70,8 +70,9 @@
 #pragma mark - action
 
 - (void)buttonAction{
-    kGCD_banner_async(^{
-        __banner_weakself;
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_async(queue, ^{
+        __weak __typeof(self) weakself = self;
         NSString * url = @"https://mp4.vjshi.com/2018-03-30/1f36dd9819eeef0bc508414494d34ad9.mp4";
         [KJWebImageDownloader kj_downloadDataWithURL:url progress:^(KJBannerDownloadProgress * pro) {
             [weakself displayProgress:pro];
@@ -80,7 +81,7 @@
 }
 
 - (void)displayProgress:(KJBannerDownloadProgress *)pro{
-    kGCD_banner_main(^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         self.downloadLabel.text = [NSString stringWithFormat:@"已下载：%.2fkb",pro.downloadBytes/1024.];
         self.totalLabel.text = [NSString stringWithFormat:@"总大小：%.2fkb",pro.totalBytes/1024.];
         self.speedLabel.text = [NSString stringWithFormat:@"下载速度：%.2fkb/s",pro.speed];

@@ -8,6 +8,8 @@
 //  轮播图
 
 #import <UIKit/UIKit.h>
+#import "KJPageControl.h"
+#import "KJBannerViewCell.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,8 +20,6 @@ typedef NS_ENUM(NSInteger, KJBannerViewRollDirectionType) {
     KJBannerViewRollDirectionTypeBottomToTop, /// 从下往上
     KJBannerViewRollDirectionTypeTopToBottom, /// 从上往下
 };
-@class KJPageControl;
-@class KJBannerViewCell;
 @class KJBannerViewFlowLayout;
 @protocol KJBannerViewDelegate,KJBannerViewDataSource;
 IB_DESIGNABLE
@@ -43,7 +43,7 @@ IB_DESIGNABLE
 @property (nonatomic,assign) IBInspectable CGFloat itemWidth;
 /// Cell间距，默认0px
 @property (nonatomic,assign) IBInspectable CGFloat itemSpace;
-/// 占位图，用于网络未加载到图片时
+/// 占位图，用于没有数据时刻占位显示
 @property (nonatomic,strong) UIImage *placeholderImage;
 /// 滚动方向，默认从右到左
 @property (nonatomic,assign) KJBannerViewRollDirectionType rollType;
@@ -53,13 +53,15 @@ IB_DESIGNABLE
 @property (nonatomic,strong,readonly) KJPageControl *pageControl;
 /// 布局信息
 @property (nonatomic,strong,readonly) KJBannerViewFlowLayout *layout;
+/// 缓存已加载的图片资源
+@property (nonatomic,strong,readonly) NSMutableDictionary *cacheImages;
 
 /// 注册一个类，用于创建 `UICollectionViewCell`
 /// @param clazz 类
 /// @param identifier 标识符
 - (void)registerClass:(Class)clazz forCellWithReuseIdentifier:(NSString *)identifier;
 
-/// 注册一个类，用于创建 `UICollectionViewCell`
+/// 注册一个类，用于创建`UICollectionViewCell`
 /// @param nib UINib
 /// @param identifier 标识符
 - (void)registerNib:(UINib *)nib forCellWithReuseIdentifier:(NSString *)identifier;
@@ -100,22 +102,7 @@ IB_DESIGNABLE
 /// @param banner 轮播图
 /// @param index 索引
 /// @return 返回定制样式Cell
-- (__kindof KJBannerViewCell *)kj_bannerView:(KJBannerView *)banner
-                          cellForItemAtIndex:(NSInteger)index;
-
-@optional
-
-/// 预渲染下一个Cell图片内容
-/// @param banner 轮播图
-/// @param index 下一个对应索引
-/// @return 返回预渲染图片链接地址
-- (nullable NSString *)kj_bannerView:(KJBannerView *)banner
-     nextPreRenderedImageItemAtIndex:(NSInteger)index;
-
-/// 返回预渲染图片
-/// @param banner 轮播图
-/// @param image 预渲染图片
-- (void)kj_bannerView:(KJBannerView *)banner preRenderedImage:(UIImage *)image;
+- (__kindof KJBannerViewCell *)kj_bannerView:(KJBannerView *)banner cellForItemAtIndex:(NSInteger)index;
 
 @end
 

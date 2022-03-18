@@ -7,18 +7,12 @@
 //  https://github.com/yangKJ/KJBannerViewDemo
 
 #import "KJBannerView.h"
-#import "KJBannerViewCell.h"
-#import <objc/runtime.h>
-#import "KJPageControl.h"
 #import "KJBannerViewFlowLayout.h"
 #import "KJBannerViewTimer.h"
-#import "KJBannerViewFunc.h"
-#import "KJBannerViewPreRendered.h"
 
 #define kPageHeight (20)
 
 @interface KJBannerView() <UICollectionViewDataSource, UICollectionViewDelegate>
-
 @property (nonatomic,strong) UICollectionView *collectionView;
 @property (nonatomic,strong) KJBannerViewFlowLayout *layout;
 @property (nonatomic,strong) KJPageControl *pageControl;
@@ -26,9 +20,8 @@
 @property (nonatomic,assign) CGFloat height;
 @property (nonatomic,assign) CGFloat lastX,lastY;
 @property (nonatomic,strong) KJBannerViewTimer *timer;
-@property (nonatomic,assign) NSInteger shamItemCount;// 虚假Cell个数，无穷大看着像无限轮播
-@property (nonatomic,assign) NSInteger numberOfItems;// 真实Cell个数
-@property (nonatomic,strong) KJBannerViewPreRendered *preRendered;
+@property (nonatomic,assign) NSInteger shamItemCount;// 虚假个数，无穷大看着像无限轮播
+@property (nonatomic,assign) NSInteger numberOfItems;// 真实个数
 
 @end
 
@@ -69,6 +62,7 @@
     _showPageControl = YES;
     _rollType = KJBannerViewRollDirectionTypeRightToLeft;
     _placeholderImage = [UIImage imageNamed:@"KJBannerView.bundle/KJBannerPlaceholderImage.png"];
+    _cacheImages = [NSMutableDictionary dictionary];
 }
 
 - (void)setupUI{
@@ -96,8 +90,7 @@
 /// 创建 `UICollectionViewCell`
 /// @param identifier 标识符
 /// @param index 下标
-- (__kindof KJBannerViewCell *)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier
-                                                             forIndex:(NSInteger)index{
+- (__kindof KJBannerViewCell *)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier forIndex:(NSInteger)index{
     NSIndexPath * indexPath = [NSIndexPath indexPathForItem:index inSection:0];
     id cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     if (![cell isKindOfClass:[KJBannerViewCell class]]) {
@@ -109,7 +102,6 @@
 /// 刷新
 - (void)reloadData{
     if ([self.dataSource respondsToSelector:@selector(kj_numberOfItemsInBannerView:)]) {
-        [self.preRendered clearCacheImages];
         self.numberOfItems = [self.dataSource kj_numberOfItemsInBannerView:self];
     }
 }
@@ -211,7 +203,7 @@
         if (CGRectEqualToRect(self.pageControl.frame, CGRectZero)) {
             [self kj_useMasonry];
         }
-        self.shamItemCount = self.infiniteLoop ? 100 * numberOfItems : numberOfItems;
+        self.shamItemCount = self.infiniteLoop ? 10000 * numberOfItems : numberOfItems;
         self.pageControl.hidden = !self.showPageControl;
         self.pageControl.totalPages = numberOfItems;
         self.collectionView.scrollEnabled = YES;
@@ -294,7 +286,8 @@
 }
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
     if (self.autoScroll) {
-        kGCD_banner_after_main(self.autoTime, ^{
+        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.autoTime * NSEC_PER_SEC));
+        dispatch_after(time, dispatch_get_main_queue(), ^{
             [self.timer kj_startTimer];
         });
     }
@@ -355,62 +348,9 @@
                                                          forIndexPath:indexPath];
     }
     NSInteger itemIndex = indexPath.item % _numberOfItems;
-    KJBannerViewCell *bannerViewCell = [self.dataSource kj_bannerView:self cellForItemAtIndex:itemIndex];
-    if ([bannerViewCell isMemberOfClass:[KJBannerViewCell class]]) {
-        /// 预渲染处理
-        [self preRenderedImageWithIndex:itemIndex];
-        /// 读取预加载数据
-        [self preLoadWithBannerViewCell:bannerViewCell];
-    }
-    return bannerViewCell;
-}
-
-/// 预渲染处理
-/// @param index 当前Index
-- (void)preRenderedImageWithIndex:(NSInteger)index{
-    if ([self.dataSource respondsToSelector:@selector(kj_bannerView:nextPreRenderedImageItemAtIndex:)]) {
-        NSInteger nextIndex = index;
-        switch (_rollType) {
-            case KJBannerViewRollDirectionTypeRightToLeft:
-            case KJBannerViewRollDirectionTypeBottomToTop:
-                nextIndex++;
-                if (nextIndex >= _numberOfItems) nextIndex = 0;
-                break;
-            case KJBannerViewRollDirectionTypeLeftToRight:
-            case KJBannerViewRollDirectionTypeTopToBottom:
-                nextIndex--;
-                if (nextIndex < 0) nextIndex = _numberOfItems - 1;
-                break;
-            default:break;
-        }
-        NSString * nextString = [self.dataSource kj_bannerView:self
-                               nextPreRenderedImageItemAtIndex:nextIndex];
-        if (nextString != nil && nextString.length > 0) {
-            __banner_weakself;
-            [self.preRendered preRenderedImageWithUrl:nextString withBlock:^(UIImage * image) {
-                if ([weakself.dataSource respondsToSelector:@selector(kj_bannerView:preRenderedImage:)]) {
-                    [weakself.dataSource kj_bannerView:weakself preRenderedImage:image];
-                }
-            }];
-        }
-    }
-}
-
-/// 读取预加载数据
-- (void)preLoadWithBannerViewCell:(__kindof KJBannerViewCell *)cell{
-#if __has_include("KJWebImageHeader.h")
-    if (cell.useMineLoadImage && cell.imageURLString) {
-        [cell setValue:self.placeholderImage forKey:@"placeholderImage"];
-        /// 读取预加载数据
-        UIImage * cacheImage = [self.preRendered readCacheImageWithUrl:cell.imageURLString];
-        SEL sel = NSSelectorFromString(@"drawBannerImage:");
-        if ([cell respondsToSelector:sel]) {
-            IMP imp = [cell methodForSelector:sel];
-            void (* tempFunc)(id, SEL, UIImage *) = (void *)imp;
-            tempFunc(cell, sel, cacheImage);
-        }
-    }
-#endif
+    KJBannerViewCell *cell = [self.dataSource kj_bannerView:self cellForItemAtIndex:itemIndex];
+    [cell setValue:self forKey:@"bannerView"];
+    return cell;
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -458,6 +398,7 @@
     }
     return _collectionView;
 }
+
 - (KJPageControl *)pageControl{
     if (!_pageControl) {
         _pageControl = [[KJPageControl alloc] init];
@@ -468,19 +409,12 @@
 
 - (KJBannerViewTimer *)timer{
     if (!_timer) {
-        __banner_weakself;
+        __weak __typeof(self) weakself = self;
         _timer = [[KJBannerViewTimer alloc] initWithInterval:self.autoTime repeats:YES task:^{
             [weakself kj_automaticScroll];
         }];
     }
     return _timer;
-}
-
-- (KJBannerViewPreRendered *)preRendered{
-    if (!_preRendered) {
-        _preRendered = [[KJBannerViewPreRendered alloc] init];
-    }
-    return _preRendered;
 }
 
 @end

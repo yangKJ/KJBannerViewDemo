@@ -16,6 +16,7 @@
 @end
 
 @implementation KJWebImageDownloader
+
 static KJWebImageDownloader *manager = nil;
 /// 带缓存机制的下载图片
 + (void)kj_loadImageWithURL:(NSString *)url complete:(void(^)(UIImage *image))complete{
