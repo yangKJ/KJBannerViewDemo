@@ -23,12 +23,10 @@ KJBannerView 是一款轮播Banner，支持网络GIF和网络图片和本地图�
 | Class | 功能区 |
 | :--- | :--- |
 | KJBannerView | 轮播图主控件 |
+| KJPageView | 自定义分页控件 |
 | KJBannerViewCell | 基类，自定义需继承该Cell |
 | KJBannerViewFlowLayout | Cell缩放管理 |
-| KJBannerViewFunc | 简单函数 |
 | KJBannerViewTimer | 计时器 |
-| KJPageView | 自定义分页控件 |
-| KJBannerViewPreRendered | 预渲染管理器 |
 
 ### Downloader类介绍
 | Class | 功能区 |
@@ -37,7 +35,7 @@ KJBannerView 是一款轮播Banner，支持网络GIF和网络图片和本地图�
 | KJImageCache | 缓存工具 |
 | KJNetworkManager | 网络请求工具 |
 | KJWebImageDownloader | 网图下载工具 |
-| UIView+KJWebImage | 显示网络图片（目前支持设置UIImageView，UIButton，UIView三种） |
+| UIView+KJWebImage | 显示网络图片（支持UIImageView、UIButton、UIView） |
 
 #### 支持Xib快捷设置属性
 ![Xib](https://upload-images.jianshu.io/upload_images/1933747-0c4b715868e47746.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/666)
@@ -46,6 +44,7 @@ KJBannerView 是一款轮播Banner，支持网络GIF和网络图片和本地图�
 ![轮播图](https://upload-images.jianshu.io/upload_images/1933747-2e51515ae91af6d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/666)
 
 - 下载测试效果图，图片采用信号量方式获取
+
 ![IMG_0145.PNG](https://upload-images.jianshu.io/upload_images/1933747-ea228edad91a2dcd.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/666)
 
 ### CocoaPods Install
